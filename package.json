@@ -12,8 +12,17 @@
   "author": "ankhzet@gmail.com",
   "license": "ISC",
   "dependencies": {
+    "bootstrap": "^3.3.7",
+    "jquery": "^3.1.0",
+    "nedb": "^1.8.0",
+    "react": "^15.3.1",
+    "react-codemirror": "^0.2.6",
+    "react-dom": "^15.3.1",
+    "react-lite": "^0.15.17",
+    "react-router": "^2.8.1"
   },
   "devDependencies": {
+    "component-inspector": "^1.4.0",
     "webpack": "latest",
     "css-loader": "latest",
     "file-loader": "latest",
