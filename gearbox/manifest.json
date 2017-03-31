@@ -1,0 +1,26 @@
+{
+	"name": "GearBox",
+	"version": "0.0.1",
+	"manifest_version": 2,
+	"description": "Chrome custom plugin sandbox",
+	"icons": {
+		"16": "images/icon-16.png",
+		"128": "images/icon-128.png"
+	},
+	"background": {
+		"scripts": [
+		]
+	},
+	"content_scripts": [
+	],
+	"permissions": [
+	],
+	"browser_action": {
+		"default_icon": {
+			"19": "images/icon-19.png",
+			"38": "images/icon-38.png"
+		},
+		"default_title": "gearbox",
+	},
+	"content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+}
