@@ -1,16 +1,16 @@
 
 import { BaseActions } from '../../../core/parcel/actions/Base/BaseActions';
 
-import {SomeAction, SomePacketData} from './Some';
+import {CacheAction, CachePacketData} from './Cache';
 import { ActionPerformer } from '../../../core/parcel/actions/ActionPerformer';
 
 export class GripActions extends BaseActions {
 
-	static get some(): ActionPerformer<SomePacketData, SomeAction> {
-		let action =  SomeAction.uid;
+	static get cache(): ActionPerformer<CachePacketData, CacheAction> {
+		let action =  CacheAction.uid;
 
 		if (!this.registered(action)) {
-			this.register(SomeAction);
+			this.register(CacheAction);
 		}
 
 		return this.action(action);

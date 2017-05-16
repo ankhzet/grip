@@ -3,11 +3,12 @@ import { ClientsPool } from '../../core/parcel/ClientsPool';
 import { GripClient } from './Client';
 import { GripActions } from './actions/GripActions';
 import { ActionHandler } from '../../core/parcel/ActionHandler';
+import { Book } from '../Domain/Book';
 
 export class ContentedClientsPool extends ClientsPool<GripClient> {
 
-	some(data?: any) {
-		return this.broadcast(GripActions.some, data);
+	cache(book: Book) {
+		return this.broadcast(GripActions.cache, { book });
 	}
 
 }
