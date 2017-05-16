@@ -2,28 +2,25 @@
 const path = require('path');
 const webpack = require('webpack');
 
-const WatchIgnorePlugin = require('watch-ignore-webpack-plugin');
-
-const DEBUG = !process.argv.includes('--release');
+const DEBUG = !process.argv.includes('-p');
 const VERBOSE = process.argv.includes('--verbose');
 
 const SCRIPTS_ROOT = 'grip/scripts';
 
 module.exports = {
 	entry: {
-		popup: SCRIPTS_ROOT + '/src/popup.js',
-		content: SCRIPTS_ROOT + '/src/content.js',
-		background: SCRIPTS_ROOT + '/src/background.js',
+		popup: 'src/popup.js',
+		content: 'src/content.js',
+		background: 'src/background.js',
 	},
 	output: {
 		publicPath: '/',
 		sourcePrefix: '  ',
 
-		path: SCRIPTS_ROOT,
+		path: path.resolve(__dirname, SCRIPTS_ROOT),
 		filename: DEBUG ? '[name].js?[hash]' : '[name].js',
 	},
 
-	// devtool: DEBUG ? 'cheap-module-eval-source-map' : false,
 	plugins: [
 		new webpack.LoaderOptionsPlugin({
 			debug: DEBUG,
@@ -39,6 +36,11 @@ module.exports = {
 			'process.env.BROWSER': true,
 			__DEV__: DEBUG,
 		}),
+		// new HtmlWebpackPlugin({
+		// 	template: path.join(__dirname, "grip", "popup.html"),
+		// 	filename: "popup.html",
+		// 	chunks: ["popup"]
+		// }),
 		new webpack.optimize.CommonsChunkPlugin({
 			name: "commons",
 			filename: "commons.js",
@@ -49,11 +51,11 @@ module.exports = {
 			// (Only use these entries)
 		}),
 		...(!DEBUG ? [
-			new WatchIgnorePlugin([
+			new webpack.optimize.WatchIgnorePlugin([
 				path.resolve(__dirname, './**/fonts/'),
 			]),
 
-			new webpack.optimize.OccurenceOrderPlugin(),
+			// new webpack.optimize.OccurenceOrderPlugin(),
 			// new webpack.optimize.UglifyJsPlugin({
 			// 	compress: {
 			// 		screw_ie8: true,
@@ -84,13 +86,19 @@ module.exports = {
 		cachedAssets: VERBOSE,
 	},
 
+
 	resolve: {
+		modules   : [path.resolve(__dirname, 'grip/scripts'), 'node_modules'],
 		extensions: ['.js', '.jsx', '.json'],
 		alias: {
 			'react': 'react-lite',
 			'react-dom': 'react-lite',
 		},
 	},
+	// externals: {
+	// 	'react': 'React',
+	// 	'react-dom': 'ReactDOM',
+	// },
 
 	module: {
 		loaders: [
