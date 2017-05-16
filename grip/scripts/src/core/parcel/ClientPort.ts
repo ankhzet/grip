@@ -73,7 +73,6 @@ export class ClientPort extends Port {
 	}
 
 	process(packet: Packet<any>) {
-		console.log(arguments);
 		this.touched = +new Date;
 
 		if (this.dispatcher.dispatch(this, packet)) {
