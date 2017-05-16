@@ -76,8 +76,8 @@ export abstract class ObservableList<T extends IdentifiableInterface> {
 		return final;
 	}
 
-		let pack = new Package(...value);
 	set(values: T[], silent?: boolean): Promise<string[]> {
+		let pack = new Package(values);
 		let uids = Object.keys(pack);
 
 		for (let instance of values) {
@@ -140,8 +140,8 @@ export abstract class ObservableList<T extends IdentifiableInterface> {
 				let values = data.map((i) => this.wrap(i));
 
 				return this.set(values, true)
-					.then(() => new Package(...values))
-				;
+					.then(() => new Package(values))
+					;
 			});
 	}
 

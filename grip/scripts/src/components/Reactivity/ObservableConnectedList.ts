@@ -1,8 +1,8 @@
 
 import { IdentifiableInterface } from '../../core/db/data/IdentifiableInterface';
 import { ObservableList } from './ObservableList';
-import { ClientConnector } from '../../core/client-connector';
-import { SendAction, SendPacketData } from '../../core/parcel/actions/send';
+import { ClientConnector } from '../../core/ClientConnector';
+import { SendAction, SendPacketData } from '../../core/parcel/actions/Base/Send';
 import { PackageInterface } from '../../core/db/data/PackageInterface';
 
 export abstract class ObservableConnectedList<T extends IdentifiableInterface> extends ObservableList<T> {

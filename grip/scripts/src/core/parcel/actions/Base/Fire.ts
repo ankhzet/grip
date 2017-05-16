@@ -1,5 +1,5 @@
 
-import { Action } from './action';
+import { Action } from '../Action';
 
 export interface FirePacketData {
 	sender: string;

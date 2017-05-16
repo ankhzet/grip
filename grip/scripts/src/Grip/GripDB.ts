@@ -1,6 +1,6 @@
 
 import * as DataStore from 'nedb';
-import { DB } from './db/db';
+import { DB } from '../core/db/DB';
 
 export class GripDB extends DB {
 

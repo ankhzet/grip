@@ -7,7 +7,7 @@ import { Link, withRouter } from 'react-router'
 import { Glyph } from '../../glyph';
 import { Button } from '../../button';
 import { Panel, PanelHeader, PanelList } from '../../panel';
-import { Book } from '../../../core/domain/Book';
+import { Book } from '../../../Grip/Domain/Book';
 import { BooksPage } from '../BooksPage';
 import { Package } from '../../../core/db/data/Package';
 import { ManagerInterface } from '../../Reactivity/ManagerInterface';

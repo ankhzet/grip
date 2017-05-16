@@ -5,7 +5,7 @@ import plugins = chrome.contentSettings.plugins;
 import { Panel, PanelHeader, PanelBody, PanelFooter } from '../../../panel';
 import { Button } from '../../../button';
 
-import { Book } from '../../../../core/domain/Book';
+import { Book } from '../../../../Grip/Domain/Book';
 import { ManagerInterface } from '../../../Reactivity/ManagerInterface';
 import { BookUIManagerInterface } from '../delegates/BookUIManagerInterface';
 import { BooksPage } from '../../BooksPage';

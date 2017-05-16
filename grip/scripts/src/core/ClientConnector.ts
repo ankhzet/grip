@@ -1,8 +1,8 @@
 
-import { ClientPort } from './parcel/parcel';
-import { ActionHandler } from './parcel/dispatcher';
-import { GripActions } from './actions/actions';
-import { SendAction, SendPacketData } from './parcel/actions/send';
+import { ClientPort } from './parcel/ClientPort';
+import { SendAction, SendPacketData } from './parcel/actions/Base/Send';
+import { ActionHandler } from "./parcel/ActionHandler";
+import { GripActions } from './actions/GripActions';
 
 export class ClientConnector extends ClientPort {
 
@@ -26,12 +26,8 @@ export class ClientConnector extends ClientPort {
 		return GripActions.update(this, { what: 'plugins', data, payload });
 	}
 
-	unmount(uid: string) {
-		return GripActions.unmount(this, { uid });
-	}
-
-	execute(uid: string, code?: string) {
-		return GripActions.execute(this, { plugin: { uid: uid }, code });
+	some(data?: any) {
+		return GripActions.some(this, { data });
 	}
 
 	fire(sender: string, event: string) {

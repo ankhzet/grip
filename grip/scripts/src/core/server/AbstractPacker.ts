@@ -1,8 +1,8 @@
 
 import { ContainerInterface } from '../db/data/ContainerInterface';
-import { Serializer } from './data-server';
 import { PackageInterface } from '../db/data/PackageInterface';
 import { IdentifiableInterface } from '../db/data/IdentifiableInterface';
+import { Serializer } from "../db/data/Serializer";
 
 export abstract class AbstractPacker<T extends IdentifiableInterface, R> {
 	serializers: ContainerInterface<Serializer<T, R>> = {};

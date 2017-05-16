@@ -1,5 +1,5 @@
 
-import { Model } from '../db/data/Model';
+import { Model } from '../../core/db/data/Model';
 
 export class Book extends Model{
 	public uid: string;
