@@ -10,7 +10,7 @@ import { ActionPerformer } from '../ActionPerformer';
 export class BaseActions extends AbstractActions {
 
 	static get connect(): ActionPerformer<ConnectPacketData, ConnectAction> {
-		let action =  ConnectAction.uid;
+		let action = ConnectAction.uid;
 
 		if (!this.registered(action)) {
 			this.register(ConnectAction);
@@ -20,7 +20,7 @@ export class BaseActions extends AbstractActions {
 	}
 
 	static get fetch(): ActionPerformer<FetchPacketData, FetchAction> {
-		let action =  FetchAction.uid;
+		let action = FetchAction.uid;
 
 		if (!this.registered(action)) {
 			this.register(FetchAction);
@@ -30,7 +30,7 @@ export class BaseActions extends AbstractActions {
 	}
 
 	static get send(): ActionPerformer<SendPacketData, SendAction> {
-		let action =  SendAction.uid;
+		let action = SendAction.uid;
 
 		if (!this.registered(action)) {
 			this.register(SendAction);
@@ -40,7 +40,7 @@ export class BaseActions extends AbstractActions {
 	}
 
 	static get update(): ActionPerformer<UpdatePacketData, UpdateAction> {
-		let action =  UpdateAction.uid;
+		let action = UpdateAction.uid;
 
 		if (!this.registered(action)) {
 			this.register(UpdateAction);
@@ -50,7 +50,7 @@ export class BaseActions extends AbstractActions {
 	}
 
 	static get fire(): ActionPerformer<FirePacketData, FireAction> {
-		let action =  FireAction.uid;
+		let action = FireAction.uid;
 
 		if (!this.registered(action)) {
 			this.register(FireAction);
