@@ -21,7 +21,7 @@ export class BooksPage extends React.Component<BooksPageProps, {}> implements Bo
 	static PATH = '/books';
 
 	render() {
-		let props = { delegate: this, manager: this, };
+		let props = { delegate: this, manager: this.props.manager, };
 
 		return (
 			<div>
