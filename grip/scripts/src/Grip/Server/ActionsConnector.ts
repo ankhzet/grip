@@ -1,6 +1,6 @@
 
 import { ClientConnector } from '../../core/server/ClientConnector';
-import { GripActions } from '../../core/actions/GripActions';
+import { GripActions } from './actions/GripActions';
 
 export class ActionsConnector extends ClientConnector {
 

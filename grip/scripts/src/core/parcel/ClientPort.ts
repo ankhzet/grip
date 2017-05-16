@@ -38,6 +38,10 @@ export class ClientPort extends Port {
 		return BaseActions.connect(this, { uid: this.uid });
 	}
 
+	fire(sender: string, event: string) {
+		return BaseActions.fire(this, { sender, event });
+	}
+
 	bind(port) {
 		if (!port) {
 			return;

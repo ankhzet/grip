@@ -1,5 +1,5 @@
 
-import { Action } from '../parcel/actions/Action';
+import { Action } from '../../../core/parcel/actions/Action';
 
 export interface SomePacketData {
 	data?: any;
