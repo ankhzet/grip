@@ -22,6 +22,21 @@ class ConnectorChannel extends ClientPort {
 		// Actions.postpone(this, 'clear');
 	}
 
+	executed(sender, { plugin, code }, packet: Packet<ExecutePacketData>) {
+		console.log('executing', plugin, code, packet);
+
+		let handler = eval(`(context, args) => (${code}).apply(context, args)`);
+
+		return handler(
+			plugin,
+			[{
+				dom: document,
+				fire: (event, ...args) => GripActions.fire(this, { sender: plugin.uid, event }),
+				unmount: () => GripActions.unmount(this, { uid: plugin.uid }),
+			}]
+		);
+	}
+
 }
 
 ((channel, interval) => {
