@@ -2,10 +2,10 @@
 import { Book } from '../../../Grip/Domain/Book';
 import { IdentifiableInterface } from '../../../core/db/data/IdentifiableInterface';
 import { ObservableConnectedList } from '../../Reactivity/ObservableConnectedList';
-import { ManagerInterface } from '../../Reactivity/ManagerInterface';
 import { PackageInterface } from '../../../core/db/data/PackageInterface';
+import { ReactiveInterface } from '../../Reactivity/ReactiveInterface';
 
-export class BookManager extends ObservableConnectedList<Book> implements ManagerInterface<Book> {
+export class BookManager extends ObservableConnectedList<Book> implements ReactiveInterface<Book> {
 
 	constructor() {
 		super('grip', 'books');
