@@ -1,8 +1,8 @@
 
 import { BaseActions } from '../parcel/actions/Base/BaseActions';
 
-import {SomeAction, SomePacketData} from "./Some";
-import { ActionPerformer } from "../parcel/actions/ActionPerformer";
+import {SomeAction, SomePacketData} from './Some';
+import { ActionPerformer } from '../parcel/actions/ActionPerformer';
 
 export class GripActions extends BaseActions {
 

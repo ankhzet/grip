@@ -1,6 +1,6 @@
 
-import { Action, ActionConstructor } from "./Action";
-import { ActionPerformer } from "./ActionPerformer";
+import { Action, ActionConstructor } from './Action';
+import { ActionPerformer } from './ActionPerformer';
 
 export abstract class AbstractActions {
 	private static _cache: {[action: string]: ActionPerformer<any, any>} = {};

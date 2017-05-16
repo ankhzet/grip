@@ -3,7 +3,7 @@ import { Book } from '../../../Grip/Domain/Book';
 import { IdentifiableInterface } from '../../../core/db/data/IdentifiableInterface';
 import { ObservableConnectedList } from '../../Reactivity/ObservableConnectedList';
 import { ManagerInterface } from '../../Reactivity/ManagerInterface';
-import { PackageInterface } from "../../../core/db/data/PackageInterface";
+import { PackageInterface } from '../../../core/db/data/PackageInterface';
 
 export class BookManager extends ObservableConnectedList<Book> implements ManagerInterface<Book> {
 

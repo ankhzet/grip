@@ -4,8 +4,8 @@ import { FetchPacketData, FetchAction } from './Fetch';
 import { SendAction, SendPacketData } from './Send';
 import { UpdatePacketData, UpdateAction } from '../../../server/actions/Update';
 import { FirePacketData, FireAction } from './Fire';
-import { AbstractActions } from "../AbstractActions";
-import { ActionPerformer } from "../ActionPerformer";
+import { AbstractActions } from '../AbstractActions';
+import { ActionPerformer } from '../ActionPerformer';
 
 export class BaseActions extends AbstractActions {
 

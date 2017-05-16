@@ -1,12 +1,12 @@
 
 
-import { ClientFactory, ClientPort } from "./ClientPort";
-import { Port } from "./Port";
-import { PacketDispatcher, PacketHandler } from "./PacketDispatcher";
-import { RepositoryInterface } from "./actions/RepositoryInterface";
-import { Packet } from "./Packet";
-import { ActionConstructor } from "./actions/Action";
-import { ActionHandler } from "./ActionHandler";
+import { ClientFactory, ClientPort } from './ClientPort';
+import { Port } from './Port';
+import { PacketDispatcher, PacketHandler } from './PacketDispatcher';
+import { RepositoryInterface } from './actions/RepositoryInterface';
+import { Packet } from './Packet';
+import { ActionConstructor } from './actions/Action';
+import { ActionHandler } from './ActionHandler';
 
 export abstract class ServerPort<C extends ClientPort> extends Port implements PacketHandler<C> {
 	private factory: ClientFactory<C>;

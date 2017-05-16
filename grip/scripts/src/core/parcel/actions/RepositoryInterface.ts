@@ -1,5 +1,5 @@
 
-import { ActionConstructor } from "./Action";
+import { ActionConstructor } from './Action';
 
 export interface RepositoryInterface {
 

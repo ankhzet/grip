@@ -1,7 +1,7 @@
 
 import { ClientPort } from './ClientPort';
-import { Action } from "./actions/Action";
-import { ActionPerformer } from "./actions/ActionPerformer";
+import { Action } from './actions/Action';
+import { ActionPerformer } from './actions/ActionPerformer';
 
 export class ClientsPool<C extends ClientPort> {
 	private clients: {[uid: string]: C} = {};

@@ -1,6 +1,6 @@
 
 import { PackageInterface } from './PackageInterface';
-import { IdentifiableInterface } from "./IdentifiableInterface";
+import { IdentifiableInterface } from './IdentifiableInterface';
 
 export class Package<M extends IdentifiableInterface> implements PackageInterface<M> {
 	[uid: string]: M;

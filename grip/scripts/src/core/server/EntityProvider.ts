@@ -1,7 +1,7 @@
 
 import { ModelStore } from '../db/ModelStore';
-import { IdentifiableInterface } from "../db/data/IdentifiableInterface";
-import { Package } from "../db/data/Package";
+import { IdentifiableInterface } from '../db/data/IdentifiableInterface';
+import { Package } from '../db/data/Package';
 import { DataServer } from './DataServer';
 
 export class EntityProvider<S extends IdentifiableInterface, D> {

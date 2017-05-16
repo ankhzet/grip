@@ -1,11 +1,11 @@
 
-import { ModelStore } from "../core/db/ModelStore";
-import { DataServer } from "../core/server/DataServer";
-import { EntityProvider } from "../core/server/EntityProvider";
+import { ModelStore } from '../core/db/ModelStore';
+import { DataServer } from '../core/server/DataServer';
+import { EntityProvider } from '../core/server/EntityProvider';
 
-import { Book } from "./Domain/Book";
-import { BooksPackage } from "./Domain/BooksPackage";
-import { BooksDepot } from "./Domain/BooksDepot";
+import { Book } from './Domain/Book';
+import { BooksPackage } from './Domain/BooksPackage';
+import { BooksDepot } from './Domain/BooksDepot';
 
 export class BooksProvider extends EntityProvider<Book, Book> {
 	books: BooksDepot;

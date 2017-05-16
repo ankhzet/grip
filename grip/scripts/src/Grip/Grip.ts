@@ -1,14 +1,14 @@
 
 import { GripDB } from './GripDB';
-import { Packet } from "../core/parcel/Packet";
+import { Packet } from '../core/parcel/Packet';
 import { GripServer } from './Server/Server';
-import { GripClient } from "./Server/Client";
+import { GripClient } from './Server/Client';
 
-import { BooksProvider } from "./BooksProvider";
-import { BooksDepot } from "./Domain/BooksDepot";
-import { SomeAction, SomePacketData } from "../core/actions/Some";
-import { SendAction, SendPacketData } from "../core/parcel/actions/Base/Send";
-import { ContentedClientsPool } from "./Server/ContentedClientsPool";
+import { BooksProvider } from './BooksProvider';
+import { BooksDepot } from './Domain/BooksDepot';
+import { SomeAction, SomePacketData } from '../core/actions/Some';
+import { SendAction, SendPacketData } from '../core/parcel/actions/Base/Send';
+import { ContentedClientsPool } from './Server/ContentedClientsPool';
 
 export class Grip {
 	server: GripServer;
