@@ -22,11 +22,8 @@ export interface ShowPageProps {
 
 export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 
-	constructor(props) {
-		super(props);
-
-		this.navBack      = this.navBack.bind(this);
-		this.removeBook = this.removeBook.bind(this);
+	static path(book: Book): string {
+		return BooksPage.PATH + '/' + book.uid + '/show';
 	}
 
 	async pullBook(id: string) {
