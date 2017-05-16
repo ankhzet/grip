@@ -13,7 +13,7 @@ export class BookManager extends ObservableConnectedList<Book> implements Manage
 	public perform(uids: string[], action: string, payload?: any) {
 		return this.get(uids)
 			.then((pack) => {
-				for (let uid in pack)
+				let results = Object.keys(pack).map((uid) => {
 					switch (action) {
 						case 'execute': {
 							this.connector.execute(uid);
@@ -25,6 +25,9 @@ export class BookManager extends ObservableConnectedList<Book> implements Manage
 							break;
 						}
 					}
+				});
+
+				console.log(`Performed ${action}:`, results);
 
 				return pack;
 			});

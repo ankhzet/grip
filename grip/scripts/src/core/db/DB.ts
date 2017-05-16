@@ -19,8 +19,9 @@ export class DB {
 				autoload: !callback
 			});
 
-			if (callback)
+			if (callback) {
 				table.loadDatabase(callback);
+			}
 		}
 
 		return table;
