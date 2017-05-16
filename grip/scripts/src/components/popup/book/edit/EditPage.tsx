@@ -6,14 +6,14 @@ import { Button } from '../../../button';
 
 import { Book } from '../../../../Grip/Domain/Book';
 import { ManagerInterface } from '../../../Reactivity/ManagerInterface';
-import { BookUIManagerInterface } from '../delegates/BookUIManagerInterface';
+import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
 import { BooksPage } from '../../BooksPage';
 import { BooksPackage } from '../../../../Grip/Domain/BooksPackage';
 import { Link } from "react-router";
 import { ShowPage } from '../show/ShowPage';
 
 export interface EditPageProps {
-	delegate: BookUIManagerInterface<Book>;
+	delegate: BookUIDelegateInterface<Book>;
 	manager: ManagerInterface<Book>;
 	params: {
 		id: string;

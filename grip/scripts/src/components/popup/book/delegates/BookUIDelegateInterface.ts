@@ -1,7 +1,7 @@
 
 import { Book } from '../../../../Grip/Domain/Book';
 
-export interface BookUIManagerInterface<B extends Book> {
+export interface BookUIDelegateInterface<B extends Book> {
 	createBook(): Promise<B>;
 	showBook(book: B): Promise<B>;
 	editBook(book: B): Promise<B>;
