@@ -12,6 +12,8 @@ import { BooksPackage } from "../../../Grip/Domain/BooksPackage";
 import { BooksPage } from '../BooksPage';
 import { ManagerInterface } from '../../Reactivity/ManagerInterface';
 import { BookUIManagerInterface } from "./delegates/BookUIManagerInterface";
+import { ShowPage } from './show/ShowPage';
+import { EditPage } from './edit/EditPage';
 
 interface BookItemRowProps {
 	manager: ManagerInterface<Book>;
@@ -23,27 +25,29 @@ interface BookItemRowProps {
 class BookItemRow extends React.Component<BookItemRowProps, {}> {
 
 	render() {
+		let book = this.props.book;
+
 		return (
 			<div className="row">
 				<div className="col-lg-12">
 					<div className="input-group">
 						<div className="input-group-btn">
-							<Button class="btn-xs" onClick={ this.removeBook }>
+							<Button class="btn-xs" onClick={ () => this.removeBook() }>
 								<Glyph name="remove" />
 							</Button>
 						</div>
 
-						<Link className="col-xs-9" to={ "/fetcher/1" }>Book "{ this.props.book.title }"</Link>
+						<Link className="col-xs-9" to={ ShowPage.path(book.uid) }>Book "{ book.title }"</Link>
 
 						<div className="input-group-btn">
-							<Button class="btn-xs" onClick={ null }>
+							<Button class="btn-xs" onClick={ () => console.log('circle', book) }>
 								<Glyph name="play-circle" />
 							</Button>
 							<Button class="btn-xs dropdown-toggle" data-toggle="dropdown">
 								Actions <span className="caret" />
 							</Button>
 							<ul className="dropdown-menu pull-right">
-								<li><Link to={ BooksPage.PATH + "/" + this.props.book.uid + "/fetch" }>Fetch</Link></li>
+								<li><Link to={ EditPage.path(book.uid) }>Edit</Link></li>
 							</ul>
 						</div>
 					</div>
@@ -78,11 +82,12 @@ export class ListPage extends React.Component<ListPageProps, { books: BooksPacka
 			books: null,
 		});
 
-		(async () => {
-			this.setState({
-				books: await this.props.manager.get(uids),
+		return this.props.manager.get(uids)
+			.then((books: BooksPackage) => {
+				this.setState({
+					books,
+				});
 			});
-		})();
 	}
 
 	render() {
@@ -93,7 +98,7 @@ export class ListPage extends React.Component<ListPageProps, { books: BooksPacka
 				<PanelHeader>
 					Books
 					<div className="pull-right">
-						<Button class="btn-xs" onClick={ this.addBook.bind(this) }>
+						<Button class="btn-xs" onClick={ () => this.addBook() }>
 							<Glyph name="plus" />
 						</Button>
 					</div>
@@ -112,7 +117,9 @@ export class ListPage extends React.Component<ListPageProps, { books: BooksPacka
 		);
 	}
 
-	private addBook() {
-		return this.props.delegate.createBook();
+	private async addBook() {
+		return this.props.delegate.editBook(
+			await this.props.delegate.createBook()
+		);
 	}
 }
