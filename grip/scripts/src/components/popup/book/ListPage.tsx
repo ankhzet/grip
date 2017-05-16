@@ -57,7 +57,7 @@ class BookItemRow extends React.Component<BookItemRowProps, {}> {
 	}
 
 	removeBook () {
-
+		return this.props.delegate.removeBook(this.props.book);
 	}
 
 }
