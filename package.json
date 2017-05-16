@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "description": "Blog fetcher",
   "scripts": {
-    "pack": "webpack --display-modules --progress --colors --release",
-    "watchdog": "webpack --display-modules --progress --colors --watch --watch-poll --verbose",
+    "pack": "webpack --display-modules --progress --colors -p",
+    "watchdog": "webpack --progress --colors --watch --watch-poll --verbose",
     "install:webpack": "npm link webpack",
     "install:typings": "npm link typings",
     "install:global": "npm run install:webpack && npm run install:typings"
@@ -22,7 +22,6 @@
     "react": "^15.3.1",
     "react-codemirror": "^0.2.6",
     "react-dom": "^15.3.1",
-    "react-lite": "^0.15.17",
     "react-router": "^2.8.1"
   },
   "devDependencies": {
@@ -31,7 +30,6 @@
     "css-loader": "latest",
     "file-loader": "latest",
     "style-loader": "latest",
-    "url-loader": "latest",
-    "watch-ignore-webpack-plugin": "^1.0.0"
+    "url-loader": "latest"
   }
 }
