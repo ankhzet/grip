@@ -6,7 +6,7 @@ import { GripClient } from './Server/Client';
 
 import { BooksProvider } from './BooksProvider';
 import { BooksDepot } from './Domain/BooksDepot';
-import { SomeAction, SomePacketData } from '../core/actions/Some';
+import { SomeAction, SomePacketData } from './Server/actions/Some';
 import { SendAction, SendPacketData } from '../core/parcel/actions/Base/Send';
 import { ContentedClientsPool } from './Server/ContentedClientsPool';
 

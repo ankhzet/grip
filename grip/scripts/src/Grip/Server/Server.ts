@@ -8,9 +8,9 @@ import { GripDB } from '../GripDB';
 import { ActionConstructor } from '../../core/parcel/actions/Action';
 import { ActionHandler } from '../../core/parcel/ActionHandler';
 
-import { GripActions } from '../../core/actions/GripActions';
+import { GripActions } from './actions/GripActions';
 import { SendPacketData } from '../../core/parcel/actions/Base/Send';
-import { SomePacketData } from '../../core/actions/Some';
+import { SomePacketData } from './actions/Some';
 import { Packet } from '../../core/parcel/Packet';
 import { ConnectAction } from '../../core/parcel/actions/Base/Connect';
 import { ClientActionHandler, ContentedClientsPool } from './ContentedClientsPool';
