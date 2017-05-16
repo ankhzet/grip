@@ -7,23 +7,22 @@ import { Panel, PanelFooter, PanelHeader, PanelBody } from '../../../panel';
 import { Button } from '../../../button';
 import { Glyph } from '../../../glyph';
 
-import * as Codemirror from 'react-codemirror';
-import 'codemirror/addon/selection/active-line';
-import 'codemirror/mode/javascript/javascript';
-import 'codemirror/lib/codemirror.css';
 import { Book } from '../../../../Grip/Domain/Book';
 import { BooksPage } from '../../BooksPage';
 import { ManagerInterface } from '../../../Reactivity/ManagerInterface';
+import { EditPage } from '../edit/EditPage';
+import { BookUIManagerInterface } from '../delegates/BookUIManagerInterface';
 
 export interface ShowPageProps {
 	manager: ManagerInterface<Book>;
+	delegate: BookUIManagerInterface<Book>;
 	params: { id: string };
 }
 
 export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 
-	static path(book: Book): string {
-		return BooksPage.PATH + '/' + book.uid + '/show';
+	static path(uid: string): string {
+		return `${BooksPage.PATH}/${uid}`;
 	}
 
 	async pullBook(id: string) {
@@ -39,31 +38,27 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 	}
 
 	componentWillReceiveProps(next) {
-		return this.pullBook(next.params.id);
+		this.pullBook(next.params.id);
 	}
 
 	componentWillMount() {
-		return this.pullBook(this.props.params.id);
+		this.pullBook(this.props.params.id);
 	}
 
 	render() {
 		let book = this.state.book;
 
-		if (!book) {
-			return null;
-		}
-
-		return (
+		return book && (
 			<Panel>
 				<PanelHeader>
 					Book: { book.title }
 					<div className="btn-toolbar pull-right">
 						<div className="btn-group">
-							<Button class="btn-xs" onClick={ this.removeBook }>
+							<Button class="btn-xs" onClick={ () => this.removeBook() }>
 								<Glyph name="remove" />
 							</Button>
 							<Button class="btn-xs">
-								<Link to={ BooksPage.PATH + '/' + book.uid + '/edit' }>
+								<Link to={ EditPage.path(book.uid) }>
 									<Glyph name="edit" />
 								</Link>
 							</Button>
@@ -78,36 +73,21 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 
 				<PanelBody>
 					<div className="form-group col-lg-12">
-
-						<Codemirror
-							value={ book.uri }
-							options={{
-									mode: 'javascript',
-									theme: 'base16-oceanicnext-dark',
-									lineNumbers: true,
-									indentWithTabs: true,
-									tabSize: 2,
-									readOnly: true,
-								}} />
-
+						{ book.uri }
 					</div>
 				</PanelBody>
 
 				<PanelFooter>
-					<Button class="btn-xs" onClick={ this.navBack }>
-						&larr;
+					<Button class="btn-xs">
+						<Link to={ BooksPage.path() }>&larr;</Link>
 					</Button>
 				</PanelFooter>
 			</Panel>
 		);
 	}
 
-	navBack() {
-		// this.props.delegate.listPlugins();
-	}
-
 	removeBook() {
-		// this.props.delegate.removePlugin(this.state.book.uid);
+		return this.props.delegate.removeBook(this.state.book);
 	}
 
 }

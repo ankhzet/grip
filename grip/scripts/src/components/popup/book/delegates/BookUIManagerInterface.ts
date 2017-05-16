@@ -2,11 +2,11 @@
 import { Book } from '../../../../Grip/Domain/Book';
 
 export interface BookUIManagerInterface<B extends Book> {
-	createBook();
-	showBook(uid: string): B;
-	editBook(uid: string): B;
-	saveBook(uid: string, data);
-	removeBook(uid: string);
+	createBook(): Promise<B>;
+	showBook(book: B): Promise<B>;
+	editBook(book: B): Promise<B>;
+	saveBook(book: B, data): Promise<B>;
+	removeBook(book: B): Promise<string>;
 
 	listBooks();
 }
