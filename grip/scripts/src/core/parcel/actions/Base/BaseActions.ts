@@ -1,6 +1,6 @@
 
 import { ConnectPacketData, ConnectAction } from './Connect';
-import { FetchPacketData, FetchAction } from './Fetch';
+import { FetchPacketData, FetchAction } from '../../../server/actions/Fetch';
 import { SendAction, SendPacketData } from './Send';
 import { UpdatePacketData, UpdateAction } from '../../../server/actions/Update';
 import { FirePacketData, FireAction } from './Fire';

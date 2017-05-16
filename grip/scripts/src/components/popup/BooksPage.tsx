@@ -35,10 +35,9 @@ export class BooksPage extends React.Component<BooksPageProps, {}> implements Bo
 
 	createBook() {
 		this.props.manager.set([
-			new Book("")
+			new Book("000")
 		]);
 
-		this.showBook()
 	}
 
 	getBookByUid(uid: string): Book {

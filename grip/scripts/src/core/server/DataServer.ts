@@ -4,7 +4,7 @@ import { ClientPort } from '../parcel/ClientPort';
 import { BaseActions } from '../parcel/actions/Base/BaseActions';
 import { PacketHandler } from '../parcel/PacketDispatcher';
 import { Packet } from '../parcel/Packet';
-import { FetchAction, FetchPacketData } from '../parcel/actions/Base/Fetch';
+import { FetchAction, FetchPacketData } from './actions/Fetch';
 import { UpdateAction, UpdatePacketData } from './actions/Update';
 import { SendPacketData } from '../parcel/actions/Base/Send';
 import { Package } from '../db/data/Package';
@@ -20,12 +20,12 @@ export type Mapper<S extends IdentifiableInterface, D extends IdentifiableInterf
 export type Updatable<S extends IdentifiableInterface> = (store: ModelStore<S>, data: SyncResultInterface) => any;
 
 export class DataServer<S extends IdentifiableInterface, D> {
-	db: DB;
+	private db: DB;
 	private _cache: ContainerInterface<Package<any>> = {};
-	mappers: ContainerInterface<Mapper<S, any>> = {};
-	updatables: ContainerInterface<Updatable<S>> = {};
+	private mappers: ContainerInterface<Mapper<S, any>> = {};
+	private updatables: ContainerInterface<Updatable<S>> = {};
 
-	packer: EntityPacker<S, D> = new EntityPacker<S, D>();
+	private packer: EntityPacker<S, D> = new EntityPacker<S, D>();
 
 	constructor(handler: PacketHandler<ClientPort>, db: DB) {
 		this.db = db;
@@ -82,7 +82,7 @@ export class DataServer<S extends IdentifiableInterface, D> {
 		return mapper ? mapper(data) : data;
 	}
 
-	fetch(client: ClientPort, { what, query, payload: requestID }: FetchPacketData, packet: Packet<FetchPacketData>) {
+	fetch({ what, query, payload: requestID }: FetchPacketData, client: ClientPort, packet: Packet<FetchPacketData>) {
 		let sender = (data: Package<S>) => {
 			return this.send(client, {
 				what,
@@ -108,7 +108,7 @@ export class DataServer<S extends IdentifiableInterface, D> {
 			});
 	}
 
-	update(client: ClientPort, { what, data, payload: requestID }: UpdatePacketData, packet: Packet<UpdatePacketData>) {
+	update({ what, data, payload: requestID }: UpdatePacketData, client: ClientPort, packet: Packet<UpdatePacketData>) {
 		this.db.query(what)
 			.specific(null, (table) => {
 				let store = new ModelStore(table);

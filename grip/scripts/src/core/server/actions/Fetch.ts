@@ -1,5 +1,5 @@
 
-import { Action } from '../Action';
+import { Action } from '../../parcel/actions/Action';
 
 export interface FetchPacketData {
 	what: string;

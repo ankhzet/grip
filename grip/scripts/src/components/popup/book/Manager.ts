@@ -8,7 +8,7 @@ import { PackageInterface } from '../../../core/db/data/PackageInterface';
 export class BookManager extends ObservableConnectedList<Book> implements ManagerInterface<Book> {
 
 	constructor() {
-		super('grip');
+		super('grip', 'books');
 	}
 
 	public perform(uids: string[], action: string, payload?: any) {
@@ -16,9 +16,6 @@ export class BookManager extends ObservableConnectedList<Book> implements Manage
 			.then((pack: PackageInterface<any>) => {
 				let results = Object.keys(pack).map((uid) => {
 					switch (action) {
-						case 'some': {
-							return this.connector.some(uid);
-						}
 					}
 				});
 
