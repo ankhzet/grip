@@ -11,13 +11,13 @@ import { Book } from '../../../Grip/Domain/Book';
 import { BooksPackage } from "../../../Grip/Domain/BooksPackage";
 import { BooksPage } from '../BooksPage';
 import { ManagerInterface } from '../../Reactivity/ManagerInterface';
-import { BookUIManagerInterface } from "./delegates/BookUIManagerInterface";
+import { BookUIDelegateInterface } from "./delegates/BookUIDelegateInterface";
 import { ShowPage } from './show/ShowPage';
 import { EditPage } from './edit/EditPage';
 
 interface BookItemRowProps {
 	manager: ManagerInterface<Book>;
-	delegate: BookUIManagerInterface<Book>;
+	delegate: BookUIDelegateInterface<Book>;
 	book: Book;
 }
 
@@ -63,7 +63,7 @@ class BookItemRow extends React.Component<BookItemRowProps, {}> {
 }
 
 export interface ListPageProps {
-	delegate: BookUIManagerInterface<Book>;
+	delegate: BookUIDelegateInterface<Book>;
 	manager: ManagerInterface<Book>;
 }
 

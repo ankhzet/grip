@@ -11,11 +11,11 @@ import { Book } from '../../../../Grip/Domain/Book';
 import { BooksPage } from '../../BooksPage';
 import { ManagerInterface } from '../../../Reactivity/ManagerInterface';
 import { EditPage } from '../edit/EditPage';
-import { BookUIManagerInterface } from '../delegates/BookUIManagerInterface';
+import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
 
 export interface ShowPageProps {
 	manager: ManagerInterface<Book>;
-	delegate: BookUIManagerInterface<Book>;
+	delegate: BookUIDelegateInterface<Book>;
 	params: { id: string };
 }
 
