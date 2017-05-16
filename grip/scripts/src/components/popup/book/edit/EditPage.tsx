@@ -136,12 +136,6 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 	}
 
 	private async saveBook() {
-		// validate
-		// if (!this.valid(this.state)) {
-		//
-		// 	return;
-		// }
-
 		return this.props.delegate.showBook(
 			await this.props.delegate.saveBook(
 				this.state.book,
