@@ -9,8 +9,6 @@ import { ManagerInterface } from '../../../Reactivity/ManagerInterface';
 import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
 import { BooksPage } from '../../BooksPage';
 import { BooksPackage } from '../../../../Grip/Domain/BooksPackage';
-import { Link } from "react-router";
-import { ShowPage } from '../show/ShowPage';
 
 export interface EditPageProps {
 	delegate: BookUIDelegateInterface<Book>;
@@ -66,7 +64,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 	render() {
 		let book = this.state.book;
 
-		return book && (
+		return (book || null) && (
 			<Panel>
 				<PanelHeader>
 					Edit book: { book.title }
@@ -104,10 +102,8 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 				</PanelBody>
 
 				<PanelFooter>
-					<Button class="btn-xs">
-						<Link to={ ShowPage.path(book.uid) }>
-							&larr;
-						</Link>
+					<Button class="btn-xs" onClick={ () => this.props.delegate.showBook(book) }>
+						&larr;
 					</Button>
 					<Button class="btn-xs btn-primary pull-right" onClick={ () => this.saveBook() }>
 						Save
