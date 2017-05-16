@@ -27,7 +27,7 @@ class BookItemRow extends React.Component<BookItemRowProps, {}> {
 	render() {
 		let book = this.props.book;
 
-		return (
+		return (book || null) && (
 			<div className="row">
 				<div className="col-lg-12">
 					<div className="input-group">
@@ -92,6 +92,7 @@ export class ListPage extends React.Component<ListPageProps, { books: BooksPacka
 
 	render() {
 		let books = this.state.books || {};
+		let uids = Object.keys(books);
 
 		return (
 			<Panel>
@@ -104,14 +105,19 @@ export class ListPage extends React.Component<ListPageProps, { books: BooksPacka
 					</div>
 				</PanelHeader>
 				<PanelList>
-					{Object.keys(books).map((uid) => (
+					{uids.length
+						? uids.map((uid) => (
 						<li key={ uid } className="list-group-item">
 							<BookItemRow
 								manager={ this.props.manager }
 								delegate={ this.props.delegate }
 								book={ books[uid] } />
 						</li>
-					))}
+					))
+						: (
+							<span className="col-md-12 text-center text-info">No books yet</span>
+						)
+					}
 				</PanelList>
 			</Panel>
 		);

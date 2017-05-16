@@ -9,6 +9,7 @@ import { ManagerInterface } from '../../../Reactivity/ManagerInterface';
 import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
 import { BooksPage } from '../../BooksPage';
 import { BooksPackage } from '../../../../Grip/Domain/BooksPackage';
+import { Glyph } from '../../../glyph';
 
 export interface EditPageProps {
 	delegate: BookUIDelegateInterface<Book>;
@@ -109,9 +110,16 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 					<Button class="btn-xs" onClick={ () => this.props.delegate.showBook(book) }>
 						&larr;
 					</Button>
-					<Button class="btn-xs btn-primary pull-right" onClick={ () => this.saveBook() }>
-						Save
-					</Button>
+
+					<div className="pull-right">
+						<Button class="btn-xs btn-danger" onClick={ () => this.removeBook() }>
+							<Glyph name="remove" />
+						</Button>
+
+						<Button class="btn-xs btn-primary" onClick={ () => this.saveBook() }>
+							Save
+						</Button>
+					</div>
 				</PanelFooter>
 			</Panel>
 		);
@@ -133,6 +141,13 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 				uri: e.srcElement.value,
 			}
 		});
+	}
+
+	private async removeBook() {
+		return this.props.delegate.removeBook(this.state.book)
+			.then(() => {
+				return this.props.delegate.listBooks();
+			});
 	}
 
 	private async saveBook() {
