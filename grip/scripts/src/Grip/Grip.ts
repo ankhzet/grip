@@ -9,6 +9,7 @@ import { BooksDepot } from './Domain/BooksDepot';
 import { CacheAction, CachePacketData } from './Server/actions/Cache';
 import { SendAction, SendPacketData } from '../core/parcel/actions/Base/Send';
 import { ContentedClientsPool } from './Server/ContentedClientsPool';
+import { Cacher } from './Client/Cacher';
 
 export class Grip {
 	server: GripServer;
@@ -52,14 +53,19 @@ export class Grip {
 
 	_handle_cache({ book: { uid, title, uri } }: CachePacketData) {
 		let book = this.books.get(uid);
-		console.log('server: cache request', uid, title, book);
 
 		if (!book) {
-			// todo: error handling!
 			throw new Error(`Book "${title}" with uid "${uid}" not found`);
 		}
 
-		this.broadcastCache(book);
+		let cacher = new Cacher();
+
+		cacher.fetch({
+			tocURI: book.uri,
+			pattern: /\/(xray-|xray\/)/,
+			context: '.entry-content',
+		}).then((cache: Cache) => {
+		});
 	}
 
 }

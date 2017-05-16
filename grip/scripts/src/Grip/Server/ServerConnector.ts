@@ -16,8 +16,8 @@ export class GripConnector extends ServerConnector {
 
 		cacher.fetch({
 			tocURI: book.uri,
-			pattern: /\/(xray-|xray)\//,
-			context: $('.entry-content')[0],
+			pattern: /\/(xray-|xray\/)/,
+			context: '.entry-content',
 		}).then((cache: Cache) => {
 			console.log('cached:', cache)
 		});

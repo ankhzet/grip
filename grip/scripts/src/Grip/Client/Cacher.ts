@@ -71,7 +71,7 @@ class State {
 export class CacheParams {
 	tocURI: string;
 	pattern: string|RegExp;
-	context: Element;
+	context: string;
 }
 
 export class Cache extends CacheParams {
@@ -145,17 +145,17 @@ export class Cacher {
 		return uri.toString();
 	}
 
-	links(pattern, context: Element) {
+	links(pattern, context) {
 		let self = this;
 		let toc = {}, href;
 
-		for (let node of context.querySelectorAll('a[href]')) {
-			let href = node.getAttribute('href');
+		$('a[href]', context).each(function ()  {
+			let href = this.getAttribute('href');
 
 			if (href && href.match(pattern)) {
-				toc[self.uri(href)] = node.innerHTML;
+				toc[self.uri(href)] = this.innerHTML;
 			}
-		}
+		});
 
 		return toc;
 	}
@@ -179,7 +179,7 @@ export class Cacher {
 						return <CachedPage>({
 							index   : index,
 							uri     : uri,
-							title   : data.toc[uri],
+							title   : toc[uri],
 							state   : new State(),
 							contents: undefined,
 						});
@@ -247,10 +247,10 @@ export class Cacher {
 }
 
 let Util = {
-	wrap(html: string, parent?: string): Element {
-		return $('<' + (parent || 'html') + '>').html(html)[0];
+	wrap(html: string, parent?: string) {
+		return $('<' + (parent || 'html') + '>').html(html);
 	},
-	contents(html: string, context: Element, parent?: string) {
+	contents(html: string, context: string, parent?: string) {
 		return new Promise((rs, rj) => {
 			try {
 				let filtered = this.wrap(html, parent)
