@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 		"noEmitOnError": true,
-		"rootDir": "./gearbox/scripts/src",
+		"rootDir": "./grip/scripts/src",
 		"sourceMap": true,
 		"noImplicitAny": false,
 		"experimentalDecorators": true,

@@ -7,7 +7,7 @@ const WatchIgnorePlugin = require('watch-ignore-webpack-plugin');
 const DEBUG = !process.argv.includes('--release');
 const VERBOSE = process.argv.includes('--verbose');
 
-const SCRIPTS_ROOT = './gearbox/scripts';
+const SCRIPTS_ROOT = 'grip/scripts';
 
 module.exports = {
 	entry: {
