@@ -24,7 +24,7 @@ export class BookUIDelegate implements BookUIDelegateInterface<Book> {
 
 	async createBook(): Promise<Book> {
 		let uids: string[] = await this.manager.set([
-			new Book("000")
+			new Book(this.manager.generateUID())
 		]);
 
 		return this.getBookByUid(uids.shift());
