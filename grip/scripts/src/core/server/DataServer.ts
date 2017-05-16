@@ -20,12 +20,13 @@ export type Mapper<S extends IdentifiableInterface, D extends IdentifiableInterf
 export type Updatable<S extends IdentifiableInterface> = (store: ModelStore<S>, data: SyncResultInterface) => any;
 
 export class DataServer<S extends IdentifiableInterface, D> {
-	private db: DB;
 	private _cache: ContainerInterface<Package<any>> = {};
 	private mappers: ContainerInterface<Mapper<S, any>> = {};
 	private updatables: ContainerInterface<Updatable<S>> = {};
 
 	private packer: EntityPacker<S, D> = new EntityPacker<S, D>();
+
+	public db: DB;
 
 	constructor(handler: PacketHandler<ClientPort>, db: DB) {
 		this.db = db;
