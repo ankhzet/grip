@@ -3,20 +3,20 @@ import * as React from 'react';
 
 import { Link, withRouter } from 'react-router'
 
-// import { PluginManagementUIDelegate } from './delegates/plugin-management-ui';
 import { Glyph } from '../../glyph';
 import { Button } from '../../button';
 import { Panel, PanelHeader, PanelList } from '../../panel';
+
 import { Book } from '../../../Grip/Domain/Book';
+import { BooksPackage } from "../../../Grip/Domain/BooksPackage";
 import { BooksPage } from '../BooksPage';
-import { Package } from '../../../core/db/data/Package';
 import { ManagerInterface } from '../../Reactivity/ManagerInterface';
+import { BookUIManagerInterface } from "./delegates/BookUIManagerInterface";
 
 interface BookItemRowProps {
 	manager: ManagerInterface<Book>;
+	delegate: BookUIManagerInterface<Book>;
 	book: Book;
-
-	// delegate: PluginManagementUIDelegate<Plugin>;
 }
 
 @withRouter
@@ -59,28 +59,30 @@ class BookItemRow extends React.Component<BookItemRowProps, {}> {
 }
 
 export interface ListPageProps {
-	// delegate: PluginManagementUIDelegate<Plugin>;
+	delegate: BookUIManagerInterface<Book>;
 	manager: ManagerInterface<Book>;
 }
 
-export class ListPage extends React.Component<ListPageProps, { books: Package<Book> }> {
+export class ListPage extends React.Component<ListPageProps, { books: BooksPackage }> {
 
 	componentWillMount() {
-		return this.pullBooks();
+		this.pullBooks();
 	}
 
 	componentWillReceiveProps() {
-		return this.pullBooks();
+		this.pullBooks();
 	}
 
-	async pullBooks(uids: string[] = []) {
+	pullBooks(uids: string[] = []) {
 		this.setState({
 			books: null,
 		});
 
-		this.setState({
-			books: await this.props.manager.get(uids),
-		});
+		(async () => {
+			this.setState({
+				books: await this.props.manager.get(uids),
+			});
+		})();
 	}
 
 	render() {
@@ -91,7 +93,7 @@ export class ListPage extends React.Component<ListPageProps, { books: Package<Bo
 				<PanelHeader>
 					Books
 					<div className="pull-right">
-						<Button class="btn-xs" onClick={ this.addBook }>
+						<Button class="btn-xs" onClick={ this.addBook.bind(this) }>
 							<Glyph name="plus" />
 						</Button>
 					</div>
@@ -101,6 +103,7 @@ export class ListPage extends React.Component<ListPageProps, { books: Package<Bo
 						<li key={ uid } className="list-group-item">
 							<BookItemRow
 								manager={ this.props.manager }
+								delegate={ this.props.delegate }
 								book={ books[uid] } />
 						</li>
 					))}
@@ -110,6 +113,6 @@ export class ListPage extends React.Component<ListPageProps, { books: Package<Bo
 	}
 
 	private addBook() {
-	// 	return this.props.delegate.createPlugin();
+		return this.props.delegate.createBook();
 	}
 }
