@@ -126,6 +126,7 @@ export class DataServer<S extends IdentifiableInterface, D> {
 					})
 					.catch((error) => {
 						console.log(`Failed to update "${what}" with data:\n`, data);
+						console.log(error);
 
 						throw new Error(`Failed to update "${what}":\n${error}`);
 					});

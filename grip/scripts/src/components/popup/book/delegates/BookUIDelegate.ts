@@ -59,9 +59,8 @@ export class BookUIDelegate implements BookUIDelegateInterface<Book> {
 	}
 
 	async removeBook(book: Book): Promise<string> {
-		return (await this.manager.remove([book.uid]))
-			.shift()
-		;
+		return await this.manager.remove([book.uid])
+			.then((uids) => (this.listBooks(), uids.shift()));
 	}
 
 	async listBooks() {

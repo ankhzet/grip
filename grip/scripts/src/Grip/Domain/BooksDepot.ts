@@ -22,7 +22,9 @@ export class BooksDepot extends Books {
 		let result: BooksPackage = {};
 
 		for (let fragment of data) {
-			result[fragment.uid] = this.bookFromData(fragment);
+			if (fragment) {
+				result[fragment.uid] = this.bookFromData(fragment);
+			}
 		}
 
 		return result;
