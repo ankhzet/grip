@@ -2,8 +2,9 @@
 import { IdentifiableInterface } from '../../core/db/data/IdentifiableInterface';
 import { Package } from '../../core/db/data/Package';
 import { PackageInterface } from '../../core/db/data/PackageInterface';
+import { ManagerInterface } from './ManagerInterface';
 
-export abstract class ObservableList<T extends IdentifiableInterface> {
+export abstract class ObservableList<T extends IdentifiableInterface> implements ManagerInterface<T> {
 	private pending: {[uid: string]: Promise<PackageInterface<T>>} = {};
 	private data: {[uid: string]: T} = {};
 
