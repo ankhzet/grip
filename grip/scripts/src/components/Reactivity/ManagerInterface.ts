@@ -4,9 +4,9 @@ import { IdentifiableInterface } from '../../core/db/data/IdentifiableInterface'
 
 export interface ManagerInterface<T extends IdentifiableInterface> {
 
+	generateUID(): string;
 	get(uids?: string[]): Promise<PackageInterface<T>>;
-	set(values: T[]): Promise<string[]>;
+	set(values: T[], silent?: boolean): Promise<string[]>;
 	remove(uids: string[]): Promise<string[]>;
-	perform(uids: string[], action: string, payload?: any);
 
 }

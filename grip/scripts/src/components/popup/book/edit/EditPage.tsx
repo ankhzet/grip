@@ -1,64 +1,75 @@
 
 import * as React from "react";
 
-import plugins = chrome.contentSettings.plugins;
 import { Panel, PanelHeader, PanelBody, PanelFooter } from '../../../panel';
 import { Button } from '../../../button';
 
-import { Book } from '../../../../core/domain/Book';
+import { Book } from '../../../../Grip/Domain/Book';
 import { ManagerInterface } from '../../../Reactivity/ManagerInterface';
-import { BookUIManagerInterface } from '../delegates/BookUIManagerInterface';
+import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
 import { BooksPage } from '../../BooksPage';
+import { BooksPackage } from '../../../../Grip/Domain/BooksPackage';
+import { Glyph } from '../../../glyph';
 
 export interface EditPageProps {
-	delegate: BookUIManagerInterface<Book>;
+	delegate: BookUIDelegateInterface<Book>;
 	manager: ManagerInterface<Book>;
-	uid: string;
+	params: {
+		id: string;
+	};
 }
 
 export interface EditPageState {
 	book?: Book;
-	title?: string;
-	uri?: string;
+	form?: {
+		title: string;
+		uri: string;
+	},
 }
 
 export class EditPage extends React.Component<EditPageProps, EditPageState> {
 
-	static path(book: Book): string {
-		return BooksPage.PATH + '/' + book.uid + '/edit';
+	static path(uid: string): string {
+		return `${BooksPage.PATH}/${uid}/edit`;
 	}
 
 	async pullBook(id: string) {
 		this.setState({
 			book: null,
+			form: {
+				title: '',
+				uri: '',
+			},
 		});
 
-		let pack = await this.props.manager.get([id]);
-		let book = pack[id];
+		return this.props.manager.get([id])
+			.then((books: BooksPackage) => {
+				let book = books[id];
 
-		this.setState({
-			book : book,
-			title: book.title,
-			uri  : book.uri,
-		});
+				this.setState({
+					book : book,
+					form: {
+						title: book.title,
+						uri  : book.uri,
+					},
+				});
+
+				return book;
+			});
 	}
 
 	componentWillReceiveProps(next) {
-		return this.pullBook(next.uid);
+		this.pullBook(next.uid);
 	}
 
 	componentWillMount() {
-		return this.pullBook(this.props.uid);
+		this.pullBook(this.props.params.id);
 	}
 
 	render() {
 		let book = this.state.book;
 
-		if (!book) {
-			return null;
-		}
-
-		return (
+		return (book || null) && (
 			<Panel>
 				<PanelHeader>
 					Edit book: { book.title }
@@ -77,7 +88,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 							<div className="col-lg-12">
 								<div className="input-group">
 									<span className="input-group-addon">Title</span>
-									<input className="form-control" value={ this.state.title } onChange={ this.titleChanged } />
+									<input className="form-control" value={ this.state.form.title } onChange={ (e) => this.titleChanged(e) } />
 								</div>
 							</div>
 						</div>
@@ -87,7 +98,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 							<div className="col-lg-12">
 								<div className="input-group">
 									<span className="input-group-addon">URI</span>
-									<input className="form-control" value={ this.state.uri } onChange={ this.uriChanged } />
+									<input className="form-control" value={ this.state.form.uri } onChange={ (e) => this.uriChanged(e) } />
 								</div>
 							</div>
 						</div>
@@ -96,12 +107,19 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 				</PanelBody>
 
 				<PanelFooter>
-					<Button class="btn-xs" onClick={ this.navBack }>
+					<Button class="btn-xs" onClick={ () => this.props.delegate.showBook(book) }>
 						&larr;
 					</Button>
-					<Button class="btn-xs" onClick={ this.saveBook }>
-						Save
-					</Button>
+
+					<div className="pull-right">
+						<Button class="btn-xs btn-danger" onClick={ () => this.removeBook() }>
+							<Glyph name="remove" />
+						</Button>
+
+						<Button class="btn-xs btn-primary" onClick={ () => this.saveBook() }>
+							Save
+						</Button>
+					</div>
 				</PanelFooter>
 			</Panel>
 		);
@@ -109,37 +127,36 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 
 	private titleChanged(e) {
 		this.setState({
-			title: e.srcElement.value,
+			form: {
+				title: e.srcElement.value,
+				uri: this.state.form.uri,
+			},
 		});
 	}
 
-	private uriChanged(uri) {
+	private uriChanged(e) {
 		this.setState({
-			uri: uri,
+			form: {
+				title: this.state.form.title,
+				uri: e.srcElement.value,
+			}
 		});
 	}
 
-	private navBack() {
-		// validate
-		// if (!this.valid(this.state)) {
-		//
-		// 	return;
-		// }
-
-		return this.props.delegate.showBook(this.props.uid)
+	private async removeBook() {
+		return this.props.delegate.removeBook(this.state.book)
+			.then(() => {
+				return this.props.delegate.listBooks();
+			});
 	}
 
-	private saveBook() {
-		// validate
-		// if (!this.valid(this.state)) {
-		//
-		// 	return;
-		// }
-
-		this.props.delegate.saveBook(this.props.uid, {
-			title: this.state.title,
-			code: this.state.uri,
-		});
+	private async saveBook() {
+		return this.props.delegate.showBook(
+			await this.props.delegate.saveBook(
+				this.state.book,
+				this.state.form
+			)
+		);
 	}
 
 }

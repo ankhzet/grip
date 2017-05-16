@@ -3,47 +3,51 @@ import * as React from 'react';
 
 import { Link, withRouter } from 'react-router'
 
-// import { PluginManagementUIDelegate } from './delegates/plugin-management-ui';
 import { Glyph } from '../../glyph';
 import { Button } from '../../button';
 import { Panel, PanelHeader, PanelList } from '../../panel';
-import { Book } from '../../../core/domain/Book';
+
+import { Book } from '../../../Grip/Domain/Book';
+import { BooksPackage } from "../../../Grip/Domain/BooksPackage";
 import { BooksPage } from '../BooksPage';
-import { Package } from '../../../core/db/data/Package';
 import { ManagerInterface } from '../../Reactivity/ManagerInterface';
+import { BookUIDelegateInterface } from "./delegates/BookUIDelegateInterface";
+import { ShowPage } from './show/ShowPage';
+import { EditPage } from './edit/EditPage';
 
 interface BookItemRowProps {
 	manager: ManagerInterface<Book>;
+	delegate: BookUIDelegateInterface<Book>;
 	book: Book;
-
-	// delegate: PluginManagementUIDelegate<Plugin>;
 }
 
 @withRouter
 class BookItemRow extends React.Component<BookItemRowProps, {}> {
 
 	render() {
-		return (
+		let book = this.props.book;
+
+		return (book || null) && (
 			<div className="row">
 				<div className="col-lg-12">
 					<div className="input-group">
 						<div className="input-group-btn">
-							<Button class="btn-xs" onClick={ this.removeBook }>
+							<Button class="btn-xs" onClick={ () => this.removeBook() }>
 								<Glyph name="remove" />
 							</Button>
 						</div>
 
-						<Link className="col-xs-9" to={ "/fetcher/1" }>Book "{ this.props.book.title }"</Link>
+						<Link className="col-xs-9" to={ ShowPage.path(book.uid) }>Book "{ book.title }"</Link>
 
 						<div className="input-group-btn">
-							<Button class="btn-xs" onClick={ null }>
+							<Button class="btn-xs" onClick={ () => console.log('circle', book) }>
 								<Glyph name="play-circle" />
 							</Button>
 							<Button class="btn-xs dropdown-toggle" data-toggle="dropdown">
 								Actions <span className="caret" />
 							</Button>
 							<ul className="dropdown-menu pull-right">
-								<li><Link to={ BooksPage.PATH + "/" + this.props.book.uid + "/fetch" }>Fetch</Link></li>
+								<li><Link to={ EditPage.path(book.uid) }>Edit</Link></li>
 							</ul>
 						</div>
 					</div>
@@ -53,63 +57,73 @@ class BookItemRow extends React.Component<BookItemRowProps, {}> {
 	}
 
 	removeBook () {
-
+		return this.props.delegate.removeBook(this.props.book);
 	}
 
 }
 
 export interface ListPageProps {
-	// delegate: PluginManagementUIDelegate<Plugin>;
+	delegate: BookUIDelegateInterface<Book>;
 	manager: ManagerInterface<Book>;
 }
 
-export class ListPage extends React.Component<ListPageProps, { books: Package<Book> }> {
+export class ListPage extends React.Component<ListPageProps, { books: BooksPackage }> {
 
 	componentWillMount() {
-		return this.pullBooks();
+		this.pullBooks();
 	}
 
 	componentWillReceiveProps() {
-		return this.pullBooks();
+		this.pullBooks();
 	}
 
-	async pullBooks(uids: string[] = []) {
+	pullBooks(uids: string[] = []) {
 		this.setState({
 			books: null,
 		});
 
-		this.setState({
-			books: await this.props.manager.get(uids),
-		});
+		return this.props.manager.get(uids)
+			.then((books: BooksPackage) => {
+				this.setState({
+					books,
+				});
+			});
 	}
 
 	render() {
 		let books = this.state.books || {};
+		let uids = Object.keys(books);
 
 		return (
 			<Panel>
 				<PanelHeader>
 					Books
 					<div className="pull-right">
-						<Button class="btn-xs" onClick={ this.addBook }>
+						<Button class="btn-xs" onClick={ () => this.addBook() }>
 							<Glyph name="plus" />
 						</Button>
 					</div>
 				</PanelHeader>
 				<PanelList>
-					{Object.keys(books).map((uid) => (
+					{uids.length
+						? uids.map((uid) => (
 						<li key={ uid } className="list-group-item">
 							<BookItemRow
 								manager={ this.props.manager }
+								delegate={ this.props.delegate }
 								book={ books[uid] } />
 						</li>
-					))}
+					))
+						: (
+							<span className="col-md-12 text-center text-info">No books yet</span>
+						)
+					}
 				</PanelList>
 			</Panel>
 		);
 	}
 
-	private addBook() {
-	// 	return this.props.delegate.createPlugin();
+	private async addBook() {
+		return this.props.delegate.createBook();
 	}
 }

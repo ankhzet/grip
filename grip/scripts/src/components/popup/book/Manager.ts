@@ -1,30 +1,25 @@
 
-import { Book } from '../../../core/domain/Book';
+import { Book } from '../../../Grip/Domain/Book';
 import { IdentifiableInterface } from '../../../core/db/data/IdentifiableInterface';
 import { ObservableConnectedList } from '../../Reactivity/ObservableConnectedList';
-import { ManagerInterface } from '../../Reactivity/ManagerInterface';
+import { PackageInterface } from '../../../core/db/data/PackageInterface';
+import { ReactiveInterface } from '../../Reactivity/ReactiveInterface';
 
-export class BookManager extends ObservableConnectedList<Book> implements ManagerInterface<Book> {
+export class BookManager extends ObservableConnectedList<Book> implements ReactiveInterface<Book> {
 
 	constructor() {
-		super('grip');
+		super('grip', 'books');
 	}
 
 	public perform(uids: string[], action: string, payload?: any) {
 		return this.get(uids)
-			.then((pack) => {
-				for (let uid in pack)
+			.then((pack: PackageInterface<any>) => {
+				let results = Object.keys(pack).map((uid) => {
 					switch (action) {
-						case 'execute': {
-							this.connector.execute(uid);
-							break;
-						}
-						case 'fire': {
-							console.log(`performing ${action}(${payload}) on '${uid}'`);
-							this.connector.fire(uid, payload);
-							break;
-						}
 					}
+				});
+
+				console.log(`Performed ${action}:`, results);
 
 				return pack;
 			});

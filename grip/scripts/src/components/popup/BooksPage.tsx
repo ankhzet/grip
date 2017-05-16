@@ -6,24 +6,46 @@ import InjectedRouter = ReactRouter.InjectedRouter;
 import { ListPage } from './book/ListPage';
 import { ShowPage } from './book/show/ShowPage';
 import { EditPage } from './book/edit/EditPage';
-import { BookUIManagerInterface } from './book/delegates/BookUIManagerInterface';
-import { Book } from '../../core/domain/Book';
 import { BookManager } from './book/Manager';
+import { BookUIDelegate } from './book/delegates/BookUIDelegate';
 
 interface BooksPageProps {
 	router: InjectedRouter;
 	manager: BookManager;
 }
 
-@withRouter
-export class BooksPage extends React.Component<BooksPageProps, {}> implements BookUIManagerInterface<Book> {
+interface BooksPageState {
+	delegate: BookUIDelegate;
+}
 
+@withRouter
+export class BooksPage extends React.Component<BooksPageProps, BooksPageState> {
 	static PATH = '/books';
 
-	render() {
-		let props = { delegate: this, manager: this, };
+	static path() {
+		return this.PATH;
+	}
 
-		return (
+	delegate(props: BooksPageProps) {
+		return new BookUIDelegate(props.manager, props.router);
+	}
+
+	componentWillReceiveProps(next) {
+		this.setState({
+			delegate: this.delegate(next),
+		});
+	}
+
+	componentWillMount() {
+		this.setState({
+			delegate: this.delegate(this.props),
+		});
+	}
+
+	render() {
+		let props = { manager: this.props.manager, delegate: this.state.delegate, };
+
+		return (props.delegate || null) && (
 			<div>
 				{ React.Children.map(
 					this.props.children,
@@ -33,62 +55,12 @@ export class BooksPage extends React.Component<BooksPageProps, {}> implements Bo
 		)
 	}
 
-	createBook() {
-		return this.props.manager.set([
-			new Book("")
-		]);
-	}
-
-	getBookByUid(uid: string): Book {
-		let book = null;
-
-		(async () => {
-			book = (await this.props.manager.get([uid]))[uid];
-		})();
-
-		return book;
-	}
-
-	showBook(uid: string): Book {
-		let book = this.getBookByUid(uid);
-		this.props.router.push(ShowPage.path(book));
-
-		return book;
-	}
-
-	editBook(uid: string): Book {
-		let book = this.getBookByUid(uid);
-		this.props.router.push(EditPage.path(book));
-
-		return book;
-	}
-
-	saveBook(uid: string, data: any) {
-		let book = this.getBookByUid(uid);
-
-		for (let prop in data) {
-			book[prop] = data[prop];
-		}
-
-		return this.props.manager.set([
-			book,
-		]);
-	}
-
-	removeBook(uid: string) {
-		return this.props.manager.remove([uid]);
-	}
-
-	listBooks() {
-		this.props.router.push(BooksPage.PATH);
-	}
-
 }
 
 export const BooksPageRoutes = (
 	<Route path={ BooksPage.PATH } component={ BooksPage }>
-		<Route path={ BooksPage.PATH + '/:id' } component={ ShowPage } />
-		<Route path={ BooksPage.PATH + '/:id/edit' } component={ EditPage } />
+		<Route path={ EditPage.path(':id') } component={ EditPage } />
+		<Route path={ ShowPage.path(':id') } component={ ShowPage } />
 		<IndexRoute component={ ListPage } />
 	</Route>
 );
