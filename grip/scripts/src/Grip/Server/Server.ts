@@ -79,6 +79,7 @@ export class GripServer extends ServerPort<GripClient> {
 	}
 
 	clearAfterDisconnect(client: GripClient) {
+		console.log(`Disconnected ${client.uid}, cleaning...`);
 	}
 
 	connected(client: GripClient) {
