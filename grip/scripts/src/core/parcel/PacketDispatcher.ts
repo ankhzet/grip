@@ -1,8 +1,8 @@
 
 import { Packet } from './Packet';
 import { ActionConstructor } from './actions/Action';
-import { ActionHandler } from "./ActionHandler";
-import { RepositoryInterface } from "./actions/RepositoryInterface";
+import { ActionHandler } from './ActionHandler';
+import { RepositoryInterface } from './actions/RepositoryInterface';
 
 export type PacketHandlerDescriptor<T, S> = {handler: ActionHandler<T, S>, action: ActionConstructor<T>};
 

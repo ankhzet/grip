@@ -1,19 +1,19 @@
 
 import { GripClient } from './Client';
-import { ServerPort } from "../../core/parcel/ServerPort";
+import { ServerPort } from '../../core/parcel/ServerPort';
 
-import { DataServer } from "../../core/server/DataServer";
-import { GripDB } from "../GripDB";
+import { DataServer } from '../../core/server/DataServer';
+import { GripDB } from '../GripDB';
 
-import { ActionConstructor } from "../../core/parcel/actions/Action";
-import { ActionHandler } from "../../core/parcel/ActionHandler";
+import { ActionConstructor } from '../../core/parcel/actions/Action';
+import { ActionHandler } from '../../core/parcel/ActionHandler';
 
 import { GripActions } from '../../core/actions/GripActions';
 import { SendPacketData } from '../../core/parcel/actions/Base/Send';
-import { SomePacketData } from "../../core/actions/Some";
-import { Packet } from "../../core/parcel/Packet";
-import { ConnectAction } from "../../core/parcel/actions/Base/Connect";
-import { ClientActionHandler, ContentedClientsPool } from "./ContentedClientsPool";
+import { SomePacketData } from '../../core/actions/Some';
+import { Packet } from '../../core/parcel/Packet';
+import { ConnectAction } from '../../core/parcel/actions/Base/Connect';
+import { ClientActionHandler, ContentedClientsPool } from './ContentedClientsPool';
 
 export class GripServer extends ServerPort<GripClient> {
 	private contented: ContentedClientsPool = new ContentedClientsPool();

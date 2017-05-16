@@ -5,7 +5,7 @@ import { PacketDispatcher } from './PacketDispatcher';
 import { Packet } from './Packet';
 import { ActionConstructor } from './actions/Action';
 import { ConnectAction, ConnectPacketData } from './actions/Base/Connect';
-import { ActionHandler } from "./ActionHandler";
+import { ActionHandler } from './ActionHandler';
 
 export class ClientPort extends Port {
 	tabId: number;

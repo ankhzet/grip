@@ -1,8 +1,8 @@
 
 
-import { Books } from "./Books";
-import { Book } from "./Book";
-import { BooksPackage } from "./BooksPackage";
+import { Books } from './Books';
+import { Book } from './Book';
+import { BooksPackage } from './BooksPackage';
 
 export class BooksDepot extends Books {
 	context: any;

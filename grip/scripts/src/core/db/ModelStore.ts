@@ -3,7 +3,7 @@ import * as DataStore from 'nedb';
 import { ObjectUtils } from '../utils/object';
 import { Package } from './data/Package';
 import { SyncResultInterface } from './SyncResultInterface';
-import { IdentifiableInterface } from "./data/IdentifiableInterface";
+import { IdentifiableInterface } from './data/IdentifiableInterface';
 
 export class ModelStore<M extends IdentifiableInterface> {
 	table: DataStore;

@@ -14,7 +14,7 @@ import { IdentifiableInterface } from '../db/data/IdentifiableInterface';
 import { ContainerInterface } from '../db/data/ContainerInterface';
 import { AbstractPacker } from './AbstractPacker';
 import { PackageInterface } from '../db/data/PackageInterface';
-import { Serializer } from "../db/data/Serializer";
+import { Serializer } from '../db/data/Serializer';
 
 export type Mapper<S extends IdentifiableInterface, D extends IdentifiableInterface> = (data: Package<S>) => Package<D>;
 export type Updatable<S extends IdentifiableInterface> = (store: ModelStore<S>, data: SyncResultInterface) => any;
