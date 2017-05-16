@@ -45,9 +45,9 @@ export class BooksPage extends React.Component<BooksPageProps, BooksPageState> {
 	render() {
 		let props = { manager: this.props.manager, delegate: this.state.delegate, };
 
-		return (
+		return (props.delegate || null) && (
 			<div>
-				{ props.delegate && React.Children.map(
+				{ React.Children.map(
 					this.props.children,
 					(child) => React.cloneElement(child as any, props)
 				) }

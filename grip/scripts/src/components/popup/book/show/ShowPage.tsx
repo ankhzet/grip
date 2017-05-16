@@ -48,7 +48,7 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 	render() {
 		let book = this.state.book;
 
-		return book && (
+		return (book || null) && (
 			<Panel>
 				<PanelHeader>
 					Book: { book.title }

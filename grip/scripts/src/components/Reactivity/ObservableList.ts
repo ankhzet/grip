@@ -19,6 +19,8 @@ export abstract class ObservableList<T extends IdentifiableInterface> implements
 		// split requested invalid uids to 'already loaded' and 'invalidated' groups
 		let ready = [];
 		let load  = [];
+		let final;
+		let result = new Package();
 
 		for (let uid of uids) {
 			if (this.data[uid]) {
@@ -30,16 +32,12 @@ export abstract class ObservableList<T extends IdentifiableInterface> implements
 
 		// console.log(`ready ${ready}, load ${load}`);
 
-		let result = new Package();
-
 		// fill result with already valid entries
 		for (let uid of ready) {
 			result[uid] = this.data[uid];
 		}
 
 		// console.log(`result`, result);
-
-		let final;
 
 		if (load.length) {
 			// split requested invalid uids to 'already pending' and 'just invalidated' groups
