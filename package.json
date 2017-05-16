@@ -1,10 +1,10 @@
 {
-  "name": "gearbox",
+  "name": "grip",
   "version": "0.0.1",
-  "description": "Chrome plugins sandbox",
+  "description": "Blog fetcher",
   "scripts": {
-    "pack": "webpack --display-modules --progress --colors --release",
-    "watchdog": "webpack --display-modules --progress --colors --watch --watch-poll --verbose",
+    "pack": "webpack --display-modules --progress --colors -p",
+    "watchdog": "webpack --progress --colors --watch --watch-poll --verbose",
     "install:webpack": "npm link webpack",
     "install:typings": "npm link typings",
     "install:global": "npm run install:webpack && npm run install:typings"
@@ -12,13 +12,24 @@
   "author": "ankhzet@gmail.com",
   "license": "ISC",
   "dependencies": {
+    "bootstrap": "^3.3.7",
+    "jquery": "^3.1.0",
+    "nedb": "^1.8.0",
+    "@types/react": "^0.14.48",
+    "@types/react-dom": "^0.14.18",
+    "@types/history": "^2.0.39",
+    "@types/react-router": "^2.0.46",
+    "react": "^15.3.1",
+    "react-codemirror": "^0.2.6",
+    "react-dom": "^15.3.1",
+    "react-router": "^2.8.1"
   },
   "devDependencies": {
+    "component-inspector": "^1.4.0",
     "webpack": "latest",
     "css-loader": "latest",
     "file-loader": "latest",
     "style-loader": "latest",
-    "url-loader": "latest",
-    "watch-ignore-webpack-plugin": "^1.0.0"
+    "url-loader": "latest"
   }
 }
