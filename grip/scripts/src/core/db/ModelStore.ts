@@ -14,12 +14,12 @@ export class ModelStore {
 
 	findModels(uids: string[] = null): Promise<Model[]> {
 		return new Promise((resolve, reject) => {
-			this.table.find(uids ? {uid: {$in: uids}} : {}, (error, data) => {
-				if (error)
-					return reject(error);
-
-				resolve(data);
-			})
+			this.table.find(
+				uids
+					? {uid: {$in: uids}}
+					: {},
+				(error, data) => error ? reject(error) : resolve(data)
+			)
 		});
 	}
 
@@ -30,15 +30,17 @@ export class ModelStore {
 
 		let all = [];
 
-		if (del.length)
+		if (del.length) {
 			all.push(
 				this.removeModels(del)
 			);
+		}
 
-		if (upd.length)
+		if (upd.length) {
 			all.push(
 				this.updateModels(ObjectUtils.extract(data, upd), upsert)
 			);
+		}
 
 		let result = {
 			request: uids,
@@ -52,21 +54,17 @@ export class ModelStore {
 	}
 
 	updateModels(data: Package<Model>, upsert: boolean = true): Promise<string[]> {
-		let uids = Object.keys(data);
-		let all = [];
-		for (let uid of uids)
-			((uid) => {
-				all.push(new Promise((resolve, reject) => {
-					this.table.update({ uid }, { $set: data[uid] }, { upsert }, (error) => {
-						if (error)
-							return reject(error);
-
-						return resolve(uid);
-					});
-				}));
-			})(uid);
-
-		return Promise.all(all);
+		return Promise.all(
+			Object.keys(data)
+				.map((uid) => new Promise((resolve, reject) => {
+					this.table.update(
+						{ uid },
+						{ $set: data[uid] },
+						{ upsert },
+						(error) => error ? reject(error) : resolve(uid)
+					);
+				}))
+		);
 	}
 
 	removeModels(uids: string[]): Promise<string[]> {

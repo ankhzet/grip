@@ -76,21 +76,21 @@ export abstract class ObservableList<T extends IdentifiableInterface> {
 		return final;
 	}
 
-	set(value: T[], silent?: boolean): Promise<string[]> {
 		let pack = new Package(...value);
+	set(values: T[], silent?: boolean): Promise<string[]> {
 		let uids = Object.keys(pack);
-		for (let instance of value) {
+
+		for (let instance of values) {
 			this.data[instance.uid] = instance;
 		}
 
 		return silent
 			? Promise.resolve(uids)
 			: this.push(pack)
-					.then((uids) => {
-						this.invalidate(uids);
-						// todo: fire update event?
-						return uids;
-					});
+				.then((uids) => {
+					// todo: fire update event?
+					return this.invalidate(uids), uids;
+				});
 	}
 
 	remove(uids: string[]): Promise<string[]> {
@@ -100,7 +100,7 @@ export abstract class ObservableList<T extends IdentifiableInterface> {
 
 		return this.push(pack)
 			.then((uids: string[]) => {
-				// console.log('successfuly pushed remove, revalidating', uids);
+				// console.log('successfully pushed remove, re-validating', uids);
 				for (let uid of uids) {
 					delete this.data[uid];
 					delete this.pending[uid];
