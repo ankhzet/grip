@@ -1,8 +1,6 @@
 
 import * as React from "react";
 
-import { Link } from 'react-router';
-
 import { Panel, PanelFooter, PanelHeader, PanelBody } from '../../../panel';
 import { Button } from '../../../button';
 import { Glyph } from '../../../glyph';
@@ -10,7 +8,6 @@ import { Glyph } from '../../../glyph';
 import { Book } from '../../../../Grip/Domain/Book';
 import { BooksPage } from '../../BooksPage';
 import { ManagerInterface } from '../../../Reactivity/ManagerInterface';
-import { EditPage } from '../edit/EditPage';
 import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
 
 export interface ShowPageProps {
@@ -52,15 +49,14 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 			<Panel>
 				<PanelHeader>
 					Book: { book.title }
+
 					<div className="btn-toolbar pull-right">
 						<div className="btn-group">
 							<Button class="btn-xs" onClick={ () => this.removeBook() }>
 								<Glyph name="remove" />
 							</Button>
-							<Button class="btn-xs">
-								<Link to={ EditPage.path(book.uid) }>
-									<Glyph name="edit" />
-								</Link>
+							<Button class="btn-xs" onClick={ () => this.props.delegate.editBook(book) }>
+								<Glyph name="edit" />
 							</Button>
 						</div>
 						<div className="btn-group">
@@ -78,8 +74,8 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 				</PanelBody>
 
 				<PanelFooter>
-					<Button class="btn-xs">
-						<Link to={ BooksPage.path() }>&larr;</Link>
+					<Button class="btn-xs" onClick={ () => this.props.delegate.listBooks() }>
+						&larr;
 					</Button>
 				</PanelFooter>
 			</Panel>
