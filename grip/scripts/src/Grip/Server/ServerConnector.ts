@@ -1,18 +1,26 @@
 
 import { ServerConnector } from '../../core/client/ServerConnector';
-import { SomeAction, SomePacketData } from './actions/Some';
-import { Packet } from '../../core/parcel/Packet';
+import { CacheAction, CachePacketData } from './actions/Cache';
+import { Cache, Cacher } from '../Client/Cacher';
 
 export class GripConnector extends ServerConnector {
 
 	constructor() {
 		super('grip');
 
-		this.on(SomeAction, this.some.bind(this));
+		this.on(CacheAction, this.cache.bind(this));
 	}
 
-	some({ data }: SomePacketData, sender, packet: Packet<SomePacketData>) {
-		console.log('fired some', data, packet);
+	cache({ book }: CachePacketData) {
+		let cacher = new Cacher();
+
+		cacher.fetch({
+			tocURI: book.uri,
+			pattern: /\/(xray-|xray)\//,
+			context: $('.entry-content')[0],
+		}).then((cache: Cache) => {
+			console.log('cached:', cache)
+		});
 	}
 
 }

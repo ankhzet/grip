@@ -10,7 +10,7 @@ import { ActionHandler } from '../../core/parcel/ActionHandler';
 
 import { GripActions } from './actions/GripActions';
 import { SendPacketData } from '../../core/parcel/actions/Base/Send';
-import { SomePacketData } from './actions/Some';
+import { CachePacketData } from './actions/Cache';
 import { Packet } from '../../core/parcel/Packet';
 import { ConnectAction } from '../../core/parcel/actions/Base/Connect';
 import { ClientActionHandler, ContentedClientsPool } from './ContentedClientsPool';
@@ -22,7 +22,7 @@ export class GripServer extends ServerPort<GripClient> {
 
 	public f: {
 		send: ClientActionHandler<SendPacketData>;
-		some: ClientActionHandler<SomePacketData>;
+		cache: ClientActionHandler<CachePacketData>;
 	};
 
 	constructor(db: GripDB) {
@@ -38,8 +38,8 @@ export class GripServer extends ServerPort<GripClient> {
 			send: (data: SendPacketData, client: GripClient) => {
 				return GripActions.send(client, data);
 			},
-			some: (data: SomePacketData, client: GripClient) => {
-				return GripActions.some(client, data);
+			cache: (data: CachePacketData, client: GripClient) => {
+				return GripActions.cache(client, data);
 			},
 		};
 	}

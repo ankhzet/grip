@@ -4,6 +4,7 @@ import { IdentifiableInterface } from '../../../core/db/data/IdentifiableInterfa
 import { ObservableConnectedList } from '../../Reactivity/ObservableConnectedList';
 import { PackageInterface } from '../../../core/db/data/PackageInterface';
 import { ReactiveInterface } from '../../Reactivity/ReactiveInterface';
+import { GripActions } from '../../../Grip/Server/actions/GripActions';
 
 export class BookManager extends ObservableConnectedList<Book> implements ReactiveInterface<Book> {
 
@@ -12,10 +13,14 @@ export class BookManager extends ObservableConnectedList<Book> implements Reacti
 	}
 
 	public perform(uids: string[], action: string, payload?: any) {
+		console.log('performing...');
+
 		return this.get(uids)
 			.then((pack: PackageInterface<any>) => {
 				let results = Object.keys(pack).map((uid) => {
 					switch (action) {
+						case 'fetch':
+							return GripActions.cache(this.connector, { book: pack[uid]});
 					}
 				});
 

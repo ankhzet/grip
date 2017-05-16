@@ -40,7 +40,7 @@ class BookItemRow extends React.Component<BookItemRowProps, {}> {
 						<Link className="col-xs-9" to={ ShowPage.path(book.uid) }>Book "{ book.title }"</Link>
 
 						<div className="input-group-btn">
-							<Button class="btn-xs" onClick={ () => console.log('circle', book) }>
+							<Button class="btn-xs" onClick={ () => this.fetchBook() }>
 								<Glyph name="play-circle" />
 							</Button>
 							<Button class="btn-xs dropdown-toggle" data-toggle="dropdown">
@@ -54,6 +54,10 @@ class BookItemRow extends React.Component<BookItemRowProps, {}> {
 				</div>
 			</div>
 		);
+	}
+
+	fetchBook() {
+		return this.props.delegate.fetchBook(this.props.book);
 	}
 
 	removeBook () {

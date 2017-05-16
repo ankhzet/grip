@@ -55,12 +55,12 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 							<Button class="btn-xs" onClick={ () => this.removeBook() }>
 								<Glyph name="remove" />
 							</Button>
-							<Button class="btn-xs" onClick={ () => this.props.delegate.editBook(book) }>
+							<Button class="btn-xs" onClick={ () => this.editBook() }>
 								<Glyph name="edit" />
 							</Button>
 						</div>
 						<div className="btn-group">
-							<Button class="btn-xs" onClick={ null }>
+							<Button class="btn-xs" onClick={ () => this.fetchBook() }>
 								<Glyph name="play-circle" />
 							</Button>
 						</div>
@@ -74,7 +74,7 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 				</PanelBody>
 
 				<PanelFooter>
-					<Button class="btn-xs" onClick={ () => this.props.delegate.listBooks() }>
+					<Button class="btn-xs" onClick={ () => this.listBooks() }>
 						&larr;
 					</Button>
 				</PanelFooter>
@@ -82,8 +82,20 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 		);
 	}
 
+	listBooks() {
+		return this.props.delegate.listBooks();
+	}
+
+	editBook() {
+		return this.props.delegate.editBook(this.state.book);
+	}
+
 	removeBook() {
 		return this.props.delegate.removeBook(this.state.book);
+	}
+
+	fetchBook() {
+		return this.props.delegate.fetchBook(this.state.book);
 	}
 
 }
