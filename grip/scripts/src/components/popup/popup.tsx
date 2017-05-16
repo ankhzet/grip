@@ -8,7 +8,7 @@ import { AboutPageRoutes, AboutPage } from './AboutPage';
 import { BooksPageRoutes, BooksPage } from './BooksPage';
 import { BookManager } from './book/Manager';
 import { ManagerInterface } from '../Reactivity/ManagerInterface';
-import { Book } from '../../core/domain/Book';
+import { Book } from '../../Grip/Domain/Book';
 // import { Breadcrumbs } from '../breadcrumbs';
 
 interface PageLink {

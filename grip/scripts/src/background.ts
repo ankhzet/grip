@@ -1,9 +1,9 @@
 
-import { Grip } from './core/Grip';
+import { Grip } from './Grip/Grip';
 
 ((sandbox) => {
 
-
+	console.log('Grip sandbox:', sandbox);
 
 })(new Grip());
 
