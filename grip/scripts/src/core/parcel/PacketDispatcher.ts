@@ -1,9 +1,9 @@
 
-import { Packet } from './packet';
-import { ActionsRepository } from './actions/actions';
-import { ActionConstructor } from './actions/action';
+import { Packet } from './Packet';
+import { ActionConstructor } from './actions/Action';
+import { ActionHandler } from "./ActionHandler";
+import { RepositoryInterface } from "./actions/RepositoryInterface";
 
-export type ActionHandler<T, S> = (sender: S, data: T, packet: Packet<T>) => any;
 export type PacketHandlerDescriptor<T, S> = {handler: ActionHandler<T, S>, action: ActionConstructor<T>};
 
 export interface PacketDispatchDelegate<T> {
@@ -15,44 +15,41 @@ export interface PacketHandler<S> {
 }
 
 export class PacketDispatcher implements PacketDispatchDelegate<any> {
-	repository: ActionsRepository;
+	repository: RepositoryInterface;
 	actionHandlers: {[handler: string]: Function[]} = { };
 
 	private static DEFAULT = '*';
 
-	constructor(repository: ActionsRepository) {
+	constructor(repository: RepositoryInterface) {
 		this.repository = repository;
 	}
 
-	bind<T, C, S>(context: C, descriptors: PacketHandlerDescriptor<T, S>|(PacketHandlerDescriptor<any, S>[])): C {
+	bind<T, C, S>(context: C, descriptors: PacketHandlerDescriptor<T, S>|(PacketHandlerDescriptor<T, S>[])): C {
 		if (descriptors instanceof Array) {
-			for (let descriptor of descriptors)
+			for (let descriptor of descriptors) {
 				this.bind(context, descriptor);
+			}
 
 			return context;
 		}
 
 		let descriptor = <PacketHandlerDescriptor<T, S>>descriptors;
 		let method = descriptor.handler;
-		let handler, name = PacketDispatcher.DEFAULT;
+		let name = PacketDispatcher.DEFAULT;
+		let unpack = null;
 
 		if (descriptor.action) {
-			name = descriptor.action.uid;
-
 			let action = this.repository.get(descriptor.action);
-			handler = function (sender: S, packet) {
-				return method.call(context, sender, action.unpack(packet.data), packet);
-			};
-		} else {
-			handler = function (sender: S, packet) {
-				return method.call(context, sender, packet.data, packet);
-			};
+			unpack = (packet) => action.unpack(packet.data);
+			name = descriptor.action.uid;
 		}
 
-		let bound = this.actionHandlers[name];
-		if (!bound)
-			bound = this.actionHandlers[name] = [];
-		bound.push(handler);
+		let bound = this.actionHandlers[name] || (this.actionHandlers[name] = []);
+		bound.push(
+			unpack
+				? (sender: S, packet) => method.call(context, unpack(packet), sender, packet)
+				: (sender: S, packet) => method.call(context, packet.data, sender, packet)
+		);
 
 		return context;
 	}
@@ -64,6 +61,7 @@ export class PacketDispatcher implements PacketDispatchDelegate<any> {
 
 			for (let action of [packet.action, PacketDispatcher.DEFAULT]) {
 				let handlers = this.actionHandlers[action];
+
 				if (handlers) {
 					handled = true;
 

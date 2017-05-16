@@ -11,7 +11,7 @@ import * as Codemirror from 'react-codemirror';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/lib/codemirror.css';
-import { Book } from '../../../../core/domain/Book';
+import { Book } from '../../../../Grip/Domain/Book';
 import { BooksPage } from '../../BooksPage';
 import { ManagerInterface } from '../../../Reactivity/ManagerInterface';
 

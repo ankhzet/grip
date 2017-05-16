@@ -7,7 +7,7 @@ import { ListPage } from './book/ListPage';
 import { ShowPage } from './book/show/ShowPage';
 import { EditPage } from './book/edit/EditPage';
 import { BookUIManagerInterface } from './book/delegates/BookUIManagerInterface';
-import { Book } from '../../core/domain/Book';
+import { Book } from '../../Grip/Domain/Book';
 import { BookManager } from './book/Manager';
 
 interface BooksPageProps {

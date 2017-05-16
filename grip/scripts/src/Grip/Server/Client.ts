@@ -1,5 +1,5 @@
 
-import { ClientPort } from '../parcel/parcel';
+import { ClientPort } from '../../core/parcel/ClientPort';
 
 export class GripClient extends ClientPort {
 

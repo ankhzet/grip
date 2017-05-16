@@ -1,5 +1,5 @@
 
-import { Book } from '../../../../core/domain/Book';
+import { Book } from '../../../../Grip/Domain/Book';
 
 export interface BookUIManagerInterface<B extends Book> {
 	createBook();

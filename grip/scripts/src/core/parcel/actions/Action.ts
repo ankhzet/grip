@@ -1,5 +1,5 @@
 
-import { ClientPort } from '../parcel';
+import { ClientPort } from '../ClientPort';
 
 export interface ActionConstructor<T> {
 	new (): Action<T>;

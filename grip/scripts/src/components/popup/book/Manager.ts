@@ -1,8 +1,9 @@
 
-import { Book } from '../../../core/domain/Book';
+import { Book } from '../../../Grip/Domain/Book';
 import { IdentifiableInterface } from '../../../core/db/data/IdentifiableInterface';
 import { ObservableConnectedList } from '../../Reactivity/ObservableConnectedList';
 import { ManagerInterface } from '../../Reactivity/ManagerInterface';
+import { PackageInterface } from "../../../core/db/data/PackageInterface";
 
 export class BookManager extends ObservableConnectedList<Book> implements ManagerInterface<Book> {
 
@@ -12,17 +13,11 @@ export class BookManager extends ObservableConnectedList<Book> implements Manage
 
 	public perform(uids: string[], action: string, payload?: any) {
 		return this.get(uids)
-			.then((pack) => {
+			.then((pack: PackageInterface<any>) => {
 				let results = Object.keys(pack).map((uid) => {
 					switch (action) {
-						case 'execute': {
-							this.connector.execute(uid);
-							break;
-						}
-						case 'fire': {
-							console.log(`performing ${action}(${payload}) on '${uid}'`);
-							this.connector.fire(uid, payload);
-							break;
+						case 'some': {
+							return this.connector.some(uid);
 						}
 					}
 				});

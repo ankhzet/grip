@@ -1,29 +1,29 @@
 
-import { DB } from '../db/db';
-import { ClientPort } from '../parcel/parcel';
-import { Actions } from '../parcel/actions/actions';
-import { PacketHandler } from '../parcel/dispatcher';
-import { Packet } from '../parcel/packet';
-import { FetchAction, FetchPacketData } from '../parcel/actions/fetch';
-import { UpdateAction, UpdatePacketData } from '../parcel/actions/update';
-import { SendPacketData } from '../parcel/actions/send';
+import { DB } from '../db/DB';
+import { ClientPort } from '../parcel/ClientPort';
+import { BaseActions } from '../parcel/actions/Base/BaseActions';
+import { PacketHandler } from '../parcel/PacketDispatcher';
+import { Packet } from '../parcel/Packet';
+import { FetchAction, FetchPacketData } from '../parcel/actions/Base/Fetch';
+import { UpdateAction, UpdatePacketData } from './actions/Update';
+import { SendPacketData } from '../parcel/actions/Base/Send';
 import { Package } from '../db/data/Package';
 import { ModelStore } from '../db/ModelStore';
 import { SyncResultInterface } from '../db/SyncResultInterface';
 import { IdentifiableInterface } from '../db/data/IdentifiableInterface';
 import { ContainerInterface } from '../db/data/ContainerInterface';
-import { AbstractPacker } from './abstract-packer';
+import { AbstractPacker } from './AbstractPacker';
 import { PackageInterface } from '../db/data/PackageInterface';
+import { Serializer } from "../db/data/Serializer";
 
-export type Serializer<S, D> = (data: S) => D;
 export type Mapper<S extends IdentifiableInterface, D extends IdentifiableInterface> = (data: Package<S>) => Package<D>;
-export type Updatable = (store: ModelStore, data: SyncResultInterface) => any;
+export type Updatable<S extends IdentifiableInterface> = (store: ModelStore<S>, data: SyncResultInterface) => any;
 
 export class DataServer<S extends IdentifiableInterface, D> {
 	db: DB;
 	private _cache: ContainerInterface<Package<any>> = {};
 	mappers: ContainerInterface<Mapper<S, any>> = {};
-	updatables: ContainerInterface<Updatable> = {};
+	updatables: ContainerInterface<Updatable<S>> = {};
 
 	packer: EntityPacker<S, D> = new EntityPacker<S, D>();
 
@@ -42,7 +42,7 @@ export class DataServer<S extends IdentifiableInterface, D> {
 		return this.mappers[name] = mapper;
 	}
 
-	registerUpdatable(name: string, updatable: Updatable) {
+	registerUpdatable(name: string, updatable: Updatable<S>) {
 		return this.updatables[name] = updatable;
 	}
 
@@ -132,7 +132,7 @@ export class DataServer<S extends IdentifiableInterface, D> {
 	}
 
 	send(client: ClientPort, data: SendPacketData, packet) {
-		return Actions.send(client, data);
+		return BaseActions.send(client, data);
 	}
 
 }

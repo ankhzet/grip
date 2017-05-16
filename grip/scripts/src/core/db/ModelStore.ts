@@ -1,18 +1,18 @@
 
 import * as DataStore from 'nedb';
-import { Model } from './data/Model';
 import { ObjectUtils } from '../utils/object';
 import { Package } from './data/Package';
 import { SyncResultInterface } from './SyncResultInterface';
+import { IdentifiableInterface } from "./data/IdentifiableInterface";
 
-export class ModelStore {
+export class ModelStore<M extends IdentifiableInterface> {
 	table: DataStore;
 
 	constructor(table: DataStore) {
 		this.table = table;
 	}
 
-	findModels(uids: string[] = null): Promise<Model[]> {
+	findModels(uids: string[] = null): Promise<M[]> {
 		return new Promise((resolve, reject) => {
 			this.table.find(
 				uids
@@ -23,7 +23,7 @@ export class ModelStore {
 		});
 	}
 
-	syncModels(data: Package<Model>, upsert: boolean = true): Promise<SyncResultInterface> {
+	syncModels(data: Package<M>, upsert: boolean = true): Promise<SyncResultInterface> {
 		let uids = Object.keys(data);
 		let del  = uids.filter((uid) => !data[uid]);
 		let upd  = uids.filter((uid) => del.indexOf(uid) < 0);
@@ -53,7 +53,7 @@ export class ModelStore {
 			: Promise.resolve(result);
 	}
 
-	updateModels(data: Package<Model>, upsert: boolean = true): Promise<string[]> {
+	updateModels(data: Package<M>, upsert: boolean = true): Promise<string[]> {
 		return Promise.all(
 			Object.keys(data)
 				.map((uid) => new Promise((resolve, reject) => {

@@ -1,5 +1,5 @@
 
-import { Action } from './action';
+import { Action } from '../../parcel/actions/Action';
 
 export interface UpdatePacketData {
 	what: string;

@@ -1,11 +1,5 @@
 
-export interface Packet<T> {
-	sender: string;
-	action: string;
-
-	data: T;
-	error: any;
-}
+import { Packet } from "./Packet";
 
 export class PacketUtil {
 	private static APPENDAGE = '__appendage';
