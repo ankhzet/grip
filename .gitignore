@@ -6,6 +6,6 @@ ncp-debug.log
 npm-debug.log
 *.js
 *.js.map
-gearbox/styles/**/*.css
-!gearbox/scripts/lib/*
+grip/styles/**/*.css
+!grip/scripts/lib/*
 !webpack.config.js
