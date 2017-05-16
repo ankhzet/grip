@@ -9,7 +9,7 @@ export abstract class ObservableList<T extends IdentifiableInterface> implements
 	private data: {[uid: string]: T} = {};
 
 	generateUID(): string {
-		return `${(+Object.keys(this.data).sort().pop()) + 1}`;
+		return `${(+Object.keys(this.data).sort().pop() || 0) + 1}`;
 	}
 
 	get(uids: string[] = []): Promise<PackageInterface<T>> {

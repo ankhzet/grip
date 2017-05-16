@@ -118,8 +118,6 @@ export class ListPage extends React.Component<ListPageProps, { books: BooksPacka
 	}
 
 	private async addBook() {
-		return this.props.delegate.editBook(
-			await this.props.delegate.createBook()
-		);
+		return this.props.delegate.createBook();
 	}
 }

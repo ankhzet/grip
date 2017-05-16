@@ -35,6 +35,10 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 	async pullBook(id: string) {
 		this.setState({
 			book: null,
+			form: {
+				title: '',
+				uri: '',
+			},
 		});
 
 		return this.props.manager.get([id])
