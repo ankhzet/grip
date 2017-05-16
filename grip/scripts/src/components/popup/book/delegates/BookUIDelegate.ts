@@ -27,7 +27,9 @@ export class BookUIDelegate implements BookUIDelegateInterface<Book> {
 			new Book(this.manager.generateUID())
 		]);
 
-		return this.getBookByUid(uids.shift());
+		return this.editBook(
+			await this.getBookByUid(uids.shift())
+		);
 	}
 
 	async showBook(book: Book): Promise<Book> {
