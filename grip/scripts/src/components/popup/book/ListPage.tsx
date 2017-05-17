@@ -9,7 +9,6 @@ import { Panel, PanelHeader, PanelList } from '../../panel';
 
 import { Book } from '../../../Grip/Domain/Book';
 import { BooksPackage } from "../../../Grip/Domain/BooksPackage";
-import { BooksPage } from '../BooksPage';
 import { ManagerInterface } from '../../Reactivity/ManagerInterface';
 import { BookUIDelegateInterface } from "./delegates/BookUIDelegateInterface";
 import { ShowPage } from './show/ShowPage';

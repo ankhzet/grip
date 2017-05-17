@@ -9,7 +9,7 @@ import { BooksDepot } from './Domain/BooksDepot';
 import { CacheAction, CachePacketData } from './Server/actions/Cache';
 import { SendAction, SendPacketData } from '../core/parcel/actions/Base/Send';
 import { ContentedClientsPool } from './Server/ContentedClientsPool';
-import { Cacher } from './Client/Cacher';
+import { Cache, Cacher } from './Client/Cacher';
 
 export class Grip {
 	server: GripServer;
@@ -65,6 +65,8 @@ export class Grip {
 			pattern: /\/(xray-|xray\/)/,
 			context: '.entry-content',
 		}).then((cache: Cache) => {
+			book.toc = cache.toc;
+			this.books.set(book);
 		});
 	}
 
