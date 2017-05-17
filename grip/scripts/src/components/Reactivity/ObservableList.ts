@@ -83,7 +83,7 @@ export abstract class ObservableList<T extends IdentifiableInterface> implements
 						}
 					}
 
-					// console.log(`got`, result);
+					console.log(`got`, result);
 					return result;
 				});
 		} else {
@@ -102,10 +102,13 @@ export abstract class ObservableList<T extends IdentifiableInterface> implements
 			this.data[instance.uid] = instance;
 		}
 
+		console.log('to set:', JSON.stringify(values), values, JSON.stringify(this.data), this.data);
+
 		return silent
 			? Promise.resolve(uids)
 			: this.push(pack)
 				.then((uids) => {
+					console.log(this.data);
 					// todo: fire update event?
 					return this.invalidate(uids), uids;
 				});

@@ -4,12 +4,16 @@ import { ObservableList } from './ObservableList';
 import { SendAction, SendPacketData } from '../../core/parcel/actions/Base/Send';
 import { PackageInterface } from '../../core/db/data/PackageInterface';
 import { CollectionConnector } from '../../core/server/CollectionConnector';
+import { Serializer } from '../../core/db/data/Serializer';
+import { Package } from '../../core/db/data/Package';
 
 export abstract class ObservableConnectedList<T extends IdentifiableInterface> extends ObservableList<T> {
 	protected connector: CollectionConnector;
 	private resolver: {[request: number]: (any) => any} = [];
 	private request = 0;
 	private collection: string;
+
+	private serializers: Serializer<T, any>[] = [];
 
 	constructor(namespace: string, table: string) {
 		super();
@@ -21,6 +25,10 @@ export abstract class ObservableConnectedList<T extends IdentifiableInterface> e
 			delete this.resolver[data.payload];
 			resolver(data.data);
 		});
+	}
+
+	public addSerializer(serializer: Serializer<T, any>) {
+		return this.serializers.push(serializer);
 	}
 
 	protected pull(uids: string[]): Promise<IdentifiableInterface[]> {
@@ -38,8 +46,22 @@ export abstract class ObservableConnectedList<T extends IdentifiableInterface> e
 		return new Promise((resolve) => {
 			let uid = this.request++;
 			this.resolver[uid] = resolve;
-			this.connector.update(pack, uid);
+
+			let serialized = <T[]> this.serializers.reduce((prev, serializer) => serializer(prev), pack);
+
+			this.connector.update(
+				new Package(serialized),
+				uid
+			);
 		});
+	}
+
+	protected serialize(pack: PackageInterface<T>) {
+		let got = [];
+
+		for (let instance of pack) {
+
+		}
 	}
 
 }

@@ -8,8 +8,8 @@ import { BooksProvider } from './BooksProvider';
 import { BooksDepot } from './Domain/BooksDepot';
 import { CacheAction, CachePacketData } from './Server/actions/Cache';
 import { SendAction, SendPacketData } from '../core/parcel/actions/Base/Send';
-import { ContentedClientsPool } from './Server/ContentedClientsPool';
-import { Cache, Cacher } from './Client/Cacher';
+import { Cacher } from './Client/Cacher';
+import { PagesCache } from './Client/Book/PagesCache';
 
 export class Grip {
 	server: GripServer;
@@ -25,16 +25,6 @@ export class Grip {
 
 		this.server.on(SendAction, this._handle_send.bind(this));
 		this.server.on(CacheAction, this._handle_cache.bind(this));
-	}
-
-	broadcastCache({ uid }) {
-		this.server.clientsInActiveTab((clients: ContentedClientsPool) => {
-			let instance = this.books.instance(uid);
-
-			if (instance) {
-				clients.cache(instance);
-			}
-		});
 	}
 
 	_handle_send({ what, data: payload }: SendPacketData, client: GripClient, packet: Packet<SendPacketData>) {
@@ -62,12 +52,13 @@ export class Grip {
 
 		cacher.fetch({
 			tocURI: book.uri,
-			pattern: /\/(xray-|xray\/)/,
+			pattern: book.matcher,
 			context: '.entry-content',
-		}).then((cache: Cache) => {
+		}).then((cache: PagesCache) => {
 			book.toc = cache.toc;
 			this.books.set(book);
 		});
 	}
 
 }
+// (url) => url.match(/\/(xray-|xray\/)/)

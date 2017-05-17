@@ -19,7 +19,7 @@ export class ClientPort extends Port {
 
 		this.on(ConnectAction, this.connectable);
 
-		if (!this.rebind(port)) {
+		if (this.rebind(port)) {
 			this.connect();
 		}
 	}
@@ -88,6 +88,7 @@ export class ClientPort extends Port {
 
 	connectable({ uid }: ConnectPacketData) {
 		this.uid = uid;
+		this.touched = +new Date;
 	}
 
 }
