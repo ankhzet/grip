@@ -45,6 +45,7 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 
 	render() {
 		let book = this.state.book;
+		let links = (book && book.toc && Object.keys(book.toc)) || [];
 
 		return (book || null) && (
 			<Panel>
@@ -69,19 +70,26 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 				</PanelHeader>
 
 				<PanelBody>
-					<div className="form-group col-lg-12">
-						{ book.uri }
-					</div>
+					<form className="form-vertical">
 
-					{ book.toc &&
-						<div className="form-group col-lg-12">
-							<ul>
-								{ Object.keys(book.toc).map((uri) => (
+						<div className="form-group">
+							<label className="col-xs-2 form-control-static">URL:</label>
+							<span className="col-xs-10 form-control-static">{ book.uri }</span>
+						</div>
+
+						{ links.length &&
+						<div className="form-group">
+							<label className="col-xs-2 form-control-static">Chapters:</label>
+							<span className="col-xs-10 form-control-static">{ links.length }</span>
+							<ul className="collapse collapsed">
+								{ links.map((uri) => (
 									<li key={ uri }><Link to={ uri }>{ book.toc[uri] }</Link></li>
 								)) }
 							</ul>
 						</div>
-					}
+						}
+
+					</form>
 				</PanelBody>
 
 				<PanelFooter>
