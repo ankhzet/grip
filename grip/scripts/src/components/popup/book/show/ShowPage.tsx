@@ -85,7 +85,7 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 						</div>
 
 						<div className="form-group">
-							<div className="input-group col-xs-12">
+							<div className="input-group col-xs-12 reactive-editor">
 								<CodeMirror
 									className="form-control-static col-xs-12"
 									value={ book.matcher }
