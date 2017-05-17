@@ -9,4 +9,6 @@ export interface BookUIDelegateInterface<B extends Book> {
 	removeBook(book: B): Promise<string>;
 
 	listBooks();
+
+	fetchBook(book: Book);
 }

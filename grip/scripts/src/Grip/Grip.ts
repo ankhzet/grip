@@ -6,9 +6,10 @@ import { GripClient } from './Server/Client';
 
 import { BooksProvider } from './BooksProvider';
 import { BooksDepot } from './Domain/BooksDepot';
-import { SomeAction, SomePacketData } from './Server/actions/Some';
+import { CacheAction, CachePacketData } from './Server/actions/Cache';
 import { SendAction, SendPacketData } from '../core/parcel/actions/Base/Send';
 import { ContentedClientsPool } from './Server/ContentedClientsPool';
+import { Cache, Cacher } from './Client/Cacher';
 
 export class Grip {
 	server: GripServer;
@@ -23,15 +24,15 @@ export class Grip {
 		this.provider = new BooksProvider(this.server.dataServer, this.books);
 
 		this.server.on(SendAction, this._handle_send.bind(this));
-		this.server.on(SomeAction, this._handle_some.bind(this));
+		this.server.on(CacheAction, this._handle_cache.bind(this));
 	}
 
-	some({ uid }) {
+	broadcastCache({ uid }) {
 		this.server.clientsInActiveTab((clients: ContentedClientsPool) => {
 			let instance = this.books.instance(uid);
 
 			if (instance) {
-				clients.some(instance.uri);
+				clients.cache(instance);
 			}
 		});
 	}
@@ -50,15 +51,23 @@ export class Grip {
 		}
 	}
 
-	_handle_some({ data }: SomePacketData) {
-		let book = this.books.get(data.uid);
+	_handle_cache({ book: { uid, title, uri } }: CachePacketData) {
+		let book = this.books.get(uid);
 
 		if (!book) {
-			// todo: error handling!
-			throw new Error(`Book with uid "${data.uid}" not found`);
+			throw new Error(`Book "${title}" with uid "${uid}" not found`);
 		}
 
-		this.some(book);
+		let cacher = new Cacher();
+
+		cacher.fetch({
+			tocURI: book.uri,
+			pattern: /\/(xray-|xray\/)/,
+			context: '.entry-content',
+		}).then((cache: Cache) => {
+			book.toc = cache.toc;
+			this.books.set(book);
+		});
 	}
 
 }

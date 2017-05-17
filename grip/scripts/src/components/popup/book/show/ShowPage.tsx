@@ -9,6 +9,7 @@ import { Book } from '../../../../Grip/Domain/Book';
 import { BooksPage } from '../../BooksPage';
 import { ManagerInterface } from '../../../Reactivity/ManagerInterface';
 import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
+import { Link } from 'react-router';
 
 export interface ShowPageProps {
 	manager: ManagerInterface<Book>;
@@ -44,6 +45,7 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 
 	render() {
 		let book = this.state.book;
+		let links = (book && book.toc && Object.keys(book.toc)) || [];
 
 		return (book || null) && (
 			<Panel>
@@ -55,12 +57,12 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 							<Button class="btn-xs" onClick={ () => this.removeBook() }>
 								<Glyph name="remove" />
 							</Button>
-							<Button class="btn-xs" onClick={ () => this.props.delegate.editBook(book) }>
+							<Button class="btn-xs" onClick={ () => this.editBook() }>
 								<Glyph name="edit" />
 							</Button>
 						</div>
 						<div className="btn-group">
-							<Button class="btn-xs" onClick={ null }>
+							<Button class="btn-xs" onClick={ () => this.fetchBook() }>
 								<Glyph name="play-circle" />
 							</Button>
 						</div>
@@ -68,13 +70,30 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 				</PanelHeader>
 
 				<PanelBody>
-					<div className="form-group col-lg-12">
-						{ book.uri }
-					</div>
+					<form className="form-vertical">
+
+						<div className="form-group">
+							<label className="col-xs-2 form-control-static">URL:</label>
+							<span className="col-xs-10 form-control-static">{ book.uri }</span>
+						</div>
+
+						{ links.length &&
+						<div className="form-group">
+							<label className="col-xs-2 form-control-static">Chapters:</label>
+							<span className="col-xs-10 form-control-static">{ links.length }</span>
+							<ul className="collapse collapsed">
+								{ links.map((uri) => (
+									<li key={ uri }><Link to={ uri }>{ book.toc[uri] }</Link></li>
+								)) }
+							</ul>
+						</div>
+						}
+
+					</form>
 				</PanelBody>
 
 				<PanelFooter>
-					<Button class="btn-xs" onClick={ () => this.props.delegate.listBooks() }>
+					<Button class="btn-xs" onClick={ () => this.listBooks() }>
 						&larr;
 					</Button>
 				</PanelFooter>
@@ -82,8 +101,20 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 		);
 	}
 
+	listBooks() {
+		return this.props.delegate.listBooks();
+	}
+
+	editBook() {
+		return this.props.delegate.editBook(this.state.book);
+	}
+
 	removeBook() {
 		return this.props.delegate.removeBook(this.state.book);
+	}
+
+	fetchBook() {
+		return this.props.delegate.fetchBook(this.state.book);
 	}
 
 }

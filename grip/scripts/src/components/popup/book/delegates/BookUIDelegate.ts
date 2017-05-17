@@ -16,6 +16,10 @@ export class BookUIDelegate implements BookUIDelegateInterface<Book> {
 		this.router = router;
 	}
 
+	public fetchBook(book: Book) {
+		this.manager.perform([book.uid], 'fetch');
+	}
+
 	async getBookByUid(uid: string) {
 		return this.manager.get([uid]).then((pack) => {
 			return pack[uid];
