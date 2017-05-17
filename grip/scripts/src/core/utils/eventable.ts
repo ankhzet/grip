@@ -1,25 +1,52 @@
 
 export class Eventable {
-	private _handlers: {[event: string]: Function[]} = {};
+	private static _e_uid: number = 0;
+	private _e_listeners: {[event: string]: Function[]} = {};
 
-	on(event, handler) {
+	on(event, handler): number {
+		let listeners = this._e_listeners[event] || (this._e_listeners[event] = []);
+		let uid = ++Eventable._e_uid;
+		listeners[uid] = handler;
 
-		let handlers = this._handlers[event];
-		if (!handlers)
-			handlers = this._handlers[event] = [];
-
-		handlers.push(handler);
+		return uid;
 	}
 
-	fire(event: string, ...payload: any[]) {
-		// console.log(`firing [${event}] with`, payload, 'for', this);
-		let args = [event, ...payload];
-		let handlers = this._handlers[event];
-		if (!handlers)
-			return;
+	fire(event: string, ...payload: any[]): number {
+		let listeners = this._e_listeners[event];
+		let handled = 0;
 
-		for (let handler of handlers.slice())
-			handler.apply(this, args);
+		if (listeners) {
+			let uids = listeners.keys();
+
+			for (let uid of uids) {
+				listeners[uid](payload, event);
+
+				handled++;
+			}
+		}
+
+		return handled;
 	}
 
+	once(event, handler): number {
+		let uid;
+
+		return uid = this.on(event, (payload, e) => {
+			this.off(event, uid);
+
+			return handler(e, payload);
+		});
+	}
+
+	off(event, uid?: number) {
+		let listeners = this._e_listeners[event];
+
+		if (listeners) {
+			if (!uid) {
+				delete this._e_listeners[event]
+			} else {
+				delete listeners[uid];
+			}
+		}
+	}
 }

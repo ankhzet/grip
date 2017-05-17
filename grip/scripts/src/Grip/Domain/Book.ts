@@ -6,4 +6,6 @@ export class Book extends Model{
 
 	public title: string;
 	public uri: string;
+
+	public toc?: {[uri: string]: string};
 }
