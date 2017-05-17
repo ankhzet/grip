@@ -47,10 +47,8 @@ export abstract class ObservableConnectedList<T extends IdentifiableInterface> e
 			let uid = this.request++;
 			this.resolver[uid] = resolve;
 
-			let serialized = <T[]> this.serializers.reduce((prev, serializer) => serializer(prev), pack);
-
 			this.connector.update(
-				new Package(serialized),
+				this.serialize(pack),
 				uid
 			);
 		});
@@ -59,9 +57,17 @@ export abstract class ObservableConnectedList<T extends IdentifiableInterface> e
 	protected serialize(pack: PackageInterface<T>) {
 		let got = [];
 
-		for (let instance of pack) {
+		for (let key of Object.keys(pack)) {
+			let instance = pack[key];
 
+			for (let serializer of this.serializers) {
+				instance = serializer(instance);
+			}
+
+			got.push(instance);
 		}
+
+		return new Package(got);
 	}
 
 }
