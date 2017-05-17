@@ -13,7 +13,7 @@ class State {
 	private state: number = STATE_NONE;
 	private eventable: Eventable;
 
-	constructor(initial?) {
+	constructor(initial?: number) {
 		if (initial) {
 			this.state = initial;
 		}
@@ -21,18 +21,18 @@ class State {
 		this.eventable = new Eventable();
 	}
 
-	get() {
+	get(): number {
 		return this.state || STATE_NONE;
 	}
 
-	set(state) {
+	set(state: number): number {
 		this.state = this.state | state;
 		this.eventable.fire(EVENT_CHANGED, this.state);
 
 		return this.state;
 	}
 
-	remove(state) {
+	remove(state: number) {
 		if (this.state | state) {
 			this.state = this.state ^ state;
 			this.eventable.fire(EVENT_CHANGED, this.state);
@@ -41,7 +41,7 @@ class State {
 		return this.state;
 	}
 
-	changed(callback, once) {
+	changed(callback, once?: boolean): number {
 		return (
 			once
 				? this.eventable.once(EVENT_CHANGED, callback)
@@ -49,7 +49,7 @@ class State {
 		);
 	}
 
-	each(callback) {
+	each(callback: (bit: number) => any): any[] {
 		let bit = 1;
 		let max = 0;
 		let state = this.state;
