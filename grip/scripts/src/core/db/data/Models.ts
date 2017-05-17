@@ -1,5 +1,5 @@
 
-import { Eventable } from '../../utils/eventable';
+import { Eventable } from '../../utils/Eventable';
 import { Model } from './Model';
 
 export class Models<M extends Model> extends Eventable {

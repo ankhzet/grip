@@ -1,5 +1,5 @@
 
-import { Eventable } from '../../core/utils/eventable';
+import { Eventable } from '../../core/utils/Eventable';
 
 const STATE_NONE    = 0;
 const STATE_ACTIVE  = 1;
