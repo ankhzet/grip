@@ -7,7 +7,4 @@ export class GripClient extends ClientPort {
 		super('grip', port);
 	}
 
-	connect() {
-	}
-
 }

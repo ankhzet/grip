@@ -5,6 +5,11 @@ import { Panel, PanelFooter, PanelHeader, PanelBody } from '../../../panel';
 import { Button } from '../../../button';
 import { Glyph } from '../../../glyph';
 
+import * as CodeMirror from 'react-codemirror';
+import 'codemirror/addon/selection/active-line';
+import 'codemirror/mode/javascript/javascript';
+import 'codemirror/lib/codemirror.css';
+
 import { Book } from '../../../../Grip/Domain/Book';
 import { BooksPage } from '../../BooksPage';
 import { ManagerInterface } from '../../../Reactivity/ManagerInterface';
@@ -73,14 +78,35 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 					<form className="form-vertical">
 
 						<div className="form-group">
-							<label className="col-xs-2 form-control-static">URL:</label>
-							<span className="col-xs-10 form-control-static">{ book.uri }</span>
+							<div className="input-group col-xs-12">
+								<label className="col-xs-2 form-control-static">URL:</label>
+								<span className="col-xs-10 form-control-static">{ book.uri }</span>
+							</div>
 						</div>
 
-						{ links.length &&
 						<div className="form-group">
-							<label className="col-xs-2 form-control-static">Chapters:</label>
-							<span className="col-xs-10 form-control-static">{ links.length }</span>
+							<div className="input-group col-xs-12">
+								<CodeMirror
+									className="form-control-static col-xs-12"
+									value={ book.matcher }
+									options={{
+										mode: 'javascript',
+										theme: 'base16-oceanicnext-dark',
+										lineNumbers: true,
+										indentWithTabs: true,
+										tabSize: 2,
+										readOnly: true,
+									}}
+								/>
+							</div>
+						</div>
+
+						{ (links.length || null) &&
+						<div className="form-group">
+							<div className="input-group">
+								<label className="col-xs-2 form-control-static">Chapters:</label>
+								<span className="col-xs-10 form-control-static">{ links.length }</span>
+							</div>
 							<ul className="collapse collapsed">
 								{ links.map((uri) => (
 									<li key={ uri }><Link to={ uri }>{ book.toc[uri] }</Link></li>

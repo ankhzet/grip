@@ -19,6 +19,7 @@ export class BooksDepot extends Books {
 	}
 
 	public load(data: {uid: string}[]): BooksPackage {
+		console.log('depot load', data);
 		let result: BooksPackage = {};
 
 		for (let fragment of data) {
@@ -31,6 +32,7 @@ export class BooksDepot extends Books {
 	}
 
 	protected bookFromData(data: { uid: string }): Book {
+		console.log('depot from', data);
 		let book = data.uid && this.get(data.uid);
 
 		if (!book) {

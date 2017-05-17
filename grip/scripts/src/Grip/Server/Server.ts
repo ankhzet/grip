@@ -12,7 +12,7 @@ import { GripActions } from './actions/GripActions';
 import { SendPacketData } from '../../core/parcel/actions/Base/Send';
 import { CachePacketData } from './actions/Cache';
 import { Packet } from '../../core/parcel/Packet';
-import { ConnectAction } from '../../core/parcel/actions/Base/Connect';
+import { ConnectAction, ConnectPacketData } from '../../core/parcel/actions/Base/Connect';
 import { ClientActionHandler, ContentedClientsPool } from './ContentedClientsPool';
 
 export class GripServer extends ServerPort<GripClient> {
@@ -82,7 +82,8 @@ export class GripServer extends ServerPort<GripClient> {
 		console.log(`Disconnected ${client.uid}, cleaning...`);
 	}
 
-	connected(client: GripClient) {
+	connected(data: ConnectPacketData, client: GripClient) {
+		console.log(`Connected ${client.uid}:`, data);
 		return this.contented.add(client);
 	}
 
