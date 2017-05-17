@@ -12,6 +12,16 @@ export class Book extends Model{
 
 	public toc?: {[uri: string]: string};
 
+	public serialize() {
+		return {
+			uid: this.uid,
+			title: this.title,
+			uri: this.uri,
+			toc: this.toc,
+			matcher: this.matcher,
+		};
+	}
+
 	public match(url: string) {
 		return this.callable ? this.callable(url) : false;
 	}

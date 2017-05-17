@@ -61,4 +61,3 @@ export class Grip {
 	}
 
 }
-// (url) => url.match(/\/(xray-|xray\/)/)

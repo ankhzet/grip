@@ -10,6 +10,8 @@ export class BookManager extends ObservableConnectedList<Book> implements Reacti
 
 	constructor() {
 		super('grip', 'books');
+
+		this.addSerializer((book: Book) => book.serialize());
 	}
 
 	public perform(uids: string[], action: string, payload?: any) {
