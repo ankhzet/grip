@@ -13,8 +13,6 @@ export class BookManager extends ObservableConnectedList<Book> implements Reacti
 	}
 
 	public perform(uids: string[], action: string, payload?: any) {
-		console.log('performing...');
-
 		return this.get(uids)
 			.then((pack: PackageInterface<any>) => {
 				let results = Object.keys(pack).map((uid) => {
