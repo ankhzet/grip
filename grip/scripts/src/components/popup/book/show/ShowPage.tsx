@@ -9,6 +9,7 @@ import { Book } from '../../../../Grip/Domain/Book';
 import { BooksPage } from '../../BooksPage';
 import { ManagerInterface } from '../../../Reactivity/ManagerInterface';
 import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
+import { Link } from 'react-router';
 
 export interface ShowPageProps {
 	manager: ManagerInterface<Book>;
@@ -71,6 +72,16 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 					<div className="form-group col-lg-12">
 						{ book.uri }
 					</div>
+
+					{ book.toc &&
+						<div className="form-group col-lg-12">
+							<ul>
+								{ Object.keys(book.toc).map((uri) => (
+									<li key={ uri }><Link to={ uri }>{ book.toc[uri] }</Link></li>
+								)) }
+							</ul>
+						</div>
+					}
 				</PanelBody>
 
 				<PanelFooter>
