@@ -3,15 +3,18 @@
 import { Books } from './Books';
 import { Book } from './Book';
 import { BooksPackage } from './BooksPackage';
+import { BookTranscoder } from './Transcoders/Book';
 
 export class BooksDepot extends Books {
 	context: any;
+	transcoder: BookTranscoder;
 
 	constructor(context: any) {
 		super((uid) => {
 			return new Book(uid);
 		});
 		this.context = context;
+		this.transcoder = new BookTranscoder();
 	}
 
 	public instance(uid: string): Book {
@@ -32,20 +35,12 @@ export class BooksDepot extends Books {
 	}
 
 	protected bookFromData(data: { uid: string }): Book {
-		console.log('depot from', data);
 		let book = data.uid && this.get(data.uid);
 
-		if (!book) {
-			book = this.create();
-		}
+		this.set(
+			book = this.transcoder.decode(data, book)
+		);
 
-		for (let key in data) {
-			if (!key.match(/^_/)) {
-				book[key] = data[key];
-			}
-		}
-
-		this.set(book);
 
 		return book;
 	}

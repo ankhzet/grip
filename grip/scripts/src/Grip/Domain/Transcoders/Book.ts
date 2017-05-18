@@ -4,39 +4,25 @@ import { TranscoderInterface } from '../../../core/server/TranscoderInterface';
 
 export class BookTranscoder implements TranscoderInterface<Book, {}> {
 
-	public encode(book: Book, target?: any): any {
-		let raw = ['uid', 'uri', 'title', 'toc'];
-		let to = target || {};
-		let o = to['matchers'] || (to['matchers'] = {});
-		let n = book.matchers;
-
-
-		for (let prop of raw) {
-			to[prop] = book[prop];
-		}
-
-		for (let matcher of (Object.keys(n))) {
-			o[matcher] = n[matcher].code;
-		}
-
-		return to;
+	public encode(book: Book): any {
+		return {
+			uid: book.uid,
+			uri: book.uri,
+			title: book.title,
+			toc: book.toc,
+			matchers: book.matchers.code(),
+		};
 	}
 
 	public decode(data: any, target?: Book): Book {
 		target = target || new Book(data.uid);
 
-		for (let prop of Object.keys(data)) {
-			let n = data[prop];
+		target.uri = data.uri;
+		target.title = data.title;
+		target.toc = data.toc;
 
-			if (prop === 'matchers') {
-				let o = target.matchers;
-
-				for (let matcher of Object.keys(n)) {
-					o[matcher].code = n[matcher];
-				}
-			} else {
-				target[prop] = n;
-			}
+		for (let matcher of Object.keys(data.matchers)) {
+			target.matchers.set(matcher, data.matchers[matcher]);
 		}
 
 		return target;
