@@ -136,7 +136,9 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 	}
 
 	removeBook() {
-		return this.props.delegate.removeBook(this.state.book);
+		return this.props.delegate
+			.removeBook(this.state.book)
+		;
 	}
 
 	fetchBook() {

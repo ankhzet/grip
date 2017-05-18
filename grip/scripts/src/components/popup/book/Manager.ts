@@ -5,6 +5,7 @@ import { ObservableConnectedList } from '../../Reactivity/ObservableConnectedLis
 import { PackageInterface } from '../../../core/db/data/PackageInterface';
 import { ReactiveInterface } from '../../Reactivity/ReactiveInterface';
 import { GripActions } from '../../../Grip/Server/actions/GripActions';
+import { BooksPackage } from '../../../Grip/Domain/BooksPackage';
 
 export class BookManager extends ObservableConnectedList<Book> implements ReactiveInterface<Book> {
 
@@ -14,7 +15,7 @@ export class BookManager extends ObservableConnectedList<Book> implements Reacti
 		this.addSerializer((book: Book) => book.serialize());
 	}
 
-	public perform(uids: string[], action: string, payload?: any) {
+	public perform(uids: string[], action: string, payload?: any): Promise<BooksPackage> {
 		return this.get(uids)
 			.then((pack: PackageInterface<any>) => {
 				let results = Object.keys(pack).map((uid) => {
@@ -27,7 +28,8 @@ export class BookManager extends ObservableConnectedList<Book> implements Reacti
 				console.log(`Performed ${action}:`, results);
 
 				return pack;
-			});
+			})
+		;
 	}
 
 	protected wrap(data: IdentifiableInterface): Book {
