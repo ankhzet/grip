@@ -29,9 +29,28 @@ export interface EditPageState {
 	form: {
 		title: string;
 		uri: string;
-		matcher: string;
+		matchers: {
+			toc: string;
+		};
 	},
 }
+
+const TOC_MATCHER = '(() => {\n' +
+	'	 class Matcher {\n' +
+	'    constructor(grip, context) {\n' +
+	'      this.grip = grip;\n' +
+	'      this.context = context;\n' +
+	'    }\n' +
+	'\n' +
+	'    match(content) {\n' +
+	'      return {\n' +
+	'        uri: "Title",\n' +
+	'      };\n' +
+	'    }\n' +
+	'  }\n' +
+	'\n' +
+	'  return (grip, context) => new Matcher(grip, context);\n' +
+	'})()\n';
 
 export class EditPage extends React.Component<EditPageProps, EditPageState> {
 
@@ -43,7 +62,9 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 			form: {
 				title: '',
 				uri: '',
-				matcher: '(url) => url.match(/uri-regexp/)',
+				matchers: {
+					toc: TOC_MATCHER,
+				},
 			},
 		};
 	}
@@ -61,7 +82,9 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 					form: {
 						title  : book.title,
 						uri    : book.uri,
-						matcher: book.matcher,
+						matchers: {
+							toc: book.matchers.toc.code,
+						},
 					},
 				});
 
@@ -117,7 +140,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 						<div className="form-group">
 							<CodeMirror
 								className="col-xs-12"
-								value={ this.state.form.matcher }
+								value={ this.state.form.matchers.toc }
 								options={{
 									mode: 'javascript',
 									theme: 'base16-oceanicnext-dark',
@@ -126,7 +149,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 									tabSize: 2,
 									readOnly: false,
 								}}
-								onChange={ (value) => this.matcherChanged(value) }
+								onChange={ (value) => this.tocMatcherChanged(value) }
 							/>
 						</div>
 					</div>
@@ -171,10 +194,12 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 		});
 	}
 
-	private matcherChanged(value) {
+	private tocMatcherChanged(value) {
 		this.patchState({
 			form: {
-				matcher: value,
+				matchers:{
+					toc: value,
+				},
 			}
 		});
 	}

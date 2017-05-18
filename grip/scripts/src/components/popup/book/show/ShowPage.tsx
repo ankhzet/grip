@@ -88,7 +88,7 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 							<div className="input-group col-xs-12 reactive-editor">
 								<CodeMirror
 									className="form-control-static col-xs-12"
-									value={ book.matcher }
+									value={ book.matchers.toc.code }
 									options={{
 										mode: 'javascript',
 										theme: 'base16-oceanicnext-dark',

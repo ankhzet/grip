@@ -1,5 +1,4 @@
 
-
 import { State } from './Book/Page/State';
 import { CachedPage, CacheParams, PagesCache } from './Book/PagesCache';
 import { Utils } from './Utils';
@@ -29,19 +28,16 @@ export class Cacher {
 	}
 
 	fetch(data: CacheParams) {
-		let regexp = (data.pattern instanceof RegExp) ? data.pattern : new RegExp(data.pattern);
-
 		return this.download(data.tocURI)
-			.then((html: string) => Utils.contents(html, data.context))
-			.then((contents) => this.links(regexp, Utils.wrap(contents, 'div')))
+			.then((html: string) => data.matchers.toc.match(html))
 			.then((toc) => {
 				let uris = Object.keys(toc);
 
 				return <CacheParams>{
 					tocURI: data.tocURI,
-					pattern: data.pattern,
-					context: data.context,
 					toc: toc,
+
+					matchers: data.matchers,
 
 					pages: uris.map((uri, index) => {
 						return <CachedPage>({
@@ -78,9 +74,9 @@ export class Cacher {
 
 					throw new Error('Download failed for uri "' + uri + '"');
 				})
-				.then((html) => Utils.contents(html, data.context))
+				.then((html) => data.matchers.page(html) || false)
 				.then((contents) => {
-					data.cache(page, contents || false);
+					data.cache(page, contents);
 
 					if (contents !== undefined) {
 						state.set(State.STATE_LOADED);
