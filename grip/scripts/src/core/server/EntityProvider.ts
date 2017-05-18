@@ -3,6 +3,7 @@ import { ModelStore } from '../db/ModelStore';
 import { IdentifiableInterface } from '../db/data/IdentifiableInterface';
 import { Package } from '../db/data/Package';
 import { DataServer } from './DataServer';
+import { PackageInterface } from '../db/data/PackageInterface';
 
 export class EntityProvider<S extends IdentifiableInterface, D> {
 	name: string;
@@ -17,7 +18,7 @@ export class EntityProvider<S extends IdentifiableInterface, D> {
 		this.provider.registerUpdatable(this.name, this.update.bind(this));
 	}
 
-	cache(data: Package<S>) {
+	cache(data: PackageInterface<S>): PackageInterface<S> {
 		return this.provider.cache(this.name, data);
 	}
 
@@ -25,11 +26,11 @@ export class EntityProvider<S extends IdentifiableInterface, D> {
 		return data;
 	}
 
-	map(pack: Package<any>): Package<any> {
+	map(pack: PackageInterface<any>): PackageInterface<any> {
 		return pack;
 	}
 
-	update(store: ModelStore<S>, {updated, removed}) {
+	update(store: ModelStore<S>, {updated, removed}: {updated: string[], removed: string[]}): Promise<PackageInterface<S>[]> {
 		let all = [];
 
 		if (removed.length) {
@@ -43,18 +44,20 @@ export class EntityProvider<S extends IdentifiableInterface, D> {
 		return Promise.all(all);
 	}
 
-	updated(store: ModelStore<S>, uids: string[] = null) {
+	updated(store: ModelStore<S>, uids: string[] = null): Promise<PackageInterface<S>> {
 		return store.findModels(uids)
 			.then((data: S[]) => {
 				return this.cache(new Package(data));
 			});
 	}
 
-	removed(store: ModelStore<S>, uids: string[]) {
-		return this.cache(uids.reduce((acc, uid) => {
-			acc[uid] = null;
-			return acc;
-		}, {}));
+	removed(store: ModelStore<S>, uids: string[]): Promise<PackageInterface<S>> {
+		return Promise.resolve(
+			this.cache(uids.reduce((acc, uid) => {
+				acc[uid] = null;
+				return acc;
+			}, {}))
+		);
 	}
 
 }

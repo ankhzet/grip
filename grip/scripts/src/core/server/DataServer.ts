@@ -15,6 +15,7 @@ import { ContainerInterface } from '../db/data/ContainerInterface';
 import { AbstractPacker } from './AbstractPacker';
 import { PackageInterface } from '../db/data/PackageInterface';
 import { Serializer } from '../db/data/Serializer';
+import { Collection } from './data/Collection';
 
 export type Mapper<S extends IdentifiableInterface, D extends IdentifiableInterface> = (data: Package<S>) => Package<D>;
 export type Updatable<S extends IdentifiableInterface> = (store: ModelStore<S>, data: SyncResultInterface) => any;
@@ -28,11 +29,19 @@ export class DataServer<S extends IdentifiableInterface, D> {
 
 	public db: DB;
 
+	private collections: {[name: string]: Collection<S>};
+
 	constructor(handler: PacketHandler<ClientPort>, db: DB) {
 		this.db = db;
 
+		// todo: mapping/encoding
+
 		handler.on(FetchAction, this.fetch.bind(this));
 		handler.on(UpdateAction, this.update.bind(this));
+	}
+
+	collection(name: string, factory: (uid: string) => S) {
+		return this.collections[name] = new Collection<S>(this.db, name, factory);
 	}
 
 	registerSerializer(name: string, serializer: Serializer<S, D>) {
@@ -83,57 +92,49 @@ export class DataServer<S extends IdentifiableInterface, D> {
 		return mapper ? mapper(data) : data;
 	}
 
-	fetch({ what, query, payload: requestID }: FetchPacketData, client: ClientPort, packet: Packet<FetchPacketData>) {
-		let sender = (data: Package<S>) => {
-			return this.send(client, {
-				what,
-				data: this.packer.pack(what, data),
-				payload: requestID
-			}, packet);
-		};
+	fetch({ what, query, payload }: FetchPacketData, client: ClientPort) {
+		let collection = this.collections[what];
 
+		if (!collection) {
+			return;
+		}
 
-		this.db.query(what, query)
-			.specific(
-				Object.keys(this.cache),
-				() => sender(this.cached(what))
-			)
-			.fetch((err, data: any[]) => {
-				let pack = <PackageInterface<S>>{};
-
-				for (let fragment of data) {
-					pack[fragment.uid] = fragment;
-				}
-
-				return sender(this.cache(what, pack));
-			});
+		collection.fetch(query)
+			.then((data: Package<S>) => (
+				this.send(client, {
+					data: this.packer.pack(what, data),
+					what,
+					payload
+				})
+			))
+		;
 	}
 
-	update({ what, data, payload: requestID }: UpdatePacketData, client: ClientPort, packet: Packet<UpdatePacketData>) {
-		this.db.query(what)
-			.specific(null, (table) => {
-				let store = new ModelStore(table);
+	update({ what, data, payload }: UpdatePacketData, client: ClientPort) {
+		let collection = this.collections[what];
 
-				store.syncModels(data)
-					.then((result: SyncResultInterface) => {
-						let updatable = this.updatables[what];
+		if (!collection) {
+			return;
+		}
 
-						if (updatable) {
-							updatable(store, result);
-						}
+		collection.update(data)
+			.then((result: SyncResultInterface) => (
+				this.send(client, {
+					data: result.request,
+					what,
+					payload
+				})
+			))
+			.catch((error) => {
+				console.log(`Failed to update "${what}" with data:\n`, data);
+				console.log(error);
 
-						this.send(client, { what, data: result.request, payload: requestID }, packet);
-					})
-					.catch((error) => {
-						console.log(`Failed to update "${what}" with data:\n`, data);
-						console.log(error);
-
-						throw new Error(`Failed to update "${what}":\n${error}`);
-					});
-			});
+				throw new Error(`Failed to update "${what}":\n${error}`);
+			})
+		;
 	}
 
-	send(client: ClientPort, data: SendPacketData, packet) {
+	send(client: ClientPort, data: SendPacketData) {
 		return BaseActions.send(client, data);
 	}
 
