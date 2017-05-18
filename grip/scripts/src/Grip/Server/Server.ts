@@ -5,17 +5,14 @@ import { ServerPort } from '../../core/parcel/ServerPort';
 import { DataServer } from '../../core/server/DataServer';
 import { GripDB } from '../GripDB';
 
-import { ActionConstructor } from '../../core/parcel/actions/Action';
+import { Action, ActionConstructor } from '../../core/parcel/actions/Action';
 import { ActionHandler } from '../../core/parcel/ActionHandler';
 
 import { GripActions } from './actions/GripActions';
-import { SendAction, SendPacketData } from '../../core/parcel/actions/Base/Send';
-import { CacheAction, CachePacketData } from './actions/Cache';
 import { Packet } from '../../core/parcel/Packet';
 import { ConnectAction, ConnectPacketData } from '../../core/parcel/actions/Base/Connect';
-import { ClientActionHandler, ContentedClientsPool } from './ContentedClientsPool';
+import {  ContentedClientsPool } from './ContentedClientsPool';
 import { ActionPerformer } from '../../core/parcel/actions/ActionPerformer';
-import { UpdatedAction, UpdatedPacketData } from './actions/Updated';
 
 export class GripServer extends ServerPort<GripClient> {
 	private contented: ContentedClientsPool = new ContentedClientsPool();
@@ -45,8 +42,8 @@ export class GripServer extends ServerPort<GripClient> {
 		console.log(`\tsupplied data:`, packet.data);
 	}
 
-	broadcast(callback: (client: GripClient) => any) {
-		return this.contented.each(callback);
+	broadcast<T>(action: ActionPerformer<T, Action<T>>, data: T) {
+		return this.contented.broadcast(action, data);
 	}
 
 	clientsInActiveTab(callback: (clients: ContentedClientsPool) => any) {

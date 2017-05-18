@@ -11,8 +11,8 @@ import { SendAction, SendPacketData } from '../core/parcel/actions/Base/Send';
 import { Cacher } from './Client/Cacher';
 import { PagesCache } from './Client/Book/PagesCache';
 import { Book } from './Domain/Book';
-import { ClientPort } from '../core/parcel/ClientPort';
 import { GripActions } from './Server/actions/GripActions';
+import { ModelStore } from '../core/db/ModelStore';
 
 export class Grip {
 	server: GripServer;
@@ -31,9 +31,7 @@ export class Grip {
 		this.server.on(CacheAction, this._handle_cache.bind(this));
 
 		this.books.changed((uids: string[]) => {
-			this.server.broadcast((client: ClientPort) => {
-				GripActions.updated(client, { what: 'books', uids});
-			});
+			this.server.broadcast(GripActions.updated, { what: 'books', uids});
 		})
 	}
 
@@ -58,16 +56,20 @@ export class Grip {
 			throw new Error(`Book "${title}" with uid "${uid}" not found`);
 		}
 
-		let cacher = new Cacher();
+		(new Cacher())
+			.fetch({
+				tocURI: book.uri,
+				matchers: book.matchers,
+			}).then((cache: PagesCache) => {
+				book.toc = cache.toc;
 
-		cacher.fetch({
-			tocURI: book.uri,
-			matchers: book.matchers,
-		}).then((cache: PagesCache) => {
-			book.toc = cache.toc;
-
-			return this.books.set(book);
-		});
+				return this.provider.update(new ModelStore('books'), {
+					updated: {},
+					removed: {},
+				});
+			}).then((book: Book) => {
+			})
+		;
 	}
 
 }
