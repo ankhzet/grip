@@ -37,7 +37,7 @@ export abstract class ServerPort<C extends ClientPort> extends Port implements P
 	connect(port: chrome.runtime.Port): C {
 		let client = this.factory(port);
 
-		return client.on(null, (sender: C, data: any, packet: Packet<any>) => {
+		return client.listen(null, (sender: C, data: any, packet: Packet<any>) => {
 			return this.dispatcher.dispatch(client, packet);
 		});
 	}

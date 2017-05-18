@@ -17,7 +17,7 @@ export class ClientPort extends Port {
 	constructor(name: string, port?: chrome.runtime.Port) {
 		super(name);
 
-		this.on(ConnectAction, this.connectable);
+		this.listen(ConnectAction, this.connectable);
 
 		if (this.rebind(port)) {
 			this.connect();
@@ -53,7 +53,7 @@ export class ClientPort extends Port {
 		return this.port = port;
 	}
 
-	on<T, H>(action: ActionConstructor<T>, handler: ActionHandler<T, H>): this {
+	listen<T, H>(action: ActionConstructor<T>, handler: ActionHandler<T, H>): this {
 		return this.dispatcher.bind(this, { handler, action });
 	}
 

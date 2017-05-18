@@ -26,7 +26,7 @@ export class ClientsPool<C extends ClientPort> {
 
 	each(callback: (client: C) => boolean) {
 		for (let uid in this.clients) {
-			if (!callback(this.clients[uid])) {
+			if (callback(this.clients[uid]) === false) {
 				return false;
 			}
 		}

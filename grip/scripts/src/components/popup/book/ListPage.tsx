@@ -15,12 +15,28 @@ import { ShowPage } from './show/ShowPage';
 import { EditPage } from './edit/EditPage';
 
 interface BookItemRowProps {
+	manager: ManagerInterface<Book>;
 	delegate: BookUIDelegateInterface<Book>;
 	book: Book;
 }
 
 @withRouter
 class BookItemRow extends React.Component<BookItemRowProps, {}> {
+	evt: number;
+
+	componentDidMount() {
+		this.evt = this.props.manager.changed(this.entityChanged.bind(this));
+	}
+
+	componentWillMount() {
+		this.props.manager.off(this.evt);
+	}
+
+	entityChanged(uids: string[]) {
+		if (uids.indexOf(this.props.book.uid) >= 0) {
+			this.forceUpdate();
+		}
+	}
 
 	render() {
 		let book = this.props.book;
@@ -127,6 +143,7 @@ export class ListPage extends React.Component<ListPageProps, { books: BooksPacka
 						? uids.map((uid) => (
 							<li key={ uid } className="list-group-item">
 								<BookItemRow
+									manager={ this.props.manager }
 									delegate={ this.props.delegate }
 									book={ books[uid] } />
 							</li>
