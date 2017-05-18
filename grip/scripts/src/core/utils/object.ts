@@ -27,4 +27,19 @@ export class ObjectUtils {
 		return current;
 	}
 
+	public static compose(key: string[][]|string, value?: any, target?: any) {
+		if (<any>key instanceof Array) {
+			target = value || {};
+
+			for (let [k, v] of key) {
+				target = this.compose(k, v, target);
+			}
+		} else {
+			target = target || {};
+			target[<string>key] = value;
+		}
+
+		return target;
+	}
+
 }

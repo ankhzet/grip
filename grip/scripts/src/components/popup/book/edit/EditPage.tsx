@@ -30,27 +30,10 @@ export interface EditPageState {
 		title: string;
 		uri: string;
 		matchers: {
-			toc: string;
+			[name: string]: string;
 		};
 	},
 }
-
-const TOC_MATCHER = '(() => {\n' +
-	'	 class Matcher {\n' +
-	'    constructor(grip, context) {\n' +
-	'      this.grip = grip;\n' +
-	'      this.context = context;\n' +
-	'    }\n' +
-	'\n' +
-	'    match(content) {\n' +
-	'      return {\n' +
-	'        uri: "Title",\n' +
-	'      };\n' +
-	'    }\n' +
-	'  }\n' +
-	'\n' +
-	'  return (grip, context) => new Matcher(grip, context);\n' +
-	'})()\n';
 
 export class EditPage extends React.Component<EditPageProps, EditPageState> {
 
@@ -63,7 +46,6 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 				title: '',
 				uri: '',
 				matchers: {
-					toc: TOC_MATCHER,
 				},
 			},
 		};
@@ -82,9 +64,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 					form: {
 						title  : book.title,
 						uri    : book.uri,
-						matchers: {
-							toc: book.matchers.toc.code || TOC_MATCHER,
-						},
+						matchers: book.matchers.code(),
 					},
 				});
 
@@ -140,7 +120,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 						<div className="form-group">
 							<CodeMirror
 								className="col-xs-12"
-								value={ this.state.form.matchers.toc }
+								value={ this.state.form.matchers[Book.MATCHER_TOC] }
 								options={{
 									mode: 'javascript',
 									theme: 'base16-oceanicnext-dark',
@@ -197,9 +177,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 	private tocMatcherChanged(value) {
 		this.patchState({
 			form: {
-				matchers:{
-					toc: value,
-				},
+				matchers: ObjectUtils.compose(Book.MATCHER_TOC, value),
 			}
 		});
 	}
