@@ -1,10 +1,14 @@
 
 import { State } from './Page/State';
+import { TocInterface } from '../../Domain/TocInterface';
+import { TocMatcherInterface } from '../../Domain/TocMatcherInterface';
 
 export class CacheParams {
 	tocURI: string;
-	pattern: string|RegExp;
-	context: string;
+	matchers: {
+		toc: TocMatcherInterface;
+		page: (contents: string) => string;
+	};
 }
 
 export interface CachedPage {
@@ -18,7 +22,7 @@ export interface CachedPage {
 export class PagesCache extends CacheParams {
 	private current?: CachedPage;
 
-	toc?: {[uri: string]: string};
+	toc: TocInterface = {};
 	pages?: CachedPage[];
 
 	get page() {
@@ -50,6 +54,14 @@ export class PagesCache extends CacheParams {
 
 	state(page): State {
 		return this.pages[page] ? this.pages[page].state : undefined;
+	}
+
+	uri(page) {
+		return this.pages[page] ? this.pages[page].uri : undefined;
+	}
+
+	title(page) {
+		return this.pages[page] ? this.pages[page].title : undefined;
 	}
 
 	cache(page, value?): string {
