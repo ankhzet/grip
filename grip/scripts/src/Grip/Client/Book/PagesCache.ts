@@ -1,13 +1,13 @@
 
 import { State } from './Page/State';
 import { TocInterface } from '../../Domain/TocInterface';
-import { TocMatcherInterface } from '../../Domain/TocMatcherInterface';
+import { MatcherInterface } from '../../Domain/MatcherInterface';
 
 export class CacheParams {
 	tocURI: string;
 	matchers: {
-		toc: TocMatcherInterface;
-		page: (contents: string) => string;
+		toc: MatcherInterface<string, TocInterface>;
+		page: MatcherInterface<string, string>;
 	};
 }
 

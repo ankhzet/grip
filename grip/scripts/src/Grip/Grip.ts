@@ -53,7 +53,6 @@ export class Grip {
 		cacher.fetch({
 			tocURI: book.uri,
 			matchers: book.matchers,
-			context: '.entry-content',
 		}).then((cache: PagesCache) => {
 			book.toc = cache.toc;
 			this.books.set(book);
