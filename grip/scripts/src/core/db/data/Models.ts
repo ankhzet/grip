@@ -13,12 +13,8 @@ export class Models<M extends Model> extends Eventable {
 		this.factory = factory;
 	}
 
-	onchanged(listener: () => any) {
+	public changed(listener) {
 		return this.on(Models.CHANGED, listener);
-	}
-
-	private changed() {
-		this.fire(Models.CHANGED);
 	}
 
 	public create(): M {
@@ -31,7 +27,7 @@ export class Models<M extends Model> extends Eventable {
 
 	public set(instance: M): M {
 		this.instances[instance.uid] = instance;
-		this.changed();
+		this.fire(Models.CHANGED);
 
 		return instance;
 	}
@@ -41,7 +37,7 @@ export class Models<M extends Model> extends Eventable {
 
 		if (instance) {
 			delete this.instances[uid];
-			this.changed();
+			this.fire(Models.CHANGED);
 		}
 
 		return instance;
@@ -49,7 +45,7 @@ export class Models<M extends Model> extends Eventable {
 
 	public each(consumer: (instance: M) => boolean): boolean {
 		for (let instance in this.map()) {
-			if (!consumer(this.instances[instance])) {
+			if (false === consumer(this.instances[instance])) {
 				return false;
 			}
 		}

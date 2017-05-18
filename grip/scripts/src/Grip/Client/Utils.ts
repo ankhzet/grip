@@ -1,21 +1,16 @@
 
+import * as JQuery from 'jquery';
+
 export class Utils {
 	static wrap(html: string, parent?: string): JQuery {
 		return $('<' + (parent || 'html') + '>').html(html);
 	}
 
-	static contents(html: string, context: string, parent?: string): Promise<string> {
-		return new Promise((rs, rj) => {
-			try {
-				let filtered = this.wrap(html, parent)
-					.find(context)
-					.html();
-
-				rs(filtered);
-			} catch (e) {
-				rj(e);
-			}
-		});
+	static contents(html: string, context: string, parent?: string): string {
+		return this.wrap(html, parent)
+			.find(context)
+			.html()
+		;
 	}
 
 	static download(uri: string): Promise<string> {
@@ -33,4 +28,14 @@ export class Utils {
 			})
 		;
 	}
+
+	static relative(url: string): string {
+		let uri = new URL(url);
+		uri.host = '';
+		uri.port = '';
+
+		return uri.toString();
+	}
+
+	static $ = JQuery;
 }

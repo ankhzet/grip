@@ -1,11 +1,11 @@
 
 import { State } from './Page/State';
 import { TocInterface } from '../../Domain/TocInterface';
-import { MatcherInterface } from '../../Domain/MatcherInterface';
+import { Matchers } from '../../Domain/Matchers';
 
 export class CacheParams {
 	tocURI: string;
-	matchers: {[name: string]: MatcherInterface<any, any>};
+	matchers: Matchers;
 }
 
 export interface CachedPage {
