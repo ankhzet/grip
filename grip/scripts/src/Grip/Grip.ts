@@ -10,17 +10,19 @@ import { CacheAction, CachePacketData } from './Server/actions/Cache';
 import { SendAction, SendPacketData } from '../core/parcel/actions/Base/Send';
 import { Cacher } from './Client/Cacher';
 import { PagesCache } from './Client/Book/PagesCache';
+import { Models } from "../core/db/data/Models";
 
 export class Grip {
 	server: GripServer;
 	db: GripDB;
-	books: BooksDepot = new BooksDepot(this);
+	books: BooksDepot;
 	provider: BooksProvider;
 
 	constructor() {
 		this.db = new GripDB();
 		this.server = new GripServer(this.db);
 
+		this.books = new BooksDepot();
 		this.provider = new BooksProvider(this.server.dataServer, this.books);
 
 		this.server.on(SendAction, this._handle_send.bind(this));
@@ -49,14 +51,15 @@ export class Grip {
 		}
 
 		let cacher = new Cacher();
-		let matchers = book.matchers.fetch();
 
 		cacher.fetch({
 			tocURI: book.uri,
-			matchers: matchers,
+			matchers: book.matchers,
 		}).then((cache: PagesCache) => {
 			book.toc = cache.toc;
 			this.books.set(book);
+
+			return book;
 		});
 	}
 

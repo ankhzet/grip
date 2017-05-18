@@ -3,20 +3,13 @@ import { State } from './Book/Page/State';
 import { CachedPage, CacheParams, PagesCache } from './Book/PagesCache';
 import { Utils } from './Utils';
 import { TocInterface } from '../Domain/TocInterface';
+import { Book } from '../Domain/Book';
 
 export class Cacher {
 
-	uri(url: string): string {
-		let uri = new URL(url);
-		uri.host = '';
-
-		return uri.toString();
-	}
-
-
 	fetch(data: CacheParams) {
 		return this.download(data.tocURI)
-			.then((html: string) => data.matchers.toc.match(html))
+			.then((html: string) => data.matchers.match(Book.MATCHER_TOC, html))
 			.then((toc: TocInterface) => {
 				let uris = Object.keys(toc);
 
@@ -61,7 +54,7 @@ export class Cacher {
 
 					throw new Error('Download failed for uri "' + uri + '"');
 				})
-				.then((html: string) => data.matchers.page.match(html) || false)
+				.then((html: string) => data.matchers.match(Book.MATCHER_PAGE, html))
 				.then((contents: string) => {
 					data.cache(page, contents);
 
