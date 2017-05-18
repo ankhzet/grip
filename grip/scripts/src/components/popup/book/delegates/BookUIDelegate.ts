@@ -24,7 +24,11 @@ export class BookUIDelegate implements BookUIDelegateInterface<Book> {
 	async createBook(): Promise<Book> {
 		return this.saveBook(
 			new Book(this.manager.generateUID()),
-			{}
+			{
+				matchers: {
+
+				},
+			}
 		);
 	}
 

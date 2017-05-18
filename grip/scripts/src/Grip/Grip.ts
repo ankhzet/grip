@@ -49,10 +49,11 @@ export class Grip {
 		}
 
 		let cacher = new Cacher();
+		let matchers = book.matchers.fetch();
 
 		cacher.fetch({
 			tocURI: book.uri,
-			matchers: book.matchers,
+			matchers: matchers,
 		}).then((cache: PagesCache) => {
 			book.toc = cache.toc;
 			this.books.set(book);

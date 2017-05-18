@@ -5,10 +5,7 @@ import { MatcherInterface } from '../../Domain/MatcherInterface';
 
 export class CacheParams {
 	tocURI: string;
-	matchers: {
-		toc: MatcherInterface<string, TocInterface>;
-		page: MatcherInterface<string, string>;
-	};
+	matchers: {[name: string]: MatcherInterface<any, any>};
 }
 
 export interface CachedPage {
