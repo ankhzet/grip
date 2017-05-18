@@ -11,4 +11,20 @@ export class ObjectUtils {
 		return n;
 	}
 
+	public static patch(current, next) {
+		for (let prop in next) {
+			if (next.hasOwnProperty(prop)) {
+				let o = current[prop];
+				let n = next[prop];
+
+				current[prop] = (typeof n === 'object')
+					? this.patch(o, n)
+					: n
+				;
+			}
+		}
+
+		return current;
+	}
+
 }

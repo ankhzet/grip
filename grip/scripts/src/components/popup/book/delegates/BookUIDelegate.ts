@@ -6,6 +6,7 @@ import { InjectedRouter } from 'react-router';
 import { ShowPage } from '../show/ShowPage';
 import { BooksPage } from '../../BooksPage';
 import { EditPage } from '../edit/EditPage';
+import { ObjectUtils } from '../../../../core/utils/object';
 
 export class BookUIDelegate implements BookUIDelegateInterface<Book> {
 	private manager: BookManager;
@@ -20,19 +21,10 @@ export class BookUIDelegate implements BookUIDelegateInterface<Book> {
 		this.manager.perform([book.uid], 'fetch');
 	}
 
-	async getBookByUid(uid: string) {
-		return this.manager.get([uid]).then((pack) => {
-			return pack[uid];
-		});
-	}
-
 	async createBook(): Promise<Book> {
-		let uids: string[] = await this.manager.set([
-			new Book(this.manager.generateUID())
-		]);
-
-		return this.editBook(
-			await this.getBookByUid(uids.shift())
+		return this.saveBook(
+			new Book(this.manager.generateUID()),
+			{}
 		);
 	}
 
@@ -49,22 +41,19 @@ export class BookUIDelegate implements BookUIDelegateInterface<Book> {
 	}
 
 	async saveBook(book: Book, data: any): Promise<Book> {
-		for (let prop in data) {
-			if (data.hasOwnProperty(prop)) {
-				book[prop] = data[prop];
-			}
-		}
-
-		let uids = await this.manager.set([
-			book,
-		]);
-
-		return await this.getBookByUid(uids.shift());
+		return this.manager
+			.set([
+				ObjectUtils.patch(book, data),
+			])
+			.then(() => this.manager.getOne(book.uid))
+		;
 	}
 
-	async removeBook(book: Book): Promise<string> {
-		return await this.manager.remove([book.uid])
-			.then((uids) => (this.listBooks(), uids.shift()));
+	async removeBook(book: Book): Promise<string|null> {
+		return this.manager
+			.remove([book.uid])
+			.then(() => book.uid)
+		;
 	}
 
 	async listBooks() {

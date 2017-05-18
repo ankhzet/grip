@@ -12,6 +12,11 @@ export abstract class ObservableList<T extends IdentifiableInterface> implements
 		return `${(+Object.keys(this.data).sort().pop() || 0) + 1}`;
 	}
 
+	getOne(uid: string): Promise<T> {
+		return this.get([uid])
+			.then((pack: PackageInterface<T>) => pack[uid]);
+	}
+
 	get(uids: string[] = []): Promise<PackageInterface<T>> {
 		// todo: too complex, requires refactoring
 

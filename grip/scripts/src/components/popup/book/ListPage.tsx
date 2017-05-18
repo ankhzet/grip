@@ -61,6 +61,11 @@ class BookItemRow extends React.Component<BookItemRowProps, {}> {
 	removeBook () {
 		return this.props.delegate
 			.removeBook(this.props.book)
+			.then((uid) => {
+				if (uid) {
+					this.props.delegate.listBooks()
+				}
+			})
 		;
 	}
 
@@ -126,6 +131,11 @@ export class ListPage extends React.Component<ListPageProps, { books: BooksPacka
 	private addBook() {
 		return this.props.delegate
 			.createBook()
+			.then((book) => {
+				if (book) {
+					this.props.delegate.editBook(book);
+				}
+			})
 		;
 	}
 }

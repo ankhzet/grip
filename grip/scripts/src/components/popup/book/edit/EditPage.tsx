@@ -14,7 +14,7 @@ import { Book } from '../../../../Grip/Domain/Book';
 import { ManagerInterface } from '../../../Reactivity/ManagerInterface';
 import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
 import { BooksPage } from '../../BooksPage';
-import { BooksPackage } from '../../../../Grip/Domain/BooksPackage';
+import { ObjectUtils } from "../../../../core/utils/object";
 
 export interface EditPageProps {
 	delegate: BookUIDelegateInterface<Book>;
@@ -53,10 +53,9 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 	}
 
 	async pullBook(id: string) {
-		return this.props.manager.get([id])
-			.then((books: BooksPackage) => {
-				let book = books[id];
-
+		return this.props.manager
+			.getOne(id)
+			.then((book: Book) => {
 				this.setState({
 					book: book,
 					form: {
@@ -152,26 +151,8 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 		);
 	}
 
-	private patchObject(current, next) {
-		for (let prop in next) {
-			if (next.hasOwnProperty(prop)) {
-				let o = current[prop];
-				let n = next[prop];
-
-				current[prop] = (typeof n === 'object')
-					? this.patchObject(o, n)
-					: n
-				;
-			}
-		}
-
-		return current;
-	}
-
 	private patchState(next) {
-		this.setState(
-			this.patchObject(this.state, next)
-		);
+		this.setState(ObjectUtils.patch(this.state, next));
 	}
 
 	private titleChanged(e) {
@@ -201,8 +182,10 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 	private removeBook() {
 		return this.props.delegate
 			.removeBook(this.state.book)
-			.then(() => {
-				return this.props.delegate.listBooks();
+			.then((uid) => {
+				if (uid) {
+					this.props.delegate.listBooks()
+				}
 			})
 		;
 	}
