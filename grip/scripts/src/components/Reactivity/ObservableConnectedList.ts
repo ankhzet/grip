@@ -2,35 +2,48 @@
 import { IdentifiableInterface } from '../../core/db/data/IdentifiableInterface';
 import { ObservableList } from './ObservableList';
 import { SendAction, SendPacketData } from '../../core/parcel/actions/Base/Send';
+import { UpdatedAction, UpdatedPacketData } from '../../Grip/Server/actions/Updated';
 import { PackageInterface } from '../../core/db/data/PackageInterface';
 import { CollectionConnector } from '../../core/server/CollectionConnector';
 import { TranscoderInterface } from '../../core/server/TranscoderInterface';
 import { TranscoderAggregate } from '../../core/server/TranscoderAggregate';
+import { ActionConstructor } from '../../core/parcel/actions/Action';
+import { ActionHandler } from "../../core/parcel/ActionHandler";
 
 export abstract class ObservableConnectedList<T extends IdentifiableInterface> extends ObservableList<T> {
 	protected connector: CollectionConnector;
 	private resolver: {[request: number]: (any) => any} = [];
 	private request = 0;
-	private collection: string;
 
 	private transcoders: TranscoderAggregate<T, {}>;
+
+	public collection: string;
 
 	constructor(namespace: string, table: string) {
 		super();
 
 		this.collection = table;
 		this.transcoders = new TranscoderAggregate<T, {}>();
-
 		this.connector = new CollectionConnector(namespace, table);
-		this.connector.on(SendAction, (data: SendPacketData) => {
+
+		this.listen(SendAction, (data: SendPacketData) => {
 			let resolver = this.resolver[data.payload];
 			delete this.resolver[data.payload];
 			resolver(data.data);
+		});
+		this.listen(UpdatedAction, (data: UpdatedPacketData) => {
+			if (data.what === this.collection) {
+				this.invalidate(data.uids);
+			}
 		});
 	}
 
 	public addTranscoder(transcoder: TranscoderInterface<any, any>) {
 		return this.transcoders.add(transcoder);
+	}
+
+	public listen<T, H>(action: ActionConstructor<T>, handler: ActionHandler<T, H>): this {
+		return this.connector.listen(action, handler), this;
 	}
 
 	protected pull(uids: string[]): Promise<IdentifiableInterface[]> {

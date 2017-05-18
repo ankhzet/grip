@@ -3,8 +3,10 @@ import { IdentifiableInterface } from '../../core/db/data/IdentifiableInterface'
 import { Package } from '../../core/db/data/Package';
 import { PackageInterface } from '../../core/db/data/PackageInterface';
 import { ManagerInterface } from './ManagerInterface';
+import { Eventable } from '../../core/utils/Eventable';
+import { Models } from '../../core/db/data/Models';
 
-export abstract class ObservableList<T extends IdentifiableInterface> implements ManagerInterface<T> {
+export abstract class ObservableList<T extends IdentifiableInterface> extends Eventable implements ManagerInterface<T> {
 	private pending: {[uid: string]: Promise<PackageInterface<T>>} = {};
 	private data: {[uid: string]: T} = {};
 
@@ -106,13 +108,12 @@ export abstract class ObservableList<T extends IdentifiableInterface> implements
 			this.data[uid] = instance;
 		}
 
-		return silent
-			? Promise.resolve(uids)
-			: this.push(new Package(this.serialize(values)))
-				.then((uids) => {
-					// todo: fire update event?
-					return this.invalidate(uids), uids;
-				});
+		return (
+			silent
+				? Promise.resolve(uids)
+				: this.push(new Package(this.serialize(values)))
+			).then((uids) => (this.fire(Models.CHANGED, uids), uids))
+		;
 	}
 
 	remove(uids: string[]): Promise<string[]> {
@@ -130,23 +131,29 @@ export abstract class ObservableList<T extends IdentifiableInterface> implements
 				}
 
 				return uids;
-			});
+			})
+			.then((uids) => (this.fire(Models.CHANGED, uids), uids))
+		;
 	}
 
 	invalidate(uids: string[]) {
 		for (let uid of uids) {
 			this.data[uid] = null;
 		}
+
+		this.fire(Models.CHANGED, uids);
+	}
+
+	changed(listener: (uids: string[]) => any): number {
+		return this.on(Models.CHANGED, listener);
 	}
 
 	invalid(): string[] {
-		return Object.keys(this.data)
-			.filter((uid) => !this.data[uid]);
+		return Object.keys(this.data).filter((uid) => !this.data[uid]);
 	}
 
 	fetching(): string[] {
-		return Object.keys(this.pending)
-			.filter((uid) => !!this.pending[uid]);
+		return Object.keys(this.pending).filter((uid) => !!this.pending[uid]);
 	}
 
 	protected acquire(uids: string[]): Promise<PackageInterface<T>> {

@@ -9,39 +9,27 @@ import { ActionConstructor } from '../../core/parcel/actions/Action';
 import { ActionHandler } from '../../core/parcel/ActionHandler';
 
 import { GripActions } from './actions/GripActions';
-import { SendPacketData } from '../../core/parcel/actions/Base/Send';
-import { CachePacketData } from './actions/Cache';
+import { SendAction, SendPacketData } from '../../core/parcel/actions/Base/Send';
+import { CacheAction, CachePacketData } from './actions/Cache';
 import { Packet } from '../../core/parcel/Packet';
 import { ConnectAction, ConnectPacketData } from '../../core/parcel/actions/Base/Connect';
 import { ClientActionHandler, ContentedClientsPool } from './ContentedClientsPool';
+import { ActionPerformer } from '../../core/parcel/actions/ActionPerformer';
+import { UpdatedAction, UpdatedPacketData } from './actions/Updated';
 
 export class GripServer extends ServerPort<GripClient> {
 	private contented: ContentedClientsPool = new ContentedClientsPool();
 	public db: GripDB;
 	public dataServer: DataServer<any, any>;
 
-	public f: {
-		send: ClientActionHandler<SendPacketData>;
-		cache: ClientActionHandler<CachePacketData>;
-	};
-
 	constructor(db: GripDB) {
 		super('grip', GripActions, (port: chrome.runtime.Port) => {
 			return (new GripClient(port))
-				.on(ConnectAction, this.connected.bind(this));
+				.listen(ConnectAction, this.connected.bind(this));
 		});
 
 		this.db = db;
 		this.dataServer = new DataServer(this, this.db);
-
-		this.f = {
-			send: (data: SendPacketData, client: GripClient) => {
-				return GripActions.send(client, data);
-			},
-			cache: (data: CachePacketData, client: GripClient) => {
-				return GripActions.cache(client, data);
-			},
-		};
 	}
 
 	on<T>(action: ActionConstructor<T>, handler: ActionHandler<T, GripClient>): this {
@@ -55,6 +43,10 @@ export class GripServer extends ServerPort<GripClient> {
 	_handle(client: GripClient, packet: Packet<any>) {
 		console.log(`Client [${client.uid}: ${packet.sender}] requested to '${packet.action}':`);
 		console.log(`\tsupplied data:`, packet.data);
+	}
+
+	broadcast(callback: (client: GripClient) => any) {
+		return this.contented.each(callback);
 	}
 
 	clientsInActiveTab(callback: (clients: ContentedClientsPool) => any) {

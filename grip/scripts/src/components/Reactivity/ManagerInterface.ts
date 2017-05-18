@@ -11,4 +11,7 @@ export interface ManagerInterface<T extends IdentifiableInterface> {
 
 	getOne(uid: string): Promise<T>;
 
+	changed(listener: (uids: string[]) => any): number;
+	off(uid: number);
+
 }
