@@ -2,7 +2,7 @@
 import { TranscoderInterface } from './TranscoderInterface';
 
 export class TranscoderAggregate<S, T> implements TranscoderInterface<S, T> {
-	private transcoders: TranscoderInterface<any, any>[];
+	private transcoders: TranscoderInterface<any, any>[] = [];
 
 	public add(transcoder: TranscoderInterface<any, any>): number {
 		return this.transcoders.push(transcoder);
