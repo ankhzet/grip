@@ -7,6 +7,7 @@ import { ShowPage } from '../show/ShowPage';
 import { BooksPage } from '../../BooksPage';
 import { EditPage } from '../edit/EditPage';
 import { ObjectUtils } from '../../../../core/utils/object';
+import { Alertify } from "../../../../core/utils/alertify";
 
 export class BookUIDelegate implements BookUIDelegateInterface<Book> {
 	private manager: BookManager;
@@ -56,10 +57,18 @@ export class BookUIDelegate implements BookUIDelegateInterface<Book> {
 	}
 
 	async removeBook(book: Book): Promise<string|null> {
-		return this.manager
-			.remove([book.uid])
-			.then(() => book.uid)
-		;
+		let response = await (new Promise((rs, rj) => {
+			Alertify.confirm(`You sure want to delete "${book.title}"?`, rs);
+		}));
+
+		if (response) {
+			return this.manager
+				.remove([book.uid])
+				.then(() => book.uid)
+			;
+		} else {
+			return Promise.resolve(null);
+		}
 	}
 
 	async listBooks() {
