@@ -83,7 +83,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 						title  : book.title,
 						uri    : book.uri,
 						matchers: {
-							toc: book.matchers.toc.code,
+							toc: book.matchers.toc.code || TOC_MATCHER,
 						},
 					},
 				});

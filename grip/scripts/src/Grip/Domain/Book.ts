@@ -1,7 +1,7 @@
 
 import { Model } from '../../core/db/data/Model';
 import { TocInterface } from './TocInterface';
-import { TocMatcherInterface } from './TocMatcherInterface';
+import { MatcherInterface } from './MatcherInterface';
 import { Matcher } from './Matcher';
 
 export class Book extends Model{
@@ -9,10 +9,11 @@ export class Book extends Model{
 
 	public title: string;
 	public uri: string;
-	public toc?: TocInterface;
+	public toc?: TocInterface = {};
 
 	public matchers = {
-		toc: new Matcher<TocMatcherInterface, Book>(),
+		toc: new Matcher<MatcherInterface<string, TocInterface>, TocInterface>(),
+		page: new Matcher<MatcherInterface<string, string>, string>(),
 	};
 
 }

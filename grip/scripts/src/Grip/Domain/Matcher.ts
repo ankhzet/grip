@@ -1,5 +1,7 @@
 
-export class Matcher<M, C> {
+import { MatcherInterface } from './MatcherInterface';
+
+export class Matcher<S, R, M extends MatcherInterface<S, R>> implements MatcherInterface<S, R> {
 	private _code: string;
 	private _compiled: any;
 
@@ -15,11 +17,22 @@ export class Matcher<M, C> {
 		this._code = code;
 	}
 
-	public instance(context: C): M {
+	public instance(context): M {
 		if (!this._compiled) {
 			this._compiled = eval(this.code);
 		}
 
 		return this._compiled ? this._compiled(context) : false;
 	}
+
+	match(content: any) {
+		let matcher;
+
+		if (matcher = this.instance(this)) {
+			return matcher.matc(content);
+		}
+
+		return false;
+	}
+
 }

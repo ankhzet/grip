@@ -2,6 +2,7 @@
 import { State } from './Book/Page/State';
 import { CachedPage, CacheParams, PagesCache } from './Book/PagesCache';
 import { Utils } from './Utils';
+import { TocInterface } from '../Domain/TocInterface';
 
 export class Cacher {
 
@@ -12,25 +13,11 @@ export class Cacher {
 		return uri.toString();
 	}
 
-	links(pattern, context) {
-		let self = this;
-		let toc = {}, href;
-
-		$('a[href]', context).each(function ()  {
-			let href = this.getAttribute('href');
-
-			if (href && href.match(pattern)) {
-				toc[self.uri(href)] = this.innerHTML;
-			}
-		});
-
-		return toc;
-	}
 
 	fetch(data: CacheParams) {
 		return this.download(data.tocURI)
 			.then((html: string) => data.matchers.toc.match(html))
-			.then((toc) => {
+			.then((toc: TocInterface) => {
 				let uris = Object.keys(toc);
 
 				return <CacheParams>{
@@ -74,8 +61,8 @@ export class Cacher {
 
 					throw new Error('Download failed for uri "' + uri + '"');
 				})
-				.then((html) => data.matchers.page(html) || false)
-				.then((contents) => {
+				.then((html: string) => data.matchers.page.match(html) || false)
+				.then((contents: string) => {
 					data.cache(page, contents);
 
 					if (contents !== undefined) {
