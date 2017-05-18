@@ -25,8 +25,8 @@ export interface EditPageProps {
 }
 
 export interface EditPageState {
-	book?: Book;
-	form?: {
+	book: Book;
+	form: {
 		title: string;
 		uri: string;
 		matcher: string;
@@ -35,20 +35,24 @@ export interface EditPageState {
 
 export class EditPage extends React.Component<EditPageProps, EditPageState> {
 
-	static path(uid: string): string {
-		return `${BooksPage.PATH}/${uid}/edit`;
-	}
+	constructor(props) {
+		super(props);
 
-	async pullBook(id: string) {
-		this.setState({
+		this.state = {
 			book: null,
 			form: {
 				title: '',
 				uri: '',
 				matcher: '(url) => url.match(/uri-regexp/)',
 			},
-		});
+		};
+	}
 
+	static path(uid: string): string {
+		return `${BooksPage.PATH}/${uid}/edit`;
+	}
+
+	async pullBook(id: string) {
 		return this.props.manager.get([id])
 			.then((books: BooksPackage) => {
 				let book = books[id];
@@ -63,7 +67,8 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 				});
 
 				return book;
-			});
+			})
+		;
 	}
 
 	componentWillReceiveProps(next) {
@@ -193,11 +198,13 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 		});
 	}
 
-	private async removeBook() {
-		return this.props.delegate.removeBook(this.state.book)
+	private removeBook() {
+		return this.props.delegate
+			.removeBook(this.state.book)
 			.then(() => {
 				return this.props.delegate.listBooks();
-			});
+			})
+		;
 	}
 
 	private async saveBook() {

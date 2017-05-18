@@ -15,7 +15,6 @@ import { ShowPage } from './show/ShowPage';
 import { EditPage } from './edit/EditPage';
 
 interface BookItemRowProps {
-	manager: ManagerInterface<Book>;
 	delegate: BookUIDelegateInterface<Book>;
 	book: Book;
 }
@@ -60,7 +59,9 @@ class BookItemRow extends React.Component<BookItemRowProps, {}> {
 	}
 
 	removeBook () {
-		return this.props.delegate.removeBook(this.props.book);
+		return this.props.delegate
+			.removeBook(this.props.book)
+		;
 	}
 
 }
@@ -81,11 +82,8 @@ export class ListPage extends React.Component<ListPageProps, { books: BooksPacka
 	}
 
 	pullBooks(uids: string[] = []) {
-		this.setState({
-			books: null,
-		});
-
-		return this.props.manager.get(uids)
+		return this.props.manager
+			.get(uids)
 			.then((books: BooksPackage) => {
 				this.setState({
 					books,
@@ -110,13 +108,12 @@ export class ListPage extends React.Component<ListPageProps, { books: BooksPacka
 				<PanelList>
 					{uids.length
 						? uids.map((uid) => (
-						<li key={ uid } className="list-group-item">
-							<BookItemRow
-								manager={ this.props.manager }
-								delegate={ this.props.delegate }
-								book={ books[uid] } />
-						</li>
-					))
+							<li key={ uid } className="list-group-item">
+								<BookItemRow
+									delegate={ this.props.delegate }
+									book={ books[uid] } />
+							</li>
+						))
 						: (
 							<span className="col-md-12 text-center text-info">No books yet</span>
 						)
@@ -126,7 +123,9 @@ export class ListPage extends React.Component<ListPageProps, { books: BooksPacka
 		);
 	}
 
-	private async addBook() {
-		return this.props.delegate.createBook();
+	private addBook() {
+		return this.props.delegate
+			.createBook()
+		;
 	}
 }

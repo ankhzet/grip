@@ -1,7 +1,7 @@
 
 import { State } from './Page/State';
 
-export interface CacheParams {
+export class CacheParams {
 	tocURI: string;
 	pattern: string|RegExp;
 	context: string;
@@ -15,12 +15,8 @@ export interface CachedPage {
 	cache?: string;
 }
 
-export class PagesCache implements CacheParams {
+export class PagesCache extends CacheParams {
 	private current?: CachedPage;
-
-	tocURI: string;
-	pattern: string | RegExp;
-	context: string;
 
 	toc?: {[uri: string]: string};
 	pages?: CachedPage[];
