@@ -30,7 +30,7 @@ class BookItemRow extends React.Component<BookItemRowProps, {}> {
 				<div className="col-lg-12">
 					<div className="input-group">
 						<div className="input-group-btn">
-							<Button class="btn-xs" onClick={ () => this.removeBook() }>
+							<Button class="btn-xs btn-danger" onClick={ () => this.removeBook() }>
 								<Glyph name="remove" />
 							</Button>
 						</div>
@@ -45,7 +45,19 @@ class BookItemRow extends React.Component<BookItemRowProps, {}> {
 								Actions <span className="caret" />
 							</Button>
 							<ul className="dropdown-menu pull-right">
-								<li><Link to={ EditPage.path(book.uid) }>Edit</Link></li>
+								<li>
+									<Link to={ EditPage.path(book.uid) }>
+										<Glyph name="edit" />
+										<span className="dropdown-link-text">Edit</span>
+									</Link>
+								</li>
+								<li className="divider" />
+								<li>
+									<Link onClick={ () => this.removeBook() } to={ false }>
+										<Glyph name="remove" />
+										<span className="dropdown-link-text text-danger">Delete</span>
+									</Link>
+								</li>
 							</ul>
 						</div>
 					</div>

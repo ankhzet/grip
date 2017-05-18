@@ -62,8 +62,8 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 				this.setState({
 					book: book,
 					form: {
-						title  : book.title,
-						uri    : book.uri,
+						title   : book.title,
+						uri     : book.uri,
 						matchers: book.matchers.code(),
 					},
 				});

@@ -25,6 +25,8 @@ export class BookUIDelegate implements BookUIDelegateInterface<Book> {
 		return this.saveBook(
 			new Book(this.manager.generateUID()),
 			{
+				title: 'No title',
+				uri: 'http://example.com',
 				matchers: {
 
 				},
