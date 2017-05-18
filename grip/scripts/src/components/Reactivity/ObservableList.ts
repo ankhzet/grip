@@ -88,7 +88,6 @@ export abstract class ObservableList<T extends IdentifiableInterface> implements
 						}
 					}
 
-					console.log(`got`, result);
 					return result;
 				});
 		} else {
@@ -100,20 +99,17 @@ export abstract class ObservableList<T extends IdentifiableInterface> implements
 	}
 
 	set(values: T[], silent?: boolean): Promise<string[]> {
-		let pack = new Package(values);
-		let uids = Object.keys(pack);
+		let uids = [], uid;
 
 		for (let instance of values) {
-			this.data[instance.uid] = instance;
+			uids.push(uid = instance.uid);
+			this.data[uid] = instance;
 		}
-
-		console.log('to set:', JSON.stringify(values), values, JSON.stringify(this.data), this.data);
 
 		return silent
 			? Promise.resolve(uids)
-			: this.push(pack)
+			: this.push(new Package(this.serialize(values)))
 				.then((uids) => {
-					console.log(this.data);
 					// todo: fire update event?
 					return this.invalidate(uids), uids;
 				});
@@ -128,7 +124,6 @@ export abstract class ObservableList<T extends IdentifiableInterface> implements
 
 		return this.push(pack)
 			.then((uids: string[]) => {
-				// console.log('successfully pushed remove, re-validating', uids);
 				for (let uid of uids) {
 					delete this.data[uid];
 					delete this.pending[uid];
@@ -169,16 +164,16 @@ export abstract class ObservableList<T extends IdentifiableInterface> implements
 					}
 				}
 
-				let values = data.map((i) => this.wrap(i));
-
-				return this.set(values, true)
-					.then(() => new Package(values))
+				return this.set(this.deserialize(data), true)
+					.then((uids) => this.get(uids))
 				;
 			});
 	}
 
-	protected abstract wrap(data: IdentifiableInterface): T;
+	protected abstract serialize(instances: T[]): any[];
+	protected abstract deserialize(data: any[]): T[];
+
 	protected abstract pull(uids: string[]): Promise<IdentifiableInterface[]>;
-	protected abstract push(pack: PackageInterface<T>): Promise<string[]>;
+	protected abstract push(pack: PackageInterface<IdentifiableInterface>): Promise<string[]>;
 
 }

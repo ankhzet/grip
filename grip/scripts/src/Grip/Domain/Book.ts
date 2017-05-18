@@ -15,16 +15,4 @@ export class Book extends Model{
 		toc: new Matcher<TocMatcherInterface, Book>(),
 	};
 
-	public serialize() {
-		return {
-			uid: this.uid,
-			title: this.title,
-			uri: this.uri,
-			toc: this.toc,
-			matchers: {
-				toc: this.matchers.toc,
-			},
-		};
-	}
-
 }

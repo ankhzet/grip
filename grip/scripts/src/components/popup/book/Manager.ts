@@ -1,18 +1,18 @@
 
 import { Book } from '../../../Grip/Domain/Book';
-import { IdentifiableInterface } from '../../../core/db/data/IdentifiableInterface';
 import { ObservableConnectedList } from '../../Reactivity/ObservableConnectedList';
 import { PackageInterface } from '../../../core/db/data/PackageInterface';
 import { ReactiveInterface } from '../../Reactivity/ReactiveInterface';
 import { GripActions } from '../../../Grip/Server/actions/GripActions';
 import { BooksPackage } from '../../../Grip/Domain/BooksPackage';
+import { BookTranscoder } from '../../../Grip/Domain/Transcoders/Book';
 
 export class BookManager extends ObservableConnectedList<Book> implements ReactiveInterface<Book> {
 
 	constructor() {
 		super('grip', 'books');
 
-		this.addSerializer((book: Book) => book.serialize());
+		this.addTranscoder(new BookTranscoder());
 	}
 
 	public perform(uids: string[], action: string, payload?: any): Promise<BooksPackage> {
@@ -30,16 +30,6 @@ export class BookManager extends ObservableConnectedList<Book> implements Reacti
 				return pack;
 			})
 		;
-	}
-
-	protected wrap(data: IdentifiableInterface): Book {
-		let book = new Book(data.uid);
-
-		for (let key in data) {
-			book[key] = data[key];
-		}
-
-		return book;
 	}
 
 	public async iterator(): Promise<Iterable<Book>> {
