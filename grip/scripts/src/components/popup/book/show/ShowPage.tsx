@@ -28,15 +28,20 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 		return `${BooksPage.PATH}/${uid}`;
 	}
 
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			book: null,
+		};
+	}
+
 	async pullBook(id: string) {
 		this.setState({
 			book: null,
 		});
-
-		let pack = await this.props.manager.get([id]);
-
 		this.setState({
-			book: pack[id],
+			book: await this.props.manager.getOne(id),
 		});
 	}
 
