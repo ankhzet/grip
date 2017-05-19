@@ -3,15 +3,14 @@ import { Book } from '../../../Grip/Domain/Book';
 import { ObservableConnectedList } from '../../Reactivity/ObservableConnectedList';
 import { PackageInterface } from '../../../core/db/data/PackageInterface';
 import { ReactiveInterface } from '../../Reactivity/ReactiveInterface';
-import { GripActions } from '../../../Grip/Server/actions/GripActions';
 import { BooksPackage } from '../../../Grip/Domain/BooksPackage';
 import { BookTranscoder } from '../../../Grip/Domain/Transcoders/Book';
 import { CollectionConnector } from '../../../core/server/CollectionConnector';
 import { BooksDepot } from '../../../Grip/Domain/BooksDepot';
-import { ClientConnector } from '../../../Grip/Client/ClientConnector';
+import { ServerConnector } from '../../../Grip/Client/ServerConnector';
 
 export class BookManager extends ObservableConnectedList<Book> implements ReactiveInterface<Book> {
-	protected server: ClientConnector;
+	protected server: ServerConnector;
 
 	constructor() {
 		super(new CollectionConnector('grip', BooksDepot.collection));
@@ -25,7 +24,7 @@ export class BookManager extends ObservableConnectedList<Book> implements Reacti
 				let results = Object.keys(pack).map((uid) => {
 					switch (action) {
 						case 'fetch':
-							return GripActions.cache(this.connector, { uid });
+							return this.server.cache(pack[uid]);
 					}
 				});
 

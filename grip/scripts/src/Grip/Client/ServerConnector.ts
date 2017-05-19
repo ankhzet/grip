@@ -1,6 +1,6 @@
 
 import { ServerConnector as BaseServerConnector } from '../../core/client/ServerConnector';
-import { GripActions } from "./actions/GripActions";
+import { GripActions } from "../Server/actions/GripActions";
 import { Book } from '../Domain/Book';
 
 export class ServerConnector extends BaseServerConnector {
