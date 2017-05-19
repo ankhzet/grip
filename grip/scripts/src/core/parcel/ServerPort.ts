@@ -1,21 +1,22 @@
 
 
-import { ClientFactory, ClientPort } from './ClientPort';
+import { ClientPort } from './ClientPort';
 import { Port } from './Port';
 import { PacketDispatcher, PacketHandler } from './PacketDispatcher';
-import { RepositoryInterface } from './actions/RepositoryInterface';
 import { Packet } from './Packet';
-import { ActionConstructor } from './actions/Action';
+import { Action, ActionConstructor } from './actions/Action';
 import { ActionHandler } from './ActionHandler';
+import { ClientsPool } from './ClientsPool';
+import { ActionPerformer } from './actions/ActionPerformer';
 
 export abstract class ServerPort<C extends ClientPort> extends Port implements PacketHandler<C> {
-	private factory: ClientFactory<C>;
+	private pool: ClientsPool<C>;
 	private dispatcher: PacketDispatcher;
 
-	constructor(name: string, repository: RepositoryInterface, factory: ClientFactory<C>) {
+	constructor(name: string, dispatcher: PacketDispatcher, pool: ClientsPool<C>) {
 		super(name);
-		this.factory = factory;
-		this.dispatcher = new PacketDispatcher(repository);
+		this.dispatcher = dispatcher;
+		this.pool = pool;
 
 		chrome.runtime.onConnect.addListener((port) => {
 			if (port.name === this.name) {
@@ -34,19 +35,28 @@ export abstract class ServerPort<C extends ClientPort> extends Port implements P
 		});
 	}
 
+	get clients(): ClientsPool<C> {
+		return this.pool;
+	}
+
 	connect(port: chrome.runtime.Port): C {
-		let client = this.factory(port);
+		let client = this.pool.create(port);
 
 		return client.listen(null, (sender: C, data: any, packet: Packet<any>) => {
 			return this.dispatcher.dispatch(client, packet);
 		});
 	}
 
-	disconnect(client: C) {
+	disconnect(client: C): boolean {
+		return this.pool.remove(client);
 	}
 
 	on<T>(action: ActionConstructor<T>, handler: ActionHandler<T, C>): this {
 		return this.dispatcher.bind(this, { action, handler });
+	}
+
+	broadcast<T>(action: ActionPerformer<T, Action<T>>, data: T) {
+		return this.pool.broadcast(action, data);
 	}
 
 }

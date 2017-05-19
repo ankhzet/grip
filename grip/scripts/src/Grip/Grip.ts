@@ -4,7 +4,6 @@ import { Packet } from '../core/parcel/Packet';
 import { GripServer } from './Server/Server';
 import { GripClient } from './Server/Client';
 
-import { BooksProvider } from './BooksProvider';
 import { BooksDepot } from './Domain/BooksDepot';
 import { CacheAction, CachePacketData } from './Server/actions/Cache';
 import { SendAction, SendPacketData } from '../core/parcel/actions/Base/Send';
@@ -12,20 +11,26 @@ import { Cacher } from './Client/Cacher';
 import { PagesCache } from './Client/Book/PagesCache';
 import { Book } from './Domain/Book';
 import { GripActions } from './Server/actions/GripActions';
-import { ModelStore } from '../core/db/ModelStore';
+import { ContentedClientsPool } from './Server/ContentedClientsPool';
+import { PacketDispatcher } from '../core/parcel/PacketDispatcher';
 
 export class Grip {
-	server: GripServer;
+	server: GripServer<GripClient>;
 	db: GripDB;
 	books: BooksDepot;
-	provider: BooksProvider;
 
 	constructor() {
 		this.db = new GripDB();
-		this.server = new GripServer(this.db);
+		this.books = new BooksDepot(this.db);
 
-		this.books = new BooksDepot();
-		this.provider = new BooksProvider(this.server.dataServer, this.books);
+		this.server = new GripServer(
+			new PacketDispatcher(GripActions),
+			new ContentedClientsPool((port: chrome.runtime.Port) => {
+				return new GripClient(port);
+			})
+		);
+
+		this.server.collection(this.books);
 
 		this.server.on(SendAction, this._handle_send.bind(this));
 		this.server.on(CacheAction, this._handle_cache.bind(this));
@@ -49,8 +54,8 @@ export class Grip {
 		}
 	}
 
-	_handle_cache({ book: { uid, title } }: CachePacketData) {
-		let book = this.books.get(uid);
+	async _handle_cache({ book: { uid, title } }: CachePacketData) {
+		let book = await this.books.getOne(uid);
 
 		if (!book) {
 			throw new Error(`Book "${title}" with uid "${uid}" not found`);
@@ -63,10 +68,7 @@ export class Grip {
 			}).then((cache: PagesCache) => {
 				book.toc = cache.toc;
 
-				return this.provider.update(new ModelStore('books'), {
-					updated: {},
-					removed: {},
-				});
+				return this.books.setOne(book);
 			}).then((book: Book) => {
 			})
 		;
