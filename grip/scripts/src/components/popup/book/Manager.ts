@@ -6,11 +6,15 @@ import { ReactiveInterface } from '../../Reactivity/ReactiveInterface';
 import { GripActions } from '../../../Grip/Server/actions/GripActions';
 import { BooksPackage } from '../../../Grip/Domain/BooksPackage';
 import { BookTranscoder } from '../../../Grip/Domain/Transcoders/Book';
+import { CollectionConnector } from '../../../core/server/CollectionConnector';
+import { BooksDepot } from '../../../Grip/Domain/BooksDepot';
+import { ClientConnector } from '../../../Grip/Client/ClientConnector';
 
 export class BookManager extends ObservableConnectedList<Book> implements ReactiveInterface<Book> {
+	protected server: ClientConnector;
 
 	constructor() {
-		super('grip', 'books');
+		super(new CollectionConnector('grip', BooksDepot.collection));
 
 		this.addTranscoder(new BookTranscoder());
 	}
