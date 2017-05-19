@@ -32,8 +32,10 @@ export class Server<C extends ClientPort> extends ServerPort<C> {
 
 		// todo: improve default handler
 		this.on(null, (data, client, packet) => {
-			console.log(`Client [${client.uid}: ${packet.sender}] requested to '${packet.action}':`);
-			console.log(`\tsupplied data:`, packet.data);
+			console.log(
+				`Client [${client.uid}: ${packet.sender}] requested to '${packet.action}':\n\t`,
+				packet.data
+			);
 		});
 		this.on(SendAction, this._handle_send.bind(this));
 	}
