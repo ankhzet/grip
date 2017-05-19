@@ -10,11 +10,16 @@ import { BooksDepot } from './Domain/BooksDepot';
 import { Cacher } from './Client/Cacher';
 import { PagesCache } from './Client/Book/PagesCache';
 import { Collection } from '../core/server/data/Collection';
+import { TranscoderInterface } from '../core/server/TranscoderInterface';
+import { BookTranscoder } from './Domain/Transcoders/Book';
 
 export class Grip {
 	server: GripServer;
 	db: GripDB;
 	collections: {[name: string]: Collection<any>} = {
+		books: null,
+	};
+	transcoders: {[name: string]: TranscoderInterface<any, any>} = {
 		books: null,
 	};
 
@@ -23,13 +28,30 @@ export class Grip {
 		this.collections = {
 			books: new BooksDepot(this.db),
 		};
+		this.transcoders = {
+			books: new BookTranscoder(),
+		};
 
 		this.server = new GripServer();
+		let dtr = this.server.transcoder;
 
 		for (let name of Object.keys(this.collections)) {
 			let collection = this.collections[name];
+			let transcoder = this.transcoders[name];
 
-			this.server.collection(collection);
+			if (transcoder && dtr) {
+				transcoder = ((transcoder: TranscoderInterface<any, any>) => ({
+					encode(model) {
+						return dtr.encode(transcoder.encode(model))
+					},
+					decode(data) {
+						return dtr.decode(transcoder.decode(data))
+					}
+				}))(transcoder);
+			}
+
+			this.server.collection(collection, this.transcoders[name]);
+
 			collection.changed((uids: string[]) => {
 				this.server.broadcast(GripActions.updated, { what: name, uids});
 			});

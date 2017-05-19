@@ -9,7 +9,7 @@ export class BooksDepot extends Collection<Book> {
 	static collection = 'books';
 
 	constructor(db: DB) {
-		super(db, BooksDepot.collection);
+		super(db, BooksDepot.collection, (uid: string) => new Book(uid));
 		this.transcoder = new BookTranscoder();
 	}
 
