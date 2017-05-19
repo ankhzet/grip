@@ -22,11 +22,11 @@ export class Server<C extends ClientPort> extends ServerPort<C> {
 		this.synchronised = new Synchronizer(this);
 
 		// todo: implement default protocol transcoder
-		let convertor = (o) => {
+		let converter = (o) => {
 			return ObjectUtils.transform(o, (value, prop) => (
 				(!prop.match(/^_/) && [
 					(typeof value === 'object')
-						? convertor(value)
+						? converter(value)
 						: value,
 					prop,
 				])
@@ -35,10 +35,10 @@ export class Server<C extends ClientPort> extends ServerPort<C> {
 
 		this.transcoder = {
 			encode(model: any): any {
-				return convertor(model);
+				return converter(model);
 			},
 			decode(data: any): any {
-				return convertor(data);
+				return converter(data);
 			},
 		};
 
