@@ -1,7 +1,7 @@
 
 import { State } from './Page/State';
 import { TocInterface } from '../../Domain/TocInterface';
-import { Matchers } from '../../Domain/Matchers';
+import { Matchers } from '../../Domain/Matching/Matchers';
 
 export class CacheParams {
 	tocURI: string;
