@@ -11,6 +11,7 @@ import { IdentifiableInterface } from '../db/data/IdentifiableInterface';
 import { TranscoderInterface } from './TranscoderInterface';
 import { Collection } from './data/Collection';
 import { CollectionThunk, Synchronizer } from './Synchronizer';
+import { ObjectUtils } from '../utils/object';
 
 export class Server<C extends ClientPort> extends ServerPort<C> {
 	private transcoder: TranscoderInterface<any, any>;
@@ -21,12 +22,23 @@ export class Server<C extends ClientPort> extends ServerPort<C> {
 		this.synchronised = new Synchronizer(this);
 
 		// todo: implement default protocol transcoder
+		let convertor = (o) => {
+			return ObjectUtils.transform(o, (value, prop) => (
+				(!prop.match(/^_/) && [
+					(typeof value === 'object')
+						? convertor(value)
+						: value,
+					prop,
+				])
+			));
+		};
+
 		this.transcoder = {
 			encode(model: any): any {
-				return model;
+				return convertor(model);
 			},
 			decode(data: any): any {
-				return data;
+				return convertor(data);
 			},
 		};
 

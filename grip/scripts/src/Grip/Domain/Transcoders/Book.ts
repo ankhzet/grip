@@ -1,28 +1,15 @@
 
 import { Book } from '../Book';
 import { TranscoderInterface } from '../../../core/server/TranscoderInterface';
+import { ObjectUtils } from '../../../core/utils/object';
 
 export class BookTranscoder implements TranscoderInterface<Book, {}> {
 
-	deep(src: any, c: (value: any, prop: string, has: any) => any, r: any = {}) {
-		let props = Object.keys(src);
-
-		for (let prop of props) {
-			let [n, p] = c(src[prop], prop, r[prop]);
-
-			if (n !== undefined) {
-				r[p] = n;
-			}
-		}
-
-		return r;
-	}
-
 	public encode(book: Book): any {
-		return this.deep(book, (value, prop) => {
+		return ObjectUtils.transform(book, (value, prop) => {
 			switch (prop) {
 				case 'toc':
-					value = this.deep(value, (title, uri) => (
+					value = ObjectUtils.transform(value, (title, uri) => (
 						[title, btoa(uri || "")]
 					));
 					break;
@@ -37,10 +24,10 @@ export class BookTranscoder implements TranscoderInterface<Book, {}> {
 	}
 
 	public decode(data: any, target?: Book): Book {
-		return this.deep(data, (value, prop, has) => {
+		return ObjectUtils.transform(data, (value, prop, has) => {
 			switch (prop) {
 				case 'toc':
-					value = this.deep(value, (title, uri) => {
+					value = ObjectUtils.transform(value, (title, uri) => {
 						try {
 							return [title, atob(uri || "")];
 						} catch (e) {
@@ -50,7 +37,7 @@ export class BookTranscoder implements TranscoderInterface<Book, {}> {
 					break;
 
 				case 'matchers':
-					value = this.deep(value, (code, matcher) => (
+					value = ObjectUtils.transform(value, (code, matcher) => (
 						[code, matcher]
 					), has);
 					break;
