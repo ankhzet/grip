@@ -94,13 +94,11 @@ export class Server<C extends ClientPort> extends ServerPort<C> {
 	}
 
 	prepareAfterConnect(client: C): C {
-		console.log(`Connected ${client.uid}.`);
 
 		return client;
 	}
 
 	clearBeforeDisconnect(client: C): C {
-		console.log(`Disconnecting ${client.uid}, cleaning...`);
 
 		return client;
 	}
