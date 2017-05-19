@@ -80,7 +80,6 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 						: data
 					;
 
-					console.log('updating', store, data, encoded, this);
 					store.syncModels(encoded)
 						.then(({ removed, updated, request }: SyncResultInterface) => {
 							let all = [];
