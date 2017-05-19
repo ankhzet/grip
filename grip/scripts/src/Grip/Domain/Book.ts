@@ -1,11 +1,41 @@
 
 import { Model } from '../../core/db/data/Model';
+import { TocInterface } from './TocInterface';
+import { ObjectUtils } from '../../core/utils/object';
+import { Matchers } from './Matchers';
+import { Utils } from '../Client/Utils';
 
-export class Book extends Model{
+const EMPTY_MATCHER = `
+(() => {
+	class Matcher {
+		constructor(grip, context) {
+			this.grip = grip;
+			this.context = context;
+		}
+
+		match(content) {
+			throw new Error('Not implemented.');
+		}
+	}
+
+	return (grip, context) => new Matcher(grip, context);
+})();
+`;
+
+export class Book extends Model {
 	public uid: string;
 
 	public title: string;
 	public uri: string;
+	public toc: TocInterface = {};
 
-	public toc?: {[uri: string]: string};
+	public matchers: Matchers = Matchers.create(Utils, Book.matchers);
+
+	static MATCHER_TOC = 'toc';
+	static MATCHER_PAGE= 'page';
+
+	static matchers = ObjectUtils.compose([
+		[Book.MATCHER_TOC , EMPTY_MATCHER],
+		[Book.MATCHER_PAGE, EMPTY_MATCHER],
+	]);
 }

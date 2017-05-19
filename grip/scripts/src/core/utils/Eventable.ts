@@ -16,10 +16,10 @@ export class Eventable {
 		let handled = 0;
 
 		if (listeners) {
-			let uids = listeners.keys();
+			let uids = Object.keys(listeners);
 
 			for (let uid of uids) {
-				listeners[uid](payload, event);
+				listeners[uid](...payload, event);
 
 				handled++;
 			}

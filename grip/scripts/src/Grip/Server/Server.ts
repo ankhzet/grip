@@ -1,89 +1,59 @@
 
-import { GripClient } from './Client';
 import { ServerPort } from '../../core/parcel/ServerPort';
+import { SyncServer } from '../../core/server/DataServer';
 
-import { DataServer } from '../../core/server/DataServer';
-import { GripDB } from '../GripDB';
+import { ClientPort } from '../../core/parcel/ClientPort';
+import { ClientsPool } from '../../core/parcel/ClientsPool';
+import { PacketDispatcher } from '../../core/parcel/PacketDispatcher';
+import { Collection } from '../../core/server/data/Collection';
 
-import { ActionConstructor } from '../../core/parcel/actions/Action';
-import { ActionHandler } from '../../core/parcel/ActionHandler';
+export class GripServer<C extends ClientPort> extends ServerPort<C> {
+	public synchronised: SyncServer;
 
-import { GripActions } from './actions/GripActions';
-import { SendPacketData } from '../../core/parcel/actions/Base/Send';
-import { CachePacketData } from './actions/Cache';
-import { Packet } from '../../core/parcel/Packet';
-import { ConnectAction } from '../../core/parcel/actions/Base/Connect';
-import { ClientActionHandler, ContentedClientsPool } from './ContentedClientsPool';
+	constructor(dispatcher: PacketDispatcher, pool: ClientsPool<C>) {
+		super('grip', dispatcher, pool);
+		this.synchronised = new SyncServer(this);
 
-export class GripServer extends ServerPort<GripClient> {
-	private contented: ContentedClientsPool = new ContentedClientsPool();
-	public db: GripDB;
-	public dataServer: DataServer<any, any>;
-
-	public f: {
-		send: ClientActionHandler<SendPacketData>;
-		cache: ClientActionHandler<CachePacketData>;
-	};
-
-	constructor(db: GripDB) {
-		super('grip', GripActions, (port: chrome.runtime.Port) => {
-			return (new GripClient(port))
-				.on(ConnectAction, this.connected.bind(this));
-		});
-
-		this.db = db;
-		this.dataServer = new DataServer(this, this.db);
-
-		this.f = {
-			send: (data: SendPacketData, client: GripClient) => {
-				return GripActions.send(client, data);
-			},
-			cache: (data: CachePacketData, client: GripClient) => {
-				return GripActions.cache(client, data);
-			},
-		};
-	}
-
-	on<T>(action: ActionConstructor<T>, handler: ActionHandler<T, GripClient>): this {
-		return super.on(action, (data, sender, packet) => {
-			this._handle(sender, packet);
-
-			return handler.call(this, data, sender, packet);
+		this.on(null, (data, client, packet) => {
+			console.log(`Client [${client.uid}: ${packet.sender}] requested to '${packet.action}':`);
+			console.log(`\tsupplied data:`, packet.data);
 		});
 	}
 
-	_handle(client: GripClient, packet: Packet<any>) {
-		console.log(`Client [${client.uid}: ${packet.sender}] requested to '${packet.action}':`);
-		console.log(`\tsupplied data:`, packet.data);
+	collection(collection: Collection<any>) {
+		return this.synchronised.collection(collection);
 	}
 
-	clientsInActiveTab(callback: (clients: ContentedClientsPool) => any) {
+	clientsInActiveTab(callback: (clients: ClientsPool<C>) => any) {
 		chrome.tabs.query({
 			active: true,
 			lastFocusedWindow: true,
 		}, (tabs) => {
 			let ids = tabs.map((tab) => tab.id);
+
 			callback(
-				this.contented
-					.filter((client) => ids.indexOf(client.tabId) >= 0)
+				this.clients
+					.filter((client) => (
+						ids.indexOf(client.tabId) >= 0
+					))
 			);
 		});
 	}
 
-	disconnect(client: GripClient) {
+	disconnect(client: C): boolean {
+		let deleted = false;
+
 		try {
 			this.clearAfterDisconnect(client);
 		} finally {
-			this.contented.remove(client);
+			deleted = super.disconnect(client);
 		}
+
+		return deleted;
 	}
 
-	clearAfterDisconnect(client: GripClient) {
+	clearAfterDisconnect(client: C) {
 		console.log(`Disconnected ${client.uid}, cleaning...`);
-	}
-
-	connected(client: GripClient) {
-		return this.contented.add(client);
 	}
 
 }

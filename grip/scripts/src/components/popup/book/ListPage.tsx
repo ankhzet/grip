@@ -22,6 +22,21 @@ interface BookItemRowProps {
 
 @withRouter
 class BookItemRow extends React.Component<BookItemRowProps, {}> {
+	evt: number;
+
+	componentDidMount() {
+		this.evt = this.props.manager.changed(this.entityChanged.bind(this));
+	}
+
+	componentWillMount() {
+		this.props.manager.off(this.evt);
+	}
+
+	entityChanged(uids: string[]) {
+		if (uids.indexOf(this.props.book.uid) >= 0) {
+			this.forceUpdate();
+		}
+	}
 
 	render() {
 		let book = this.props.book;
@@ -31,7 +46,7 @@ class BookItemRow extends React.Component<BookItemRowProps, {}> {
 				<div className="col-lg-12">
 					<div className="input-group">
 						<div className="input-group-btn">
-							<Button class="btn-xs" onClick={ () => this.removeBook() }>
+							<Button class="btn-xs btn-danger" onClick={ () => this.removeBook() }>
 								<Glyph name="remove" />
 							</Button>
 						</div>
@@ -46,7 +61,19 @@ class BookItemRow extends React.Component<BookItemRowProps, {}> {
 								Actions <span className="caret" />
 							</Button>
 							<ul className="dropdown-menu pull-right">
-								<li><Link to={ EditPage.path(book.uid) }>Edit</Link></li>
+								<li>
+									<Link to={ EditPage.path(book.uid) }>
+										<Glyph name="edit" />
+										<span className="dropdown-link-text">Edit</span>
+									</Link>
+								</li>
+								<li className="divider" />
+								<li>
+									<Link onClick={ () => this.removeBook() } to={ false }>
+										<Glyph name="remove" />
+										<span className="dropdown-link-text text-danger">Delete</span>
+									</Link>
+								</li>
 							</ul>
 						</div>
 					</div>
@@ -60,7 +87,14 @@ class BookItemRow extends React.Component<BookItemRowProps, {}> {
 	}
 
 	removeBook () {
-		return this.props.delegate.removeBook(this.props.book);
+		return this.props.delegate
+			.removeBook(this.props.book)
+			.then((uid) => {
+				if (uid) {
+					this.props.delegate.listBooks()
+				}
+			})
+		;
 	}
 
 }
@@ -81,11 +115,8 @@ export class ListPage extends React.Component<ListPageProps, { books: BooksPacka
 	}
 
 	pullBooks(uids: string[] = []) {
-		this.setState({
-			books: null,
-		});
-
-		return this.props.manager.get(uids)
+		return this.props.manager
+			.get(uids)
 			.then((books: BooksPackage) => {
 				this.setState({
 					books,
@@ -110,13 +141,13 @@ export class ListPage extends React.Component<ListPageProps, { books: BooksPacka
 				<PanelList>
 					{uids.length
 						? uids.map((uid) => (
-						<li key={ uid } className="list-group-item">
-							<BookItemRow
-								manager={ this.props.manager }
-								delegate={ this.props.delegate }
-								book={ books[uid] } />
-						</li>
-					))
+							<li key={ uid } className="list-group-item">
+								<BookItemRow
+									manager={ this.props.manager }
+									delegate={ this.props.delegate }
+									book={ books[uid] } />
+							</li>
+						))
 						: (
 							<span className="col-md-12 text-center text-info">No books yet</span>
 						)
@@ -126,7 +157,14 @@ export class ListPage extends React.Component<ListPageProps, { books: BooksPacka
 		);
 	}
 
-	private async addBook() {
-		return this.props.delegate.createBook();
+	private addBook() {
+		return this.props.delegate
+			.createBook()
+			.then((book) => {
+				if (book) {
+					this.props.delegate.editBook(book);
+				}
+			})
+		;
 	}
 }

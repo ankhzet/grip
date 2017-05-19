@@ -9,4 +9,9 @@ export interface ManagerInterface<T extends IdentifiableInterface> {
 	set(values: T[], silent?: boolean): Promise<string[]>;
 	remove(uids: string[]): Promise<string[]>;
 
+	getOne(uid: string): Promise<T>;
+
+	changed(listener: (uids: string[]) => any): number;
+	off(uid: number);
+
 }

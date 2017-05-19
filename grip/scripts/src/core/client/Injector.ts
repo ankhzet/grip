@@ -36,19 +36,19 @@ export class Injector {
 					window.location.reload();
 				}
 			}
+		}
 
-			if (watch) {
-				window.setTimeout(this.check.bind(this), watch / 10);
-			}
+		if (watch) {
+			window.setTimeout(this.check.bind(this), watch / 10);
 		}
 	}
 
 	actual() {
-		return this.connector.touched;
+		return +this.connector.touched;
 	}
 
 	age() {
-		return (+new Date) - this.actual();
+		return this.actual() ? (+new Date) - this.actual() : -1;
 	}
 
 	log(message?: any, ...args) {

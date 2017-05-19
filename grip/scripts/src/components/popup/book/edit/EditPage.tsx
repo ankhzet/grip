@@ -3,13 +3,18 @@ import * as React from "react";
 
 import { Panel, PanelHeader, PanelBody, PanelFooter } from '../../../panel';
 import { Button } from '../../../button';
+import { Glyph } from '../../../glyph';
+
+import * as CodeMirror from 'react-codemirror';
+import 'codemirror/addon/selection/active-line';
+import 'codemirror/mode/javascript/javascript';
+import 'codemirror/lib/codemirror.css';
 
 import { Book } from '../../../../Grip/Domain/Book';
 import { ManagerInterface } from '../../../Reactivity/ManagerInterface';
 import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
 import { BooksPage } from '../../BooksPage';
-import { BooksPackage } from '../../../../Grip/Domain/BooksPackage';
-import { Glyph } from '../../../glyph';
+import { ObjectUtils } from "../../../../core/utils/object";
 
 export interface EditPageProps {
 	delegate: BookUIDelegateInterface<Book>;
@@ -20,42 +25,52 @@ export interface EditPageProps {
 }
 
 export interface EditPageState {
-	book?: Book;
-	form?: {
+	book: Book;
+	form: {
 		title: string;
 		uri: string;
+		matchers: {
+			[name: string]: string;
+		};
 	},
 }
 
 export class EditPage extends React.Component<EditPageProps, EditPageState> {
+
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			book: null,
+			form: {
+				title: '',
+				uri: '',
+				matchers: {
+				},
+			},
+		};
+	}
 
 	static path(uid: string): string {
 		return `${BooksPage.PATH}/${uid}/edit`;
 	}
 
 	async pullBook(id: string) {
-		this.setState({
-			book: null,
-			form: {
-				title: '',
-				uri: '',
-			},
-		});
-
-		return this.props.manager.get([id])
-			.then((books: BooksPackage) => {
-				let book = books[id];
-
+		return this.props.manager
+			.getOne(id)
+			.then((book: Book) => {
 				this.setState({
-					book : book,
+					book: book,
 					form: {
-						title: book.title,
-						uri  : book.uri,
+						title   : book.title,
+						uri     : book.uri,
+						matchers: book.matchers.code(),
 					},
 				});
 
 				return book;
-			});
+			})
+		;
 	}
 
 	componentWillReceiveProps(next) {
@@ -85,7 +100,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 					<div className="form-horizontal">
 
 						<div className="form-group">
-							<div className="col-lg-12">
+							<div className="col-xs-12">
 								<div className="input-group">
 									<span className="input-group-addon">Title</span>
 									<input className="form-control" value={ this.state.form.title } onChange={ (e) => this.titleChanged(e) } />
@@ -93,9 +108,8 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 							</div>
 						</div>
 
-
 						<div className="form-group">
-							<div className="col-lg-12">
+							<div className="col-xs-12">
 								<div className="input-group">
 									<span className="input-group-addon">URI</span>
 									<input className="form-control" value={ this.state.form.uri } onChange={ (e) => this.uriChanged(e) } />
@@ -103,6 +117,21 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 							</div>
 						</div>
 
+						<div className="form-group">
+							<CodeMirror
+								className="col-xs-12"
+								value={ this.state.form.matchers[Book.MATCHER_TOC] }
+								options={{
+									mode: 'javascript',
+									theme: 'base16-oceanicnext-dark',
+									lineNumbers: true,
+									indentWithTabs: true,
+									tabSize: 2,
+									readOnly: false,
+								}}
+								onChange={ (value) => this.tocMatcherChanged(value) }
+							/>
+						</div>
 					</div>
 				</PanelBody>
 
@@ -125,29 +154,43 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 		);
 	}
 
+	private patchState(next) {
+		this.setState(ObjectUtils.patch(this.state, next));
+	}
+
 	private titleChanged(e) {
-		this.setState({
+		this.patchState({
 			form: {
 				title: e.srcElement.value,
-				uri: this.state.form.uri,
 			},
 		});
 	}
 
 	private uriChanged(e) {
-		this.setState({
+		this.patchState({
 			form: {
-				title: this.state.form.title,
 				uri: e.srcElement.value,
 			}
 		});
 	}
 
-	private async removeBook() {
-		return this.props.delegate.removeBook(this.state.book)
-			.then(() => {
-				return this.props.delegate.listBooks();
-			});
+	private tocMatcherChanged(value) {
+		this.patchState({
+			form: {
+				matchers: ObjectUtils.compose(Book.MATCHER_TOC, value),
+			}
+		});
+	}
+
+	private removeBook() {
+		return this.props.delegate
+			.removeBook(this.state.book)
+			.then((uid) => {
+				if (uid) {
+					this.props.delegate.listBooks()
+				}
+			})
+		;
 	}
 
 	private async saveBook() {

@@ -6,7 +6,7 @@ export interface BookUIDelegateInterface<B extends Book> {
 	showBook(book: B): Promise<B>;
 	editBook(book: B): Promise<B>;
 	saveBook(book: B, data): Promise<B>;
-	removeBook(book: B): Promise<string>;
+	removeBook(book: B): Promise<string|null>;
 
 	listBooks();
 

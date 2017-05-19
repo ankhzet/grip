@@ -7,8 +7,10 @@ export class Package<M extends IdentifiableInterface> implements PackageInterfac
 
 	constructor(instances?: M[]) {
 		if (instances) {
-			for (let instance of instances) {
-				this[instance.uid] = instance;
+			for (let key in instances) {
+				let instance = instances[key];
+
+				this[(instance && instance.uid) ? instance.uid : key] = instance;
 			}
 		}
 	}

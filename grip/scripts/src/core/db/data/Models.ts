@@ -1,8 +1,8 @@
 
-import { Eventable } from '../../utils/eventable';
-import { Model } from './Model';
+import { Eventable } from '../../utils/Eventable';
+import { IdentifiableInterface } from './IdentifiableInterface';
 
-export class Models<M extends Model> extends Eventable {
+export class Models<M extends IdentifiableInterface> extends Eventable {
 	private instances: {[uid: string]: M} = {};
 	private factory: (uid: string) => M;
 
@@ -13,12 +13,8 @@ export class Models<M extends Model> extends Eventable {
 		this.factory = factory;
 	}
 
-	onchanged(listener: () => any) {
+	public changed(listener: (uids: string[], event: string) => any) {
 		return this.on(Models.CHANGED, listener);
-	}
-
-	private changed() {
-		this.fire(Models.CHANGED);
 	}
 
 	public create(): M {
@@ -31,7 +27,7 @@ export class Models<M extends Model> extends Eventable {
 
 	public set(instance: M): M {
 		this.instances[instance.uid] = instance;
-		this.changed();
+		this.fire(Models.CHANGED, [instance.uid]);
 
 		return instance;
 	}
@@ -41,7 +37,7 @@ export class Models<M extends Model> extends Eventable {
 
 		if (instance) {
 			delete this.instances[uid];
-			this.changed();
+			this.fire(Models.CHANGED, [uid]);
 		}
 
 		return instance;
@@ -49,7 +45,7 @@ export class Models<M extends Model> extends Eventable {
 
 	public each(consumer: (instance: M) => boolean): boolean {
 		for (let instance in this.map()) {
-			if (!consumer(this.instances[instance])) {
+			if (false === consumer(this.instances[instance])) {
 				return false;
 			}
 		}

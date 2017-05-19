@@ -71,7 +71,7 @@ export class ModelStore<M extends IdentifiableInterface> {
 		return new Promise((resolve, reject) => {
 			this.table.remove(
 				{ uid: { $in: uids } },
-				{ multi: true },
+				{ multi: uids.length > 1 },
 				(error) => error ? reject(error) : resolve(uids)
 			);
 		});
