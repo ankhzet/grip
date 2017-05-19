@@ -10,7 +10,9 @@ import { BooksDepot } from '../../../Grip/Domain/BooksDepot';
 import { ServerConnector } from '../../../Grip/Client/ServerConnector';
 
 export class BookManager extends ObservableConnectedList<Book> implements ReactiveInterface<Book> {
-	protected server: ServerConnector;
+	static ACTION_CACHE = 'cache';
+
+	protected server: ServerConnector = new ServerConnector();
 
 	constructor() {
 		super(new CollectionConnector('grip', BooksDepot.collection));
@@ -23,8 +25,8 @@ export class BookManager extends ObservableConnectedList<Book> implements Reacti
 			.then((pack: PackageInterface<any>) => {
 				let results = Object.keys(pack).map((uid) => {
 					switch (action) {
-						case 'fetch':
-							return this.server.cache(pack[uid]);
+						case BookManager.ACTION_CACHE:
+							return this.server.cache(uid);
 					}
 				});
 

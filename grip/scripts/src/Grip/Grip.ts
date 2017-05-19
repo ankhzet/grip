@@ -60,11 +60,11 @@ export class Grip {
 		this.server.on(CacheAction, this._handle_cache.bind(this));
 	}
 
-	async _handle_cache({ book: { uid, title } }: CachePacketData) {
+	async _handle_cache({ uid }: CachePacketData) {
 		let book = await this.collections.books.getOne(uid);
 
 		if (!book) {
-			throw new Error(`Book "${title}" with uid "${uid}" not found`);
+			throw new Error(`Book with uid "${uid}" not found`);
 		}
 
 		(new Cacher())

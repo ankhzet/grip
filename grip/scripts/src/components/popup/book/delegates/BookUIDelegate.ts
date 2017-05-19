@@ -19,7 +19,7 @@ export class BookUIDelegate implements BookUIDelegateInterface<Book> {
 	}
 
 	async fetchBook(book: Book) {
-		this.manager.perform([book.uid], 'fetch');
+		this.manager.perform([book.uid], BookManager.ACTION_CACHE);
 	}
 
 	async createBook(): Promise<Book> {
