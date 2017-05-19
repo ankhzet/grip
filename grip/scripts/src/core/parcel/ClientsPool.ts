@@ -1,23 +1,32 @@
 
-import { ClientPort } from './ClientPort';
+import { ClientFactory, ClientPort } from './ClientPort';
 import { Action } from './actions/Action';
 import { ActionPerformer } from './actions/ActionPerformer';
+import { ConnectAction, ConnectPacketData } from './actions/Base/Connect';
 
 export class ClientsPool<C extends ClientPort> {
+	private factory: ClientFactory<C>;
 	private clients: {[uid: string]: C} = {};
 
-	constructor(from?: C[]) {
-		if (from)
-			for (let client of from)
-				this.add(client);
+	constructor(factory: ClientFactory<C>) {
+		this.factory = factory;
 	}
 
-	add(client: C) {
-		this.clients[client.uid] = client;
+	create(port: chrome.runtime.Port) {
+		return this.factory(port)
+			.listen(ConnectAction, this.connected.bind(this));
 	}
 
-	remove(client: C) {
-		delete this.clients[client.uid];
+	add(client: C[]|C): C[]|C {
+		return (
+			(client instanceof Array)
+				? <C[]>client.map((client) => this.add(client))
+				: this.clients[client.uid] = client
+		);
+	}
+
+	remove(client: C): boolean {
+		return delete this.clients[client.uid];
 	}
 
 	has(client: C): boolean {
@@ -50,6 +59,11 @@ export class ClientsPool<C extends ClientPort> {
 		return this.each((client) => {
 			return action(client, data);
 		});
+	}
+
+	connected(data: ConnectPacketData, client: C) {
+		console.log(`Connected ${client.uid}:`, data);
+		return this.add(client);
 	}
 
 }
