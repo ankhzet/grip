@@ -16,6 +16,36 @@ import { ManagerInterface } from '../../../Reactivity/ManagerInterface';
 import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
 import { Link } from 'react-router';
 import { Utils } from '../../../../Grip/Client/Utils';
+import { TocInterface } from '../../../../Grip/Domain/TocInterface';
+
+interface TocListProps {
+	uid: string;
+	toc: TocInterface;
+	columns?: number;
+}
+
+class TocList extends React.Component<TocListProps, {}> {
+	static DEFAULT_COLUMNS = 3;
+
+	render() {
+		let { uid, toc, columns } = this.props;
+		let links = Object.keys(toc);
+		let col = 12 / Math.min(columns || TocList.DEFAULT_COLUMNS, 12);
+
+		return (links.length || null) && (
+			<div id={ 'chapter-list-' + uid } style={{ marginBottom: "10px", }}>
+				{ Utils.chunks(links, 10).map((chunk, offset) => (
+					<ul className={ 'col-xs-' + col }>
+						{ chunk.map((uri) => (
+							<li key={ uri }><Link to={ uri }>{ toc[uri] }</Link></li>
+						)) }
+					</ul>
+				)) }
+			</div>
+		);
+	}
+}
+
 
 export interface ShowPageProps {
 	manager: ManagerInterface<Book>;
@@ -56,7 +86,6 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 
 	render() {
 		let book = this.state.book;
-		let links = (book && book.toc && Object.keys(book.toc)) || [];
 
 		return (book || null) && (
 			<Panel>
@@ -90,23 +119,15 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 							</div>
 						</div>
 
-						{ (links.length || null) &&
 						<div className="form-group">
 							<div className="input-group col-xs-12" data-toggle="collapse" data-target={ '#chapter-list-' + book.uid }>
 								<label className="col-xs-2 form-control-static">Chapters:</label>
-								<span className="col-xs-10 form-control-static">{ links.length }</span>
+								<span className="col-xs-10 form-control-static">{ Object.keys(book.toc).length }</span>
 							</div>
-							<ul className="collapse collapsed col-xs-12" id={ 'chapter-list-' + book.uid }>
-								{ Utils.chunks(links, 10).map((chunk, offset) => (
-									<div className="col-xs-4 row">
-										{ chunk.map((uri) => (
-											<li key={ uri }><Link to={ uri }>{ book.toc[uri] }</Link></li>
-										)) }
-									</div>
-								)) }
-							</ul>
+							<div className="collapse collapsed col-xs-12" id={ 'chapter-list-' + book.uid }>
+								<TocList uid={ book.uid } toc={ book.toc } columns={ 4 } />
+							</div>
 						</div>
-						}
 
 						<div className="form-group">
 							<div className="input-group col-xs-12 reactive-editor">
