@@ -5,11 +5,23 @@ body {
 	overflow-y: scroll;
 }
 
+.dropdown-link-text {
+	display: inline-block;
+	margin-left: 5px;
+}
+
 .CodeMirror {
 	width: 100%;
 	min-height: 500px !important;
 
 	font: normal 14px/18px Menlo, Monaco, Consolas, "Anonymous Pro", "Courier New";
+}
+
+.reactive-editor {
+	.CodeMirror {
+		min-height: inherit !important;
+		height: auto;
+	}
 }
 
 /*

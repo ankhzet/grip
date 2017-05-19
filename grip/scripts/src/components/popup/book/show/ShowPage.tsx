@@ -5,6 +5,11 @@ import { Panel, PanelFooter, PanelHeader, PanelBody } from '../../../panel';
 import { Button } from '../../../button';
 import { Glyph } from '../../../glyph';
 
+import * as CodeMirror from 'react-codemirror';
+import 'codemirror/addon/selection/active-line';
+import 'codemirror/mode/javascript/javascript';
+import 'codemirror/lib/codemirror.css';
+
 import { Book } from '../../../../Grip/Domain/Book';
 import { BooksPage } from '../../BooksPage';
 import { ManagerInterface } from '../../../Reactivity/ManagerInterface';
@@ -23,15 +28,20 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 		return `${BooksPage.PATH}/${uid}`;
 	}
 
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			book: null,
+		};
+	}
+
 	async pullBook(id: string) {
 		this.setState({
 			book: null,
 		});
-
-		let pack = await this.props.manager.get([id]);
-
 		this.setState({
-			book: pack[id],
+			book: await this.props.manager.getOne(id),
 		});
 	}
 
@@ -73,14 +83,35 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 					<form className="form-vertical">
 
 						<div className="form-group">
-							<label className="col-xs-2 form-control-static">URL:</label>
-							<span className="col-xs-10 form-control-static">{ book.uri }</span>
+							<div className="input-group col-xs-12">
+								<label className="col-xs-2 form-control-static">URL:</label>
+								<span className="col-xs-10 form-control-static">{ book.uri }</span>
+							</div>
 						</div>
 
-						{ links.length &&
 						<div className="form-group">
-							<label className="col-xs-2 form-control-static">Chapters:</label>
-							<span className="col-xs-10 form-control-static">{ links.length }</span>
+							<div className="input-group col-xs-12 reactive-editor">
+								<CodeMirror
+									className="form-control-static col-xs-12"
+									value={ book.matchers.get(Book.MATCHER_TOC) }
+									options={{
+										mode: 'javascript',
+										theme: 'base16-oceanicnext-dark',
+										lineNumbers: true,
+										indentWithTabs: true,
+										tabSize: 2,
+										readOnly: true,
+									}}
+								/>
+							</div>
+						</div>
+
+						{ (links.length || null) &&
+						<div className="form-group">
+							<div className="input-group">
+								<label className="col-xs-2 form-control-static">Chapters:</label>
+								<span className="col-xs-10 form-control-static">{ links.length }</span>
+							</div>
 							<ul className="collapse collapsed">
 								{ links.map((uri) => (
 									<li key={ uri }><Link to={ uri }>{ book.toc[uri] }</Link></li>
@@ -110,7 +141,14 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 	}
 
 	removeBook() {
-		return this.props.delegate.removeBook(this.state.book);
+		return this.props.delegate
+			.removeBook(this.state.book)
+			.then((uid) => {
+				if (uid) {
+					this.props.delegate.listBooks()
+				}
+			})
+		;
 	}
 
 	fetchBook() {
