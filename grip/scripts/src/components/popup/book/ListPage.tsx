@@ -42,40 +42,39 @@ class BookItemRow extends React.Component<BookItemRowProps, {}> {
 		let book = this.props.book;
 
 		return (book || null) && (
-			<div className="row">
-				<div className="col-lg-12">
-					<div className="input-group">
-						<div className="input-group-btn">
-							<Button class="btn-xs btn-danger" onClick={ () => this.removeBook() }>
-								<Glyph name="remove" />
-							</Button>
-						</div>
+			<div className="col-sx-12">
+				<div className="input-group">
+					<div className="input-group-btn">
+						<Button class="btn-xs btn-danger" onClick={ () => this.removeBook() }>
+							<Glyph name="remove" />
+						</Button>
+					</div>
 
-						<Link className="col-xs-9" to={ ShowPage.path(book.uid) }>Book "{ book.title }"</Link>
+					<Link className="col-xs-7 form-control-static" to={ ShowPage.path(book.uid) } style={{ paddingLeft: "5px;" }}>Book "{ book.title }"</Link>
+					<span className="col-xs-3 form-control-static">Chapters: { Object.keys(book.toc).length }</span>
 
-						<div className="input-group-btn">
-							<Button class="btn-xs" onClick={ () => this.fetchBook() }>
-								<Glyph name="play-circle" />
-							</Button>
-							<Button class="btn-xs dropdown-toggle" data-toggle="dropdown">
-								Actions <span className="caret" />
-							</Button>
-							<ul className="dropdown-menu pull-right">
-								<li>
-									<Link to={ EditPage.path(book.uid) }>
-										<Glyph name="edit" />
-										<span className="dropdown-link-text">Edit</span>
-									</Link>
-								</li>
-								<li className="divider" />
-								<li>
-									<Link onClick={ () => this.removeBook() } to={ false }>
-										<Glyph name="remove" />
-										<span className="dropdown-link-text text-danger">Delete</span>
-									</Link>
-								</li>
-							</ul>
-						</div>
+					<div className="input-group-btn">
+						<Button class="btn-xs" onClick={ () => this.fetchBook() }>
+							<Glyph name="play-circle" />
+						</Button>
+						<Button class="btn-xs dropdown-toggle" data-toggle="dropdown">
+							Actions <span className="caret" />
+						</Button>
+						<ul className="dropdown-menu pull-right">
+							<li>
+								<Link to={ EditPage.path(book.uid) }>
+									<Glyph name="edit" />
+									<span className="dropdown-link-text">Edit</span>
+								</Link>
+							</li>
+							<li className="divider" />
+							<li>
+								<Link onClick={ () => this.removeBook() } to={ false }>
+									<Glyph name="remove" />
+									<span className="dropdown-link-text text-danger">Delete</span>
+								</Link>
+							</li>
+						</ul>
 					</div>
 				</div>
 			</div>

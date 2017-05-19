@@ -11,7 +11,7 @@ export class CollectionConnector extends ClientConnector {
 	}
 
 	fetch(query: any, payload?: any) {
-		return BaseActions.fetch(this, { what: this.collection, query, payload });
+		return BaseActions.fetch(this, { what: this.collection, data: query, payload });
 	}
 
 	update(data: any, payload?: any) {

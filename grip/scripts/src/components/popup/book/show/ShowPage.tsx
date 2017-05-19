@@ -15,6 +15,7 @@ import { BooksPage } from '../../BooksPage';
 import { ManagerInterface } from '../../../Reactivity/ManagerInterface';
 import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
 import { Link } from 'react-router';
+import { Utils } from '../../../../Grip/Client/Utils';
 
 export interface ShowPageProps {
 	manager: ManagerInterface<Book>;
@@ -89,6 +90,24 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 							</div>
 						</div>
 
+						{ (links.length || null) &&
+						<div className="form-group">
+							<div className="input-group col-xs-12" data-toggle="collapse" data-target={ '#chapter-list-' + book.uid }>
+								<label className="col-xs-2 form-control-static">Chapters:</label>
+								<span className="col-xs-10 form-control-static">{ links.length }</span>
+							</div>
+							<ul className="collapse collapsed col-xs-12" id={ 'chapter-list-' + book.uid }>
+								{ Utils.chunks(links, 10).map((chunk, offset) => (
+									<div className="col-xs-4 row">
+										{ chunk.map((uri) => (
+											<li key={ uri }><Link to={ uri }>{ book.toc[uri] }</Link></li>
+										)) }
+									</div>
+								)) }
+							</ul>
+						</div>
+						}
+
 						<div className="form-group">
 							<div className="input-group col-xs-12 reactive-editor">
 								<CodeMirror
@@ -105,20 +124,6 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 								/>
 							</div>
 						</div>
-
-						{ (links.length || null) &&
-						<div className="form-group">
-							<div className="input-group">
-								<label className="col-xs-2 form-control-static">Chapters:</label>
-								<span className="col-xs-10 form-control-static">{ links.length }</span>
-							</div>
-							<ul className="collapse collapsed">
-								{ links.map((uri) => (
-									<li key={ uri }><Link to={ uri }>{ book.toc[uri] }</Link></li>
-								)) }
-							</ul>
-						</div>
-						}
 
 					</form>
 				</PanelBody>
