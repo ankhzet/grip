@@ -14,7 +14,8 @@ export class ClientsPool<C extends ClientPort> {
 
 	create(port: chrome.runtime.Port) {
 		return this.factory(port)
-			.listen(ConnectAction, this.connected.bind(this));
+			.listen(ConnectAction, this.connected.bind(this))
+		;
 	}
 
 	add(client: C[]|C): C[]|C {
@@ -62,7 +63,6 @@ export class ClientsPool<C extends ClientPort> {
 	}
 
 	connected(data: ConnectPacketData, client: C) {
-		console.log(`Connected ${client.uid}:`, data);
 		return this.add(client);
 	}
 

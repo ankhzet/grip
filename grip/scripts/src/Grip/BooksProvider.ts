@@ -1,6 +1,6 @@
 
 import { ModelStore } from '../core/db/ModelStore';
-import { SyncServer } from '../core/server/DataServer';
+import { Synchronizer } from '../core/server/Synchronizer';
 
 import { Book } from './Domain/Book';
 import { BooksPackage } from './Domain/BooksPackage';

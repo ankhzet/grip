@@ -3,16 +3,16 @@ import { Matcher } from './Matcher';
 import { MatcherInterface } from './MatcherInterface';
 
 export class Matchers {
-	private matchers = {};
+	private _matchers = {};
 
 	constructor(context, ...matchers: string[]) {
 		for (let name of matchers) (() => {
-			let matcher = this.matchers[name] = new Matcher(context);
+			let matcher = this._matchers[name] = new Matcher(context);
 
 			Object.defineProperty(this, name, {
 				enumerable: true,
 				configurable: false,
-				get: () => { return matcher; },
+				get: () => { return matcher.code; },
 				set: (code) => { matcher.code = code; },
 			})
 		})();
@@ -30,7 +30,7 @@ export class Matchers {
 	}
 
 	public set(name: string, code: string): MatcherInterface<any, any> {
-		let matcher = this.matchers[name];
+		let matcher = this._matchers[name];
 
 		if (matcher) {
 			matcher.code = code;
@@ -40,7 +40,7 @@ export class Matchers {
 	}
 
 	public get(name: string): string {
-		return this.matchers[name] ? this.matchers[name].code : undefined;
+		return this._matchers[name] ? this._matchers[name].code : undefined;
 	}
 
 	public match<T>(matcher: string, content: string): T|boolean {
@@ -50,7 +50,7 @@ export class Matchers {
 	public fetch() {
 		let matchers = {};
 
-		for (let name of Object.keys(this.matchers)) {
+		for (let name of Object.keys(this._matchers)) {
 			matchers[name] = (content) => this.match(name, content);
 		}
 
@@ -60,8 +60,8 @@ export class Matchers {
 	public code() {
 		let matchers = {};
 
-		for (let name of Object.keys(this.matchers)) {
-			matchers[name] = this.matchers[name].code;
+		for (let name of Object.keys(this._matchers)) {
+			matchers[name] = this._matchers[name].code;
 		}
 
 		return matchers;

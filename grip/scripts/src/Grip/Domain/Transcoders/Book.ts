@@ -4,27 +4,59 @@ import { TranscoderInterface } from '../../../core/server/TranscoderInterface';
 
 export class BookTranscoder implements TranscoderInterface<Book, {}> {
 
+	deep(src: any, c: (value: any, prop: string, has: any) => any, r: any = {}) {
+		let props = Object.keys(src);
+
+		for (let prop of props) {
+			let [n, p] = c(src[prop], prop, r[prop]);
+
+			if (n !== undefined) {
+				r[p] = n;
+			}
+		}
+
+		return r;
+	}
+
 	public encode(book: Book): any {
-		return {
-			uid: book.uid,
-			uri: book.uri,
-			title: book.title,
-			toc: book.toc,
-			matchers: book.matchers.code(),
-		};
+		return this.deep(book, (value, prop) => {
+			switch (prop) {
+				case 'toc':
+					value = this.deep(value, (title, uri) => (
+						[title, btoa(uri || "")]
+					));
+					break;
+
+				case 'matchers':
+					value = value.code();
+					break;
+			}
+
+			return [value, prop];
+		});
 	}
 
 	public decode(data: any, target?: Book): Book {
-		target = target || new Book(data.uid);
+		return this.deep(data, (value, prop, has) => {
+			switch (prop) {
+				case 'toc':
+					value = this.deep(value, (title, uri) => {
+						try {
+							return [title, atob(uri || "")];
+						} catch (e) {
+							return [title, uri];
+						}
+					});
+					break;
 
-		target.uri = data.uri;
-		target.title = data.title;
-		target.toc = data.toc;
+				case 'matchers':
+					value = this.deep(value, (code, matcher) => (
+						[code, matcher]
+					), has);
+					break;
+			}
 
-		for (let matcher of Object.keys(data.matchers)) {
-			target.matchers.set(matcher, data.matchers[matcher]);
-		}
-
-		return target;
+			return [value, prop];
+		}, target || new Book(data.uid));
 	}
 }
