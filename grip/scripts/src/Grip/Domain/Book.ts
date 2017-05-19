@@ -2,7 +2,7 @@
 import { Model } from '../../core/db/data/Model';
 import { TocInterface } from './TocInterface';
 import { ObjectUtils } from '../../core/utils/object';
-import { Matchers } from './Matchers';
+import { Matchers } from './Matching/Matchers';
 import { Utils } from '../Client/Utils';
 
 const EMPTY_MATCHER = `
