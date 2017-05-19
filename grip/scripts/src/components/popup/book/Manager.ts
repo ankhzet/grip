@@ -48,8 +48,12 @@ export class BookManager extends ObservableConnectedList<Book> implements Reacti
 
 					next: () => {
 						return {
-							done: current > last,
-							value: (current <= last) ? data[keys[current++]] : undefined,
+							done : current > last,
+							value: (
+								(current <= last)
+									? data[keys[current++]]
+									: undefined
+							),
 						};
 					}
 
