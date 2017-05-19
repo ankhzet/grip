@@ -6,16 +6,20 @@ export class Matchers {
 	private _matchers = {};
 
 	constructor(context, ...matchers: string[]) {
-		for (let name of matchers) (() => {
-			let matcher = this._matchers[name] = new Matcher(context);
+		for (let name of matchers) {
+			this._matchers[name] = (() => {
+				let matcher = new Matcher(context);
 
-			Object.defineProperty(this, name, {
-				enumerable: true,
-				configurable: false,
-				get: () => { return matcher.code; },
-				set: (code) => { matcher.code = code; },
-			})
-		})();
+				Object.defineProperty(this, name, {
+					enumerable: true,
+					configurable: false,
+					get: () => { return matcher.code; },
+					set: (code) => { matcher.code = code; },
+				});
+
+				return matcher;
+			})();
+		}
 	}
 
 	static create(context, prototype: {[key: string]: string}): Matchers {
@@ -58,13 +62,13 @@ export class Matchers {
 	}
 
 	public code() {
-		let matchers = {};
+		let code = {};
 
 		for (let name of Object.keys(this._matchers)) {
-			matchers[name] = this[name];
+			code[name] = this._matchers[name].code;
 		}
 
-		return matchers;
+		return code;
 	}
 
 	toString() {
