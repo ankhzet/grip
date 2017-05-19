@@ -58,7 +58,7 @@ class Navbar extends React.Component<LocationProps, {}> {
 							<span className="icon-bar" />
 							<span className="icon-bar" />
 						</button>
-						<Link to={ menu.link } className="navbar-brand">{ menu.title }</Link>
+						<Link to={ menu.link } className="navbar-brand" target="_blank">{ menu.title }</Link>
 					</div>
 
 					<div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
