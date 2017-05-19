@@ -1,10 +1,16 @@
 
-import { ServerConnector } from '../../core/client/ServerConnector';
+import { ServerConnector as BaseServerConnector } from '../../core/client/ServerConnector';
+import { GripActions } from "./actions/GripActions";
+import { Book } from '../Domain/Book';
 
-export class GripConnector extends ServerConnector {
+export class ServerConnector extends BaseServerConnector {
 
 	constructor() {
 		super('grip');
+	}
+
+	cache(book: Book) {
+		return GripActions.cache(this, { uid: book.uid });
 	}
 
 }

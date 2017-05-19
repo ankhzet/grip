@@ -21,7 +21,7 @@ export class BookManager extends ObservableConnectedList<Book> implements Reacti
 				let results = Object.keys(pack).map((uid) => {
 					switch (action) {
 						case 'fetch':
-							return GripActions.cache(this.connector, { book: pack[uid]});
+							return GripActions.cache(this.connector, { uid });
 					}
 				});
 
