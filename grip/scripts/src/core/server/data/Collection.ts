@@ -14,15 +14,21 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 
 	private _cache: PackageInterface<M> = {};
 	private db: DB;
+	private factory: (uid: string) => M;
 
 	protected transcoder: TranscoderInterface<M, any>;
 
 	public name: string;
 
-	constructor(db: DB, name: string) {
+	constructor(db: DB, name: string, factory: (uid: string) => M) {
 		super();
 		this.db = db;
 		this.name = name;
+		this.factory = factory;
+	}
+
+	public create(uid: string): M {
+		return this.factory(uid);
 	}
 
 	public changed(listener: (uids: string[], event?: string) => any) {

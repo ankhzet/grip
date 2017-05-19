@@ -14,7 +14,7 @@ import { CollectionThunk, Synchronizer } from './Synchronizer';
 import { ObjectUtils } from '../utils/object';
 
 export class Server<C extends ClientPort> extends ServerPort<C> {
-	private transcoder: TranscoderInterface<any, any>;
+	public transcoder: TranscoderInterface<any, any>;
 	public synchronised: Synchronizer;
 
 	constructor(name: string, dispatcher: PacketDispatcher, pool: ClientsPool<C>) {
