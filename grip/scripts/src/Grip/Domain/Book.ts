@@ -6,20 +6,22 @@ import { Matchers } from './Matching/Matchers';
 import { Utils } from '../Client/Utils';
 
 const EMPTY_MATCHER = `
-(() => {
+
+(grip) => {
 	class Matcher {
-		constructor(grip, context) {
-			this.grip = grip;
+		constructor(context) {
 			this.context = context;
+			this.pattern = /^.+$/;
 		}
 
 		match(content) {
-			throw new Error('Not implemented.');
+			throw new Error('Not implemented.').
 		}
+
 	}
 
-	return (grip, context) => new Matcher(grip, context);
-})();
+	return (context) => new Matcher(context);
+};
 `;
 
 export class Book extends Model {

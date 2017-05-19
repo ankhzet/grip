@@ -48,7 +48,7 @@ export class Matchers {
 	}
 
 	public match<T>(matcher: string, content: string): T|boolean {
-		return this[matcher] ? (this[matcher].match(content) || false) : undefined;
+		return this._matchers[matcher] ? (this._matchers[matcher].match(content) || false) : undefined;
 	}
 
 	public fetch() {
