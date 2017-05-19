@@ -1,7 +1,7 @@
 
 import { Injector } from './core/client/Injector';
-import { GripConnector } from './Grip/Server/ServerConnector';
+import { ServerConnector } from './Grip/Server/ServerConnector';
 
 ((injector) => {
 	injector.log('Injecting...');
-})(new Injector(new GripConnector()));
+})(new Injector(new ServerConnector()));
