@@ -2,7 +2,6 @@
 import { IdentifiableInterface } from '../../core/db/data/IdentifiableInterface';
 import { ObservableList } from './ObservableList';
 import { SendAction, SendPacketData } from '../../core/parcel/actions/Base/Send';
-import { UpdatedAction, UpdatedPacketData } from '../../Grip/Server/actions/Updated';
 import { PackageInterface } from '../../core/db/data/PackageInterface';
 import { CollectionConnector } from '../../core/server/CollectionConnector';
 import { TranscoderInterface } from '../../core/server/TranscoderInterface';
@@ -17,25 +16,19 @@ export abstract class ObservableConnectedList<T extends IdentifiableInterface> e
 
 	private transcoders: TranscoderAggregate<T, {}>;
 
-	public collection: string;
-
-	constructor(namespace: string, table: string) {
+	constructor(connector: CollectionConnector) {
 		super();
 
-		this.collection = table;
 		this.transcoders = new TranscoderAggregate<T, {}>();
-		this.connector = new CollectionConnector(namespace, table);
+		this.connector = connector;
 
 		this.listen(SendAction, (data: SendPacketData) => {
 			let resolver = this.resolver[data.payload];
 			delete this.resolver[data.payload];
 			resolver(data.data);
 		});
-		this.listen(UpdatedAction, (data: UpdatedPacketData) => {
-			if (data.what === this.collection) {
-				this.invalidate(data.uids);
-			}
-		});
+
+		this.connector.updated(this.invalidate.bind(this));
 	}
 
 	public addTranscoder(transcoder: TranscoderInterface<any, any>) {
