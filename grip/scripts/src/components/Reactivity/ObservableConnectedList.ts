@@ -46,7 +46,7 @@ export abstract class ObservableConnectedList<T extends IdentifiableInterface> e
 		return this.connector.listen(action, handler), this;
 	}
 
-	protected pull(uids: string[]): Promise<IdentifiableInterface[]> {
+	protected pull(uids: string[]): Promise<PackageInterface<IdentifiableInterface>> {
 		return new Promise((resolve) => {
 			let uid = this.request++;
 			this.resolver[uid] = resolve;
