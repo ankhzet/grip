@@ -61,7 +61,7 @@ export class Matchers {
 		let matchers = {};
 
 		for (let name of Object.keys(this._matchers)) {
-			matchers[name] = this._matchers[name].code;
+			matchers[name] = this[name];
 		}
 
 		return matchers;
