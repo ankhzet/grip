@@ -53,27 +53,21 @@ export class ClientPort extends Port {
 		return this.port = port;
 	}
 
-	listen<T, H>(action: ActionConstructor<T>, handler: ActionHandler<T, H>): this {
-		return this.dispatcher.bind(this, { handler, action });
+	listen<T, H extends ClientPort>(action: ActionConstructor<T>, handler: ActionHandler<T, H>): this {
+		return this.dispatcher.bind(this, <any>{ handler, action });
 	}
 
-	send(action, data?, error?) {
+	sendPacket(action, data?, error?) {
 		if (!this.port) {
 			return;
 		}
 
-		let packet = {
+		this.port.postMessage({
 			sender: this.uid,
 			action: action,
 			data: data,
-			error: null,
-		};
-
-		if (error) {
-			packet.error = error;
-		}
-
-		this.port.postMessage(packet);
+			error: error || null,
+		});
 	}
 
 	process(packet: Packet<any>) {
