@@ -9,6 +9,9 @@ import { BooksPageRoutes, BooksPage } from './BooksPage';
 import { BookManager } from './book/Manager';
 import { ManagerInterface } from '../Reactivity/ManagerInterface';
 import { Book } from '../../Grip/Domain/Book';
+import { ServerConnector } from '../../Grip/Client/ServerConnector';
+import { SendAction } from '../../core/parcel/actions/Base/Send';
+import { Alertify } from "../../core/utils/alertify";
 // import { Breadcrumbs } from '../breadcrumbs';
 
 interface PageLink {
@@ -82,11 +85,18 @@ interface AppState {
 }
 
 class App extends React.Component<LocationProps, AppState> {
+	private server: ServerConnector;
+
+	constructor(props) {
+		super(props);
+
+		this.server = new ServerConnector();
+		this.state = {
+			books: new BookManager(this.server),
+		};
+	}
 
 	componentWillMount() {
-		this.setState({
-			books: new BookManager(),
-		});
 	}
 
 	breadcrumbs(): Menu {
