@@ -13,6 +13,8 @@ export abstract class ServerPort<C extends ClientPort> extends Port implements P
 	private pool: ClientsPool<C>;
 	private dispatcher: PacketDispatcher;
 
+	uid: string = ClientPort.guid('listener');
+
 	constructor(name: string, dispatcher: PacketDispatcher, pool: ClientsPool<C>) {
 		super(name);
 		this.dispatcher = dispatcher;

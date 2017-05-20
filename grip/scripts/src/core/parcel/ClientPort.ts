@@ -10,7 +10,7 @@ import { ActionHandler } from './ActionHandler';
 export class ClientPort extends Port {
 	tabId: number;
 
-	uid: string = `${Math.random()}`;
+	uid: string = Port.guid('c');
 	touched: number = 0;
 	dispatcher: PacketDispatcher = new PacketDispatcher(BaseActions);
 
@@ -62,12 +62,14 @@ export class ClientPort extends Port {
 			return;
 		}
 
-		this.port.postMessage({
+		let packet: Packet<any> = {
 			sender: this.uid,
 			action: action,
 			data: data,
 			error: error || null,
-		});
+		};
+
+		this.port.postMessage(packet);
 	}
 
 	process(packet: Packet<any>) {
@@ -79,8 +81,8 @@ export class ClientPort extends Port {
 			});
 	}
 
-	connectable({ uid }: ConnectPacketData) {
-		this.uid = uid;
+	connectable(data: ConnectPacketData, sender: ClientPort, packet: Packet<ConnectPacketData>) {
+		this.uid = packet.sender;
 		this.touched = +new Date;
 	}
 
