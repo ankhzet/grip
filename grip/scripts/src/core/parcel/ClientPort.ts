@@ -6,6 +6,7 @@ import { Packet } from './Packet';
 import { ActionConstructor } from './actions/Action';
 import { ConnectAction, ConnectPacketData } from './actions/Base/Connect';
 import { ActionHandler } from './ActionHandler';
+import { Tracer } from '../server/Tracer';
 
 export class ClientPort extends Port {
 	tabId: number;
@@ -69,10 +70,12 @@ export class ClientPort extends Port {
 			error: error || null,
 		};
 
+		Tracer.trace(' > ', this, packet);
 		this.port.postMessage(packet);
 	}
 
 	process(packet: Packet<any>) {
+		Tracer.trace(' < ', this, packet);
 		this.touched = +new Date;
 
 		this.dispatcher.dispatch(this, packet)
