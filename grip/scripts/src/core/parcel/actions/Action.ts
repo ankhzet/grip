@@ -24,7 +24,7 @@ export class Action<T> {
 	}
 
 	send(port: ClientPort, data?, error?) {
-		return port.send(this.uid, this.pack(data), error);
+		return port.sendPacket(this.uid, this.pack(data), error);
 	}
 
 	get uid() {
