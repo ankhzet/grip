@@ -3,28 +3,31 @@ import { BaseActions } from '../parcel/actions/Base/BaseActions';
 import { ClientConnector } from './ClientConnector';
 import { UpdatedAction, UpdatedPacketData } from '../../Grip/Server/actions/Updated';
 
-export class CollectionConnector extends ClientConnector {
+export class CollectionConnector {
 	public collection: string;
+	private connector: ClientConnector;
 
-	constructor(namespace: string, collection: string) {
-		super(namespace);
+	constructor(connector: ClientConnector, collection: string) {
+		this.connector = connector;
 		this.collection = collection;
 	}
 
 	public updated(listener: (uids: string[]) => any): this {
-		return this.listen(UpdatedAction, (data: UpdatedPacketData) => {
+		this.connector.listen(UpdatedAction, (data: UpdatedPacketData) => {
 			if (data.what === this.collection) {
 				listener(data.uids);
 			}
 		});
+
+		return this;
 	}
 
 	fetch(query: any, payload?: any) {
-		return BaseActions.fetch(this, { what: this.collection, data: query, payload });
+		return BaseActions.fetch(this.connector, { what: this.collection, data: query, payload });
 	}
 
 	update(data: any, payload?: any) {
-		return BaseActions.update(this, { what: this.collection, data, payload });
+		return BaseActions.update(this.connector, { what: this.collection, data, payload });
 	}
 
 }

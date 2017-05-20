@@ -6,44 +6,43 @@ import { PackageInterface } from '../../core/db/data/PackageInterface';
 import { CollectionConnector } from '../../core/server/CollectionConnector';
 import { TranscoderInterface } from '../../core/server/TranscoderInterface';
 import { TranscoderAggregate } from '../../core/server/TranscoderAggregate';
-import { ActionConstructor } from '../../core/parcel/actions/Action';
-import { ActionHandler } from "../../core/parcel/ActionHandler";
+import { ServerConnector } from '../../Grip/Client/ServerConnector';
 
 export abstract class ObservableConnectedList<T extends IdentifiableInterface> extends ObservableList<T> {
-	protected connector: CollectionConnector;
+	protected connector: ServerConnector;
+	protected collection: CollectionConnector;
 	private resolver: {[request: number]: (any) => any} = [];
 	private request = 0;
 
 	private transcoders: TranscoderAggregate<T, {}>;
 
-	constructor(connector: CollectionConnector) {
+	constructor(connector: ServerConnector, collection: CollectionConnector) {
 		super();
 
 		this.transcoders = new TranscoderAggregate<T, {}>();
+		this.collection = collection;
+		this.collection.updated(this.invalidate.bind(this));
+
 		this.connector = connector;
-
-		this.listen(SendAction, (data: SendPacketData) => {
+		this.connector.listen(SendAction, (data: SendPacketData) => {
 			let resolver = this.resolver[data.payload];
-			delete this.resolver[data.payload];
-			resolver(data.data);
-		});
 
-		this.connector.updated(this.invalidate.bind(this));
+			if (resolver) {
+				delete this.resolver[data.payload];
+				resolver(data.data);
+			}
+		});
 	}
 
 	public addTranscoder(transcoder: TranscoderInterface<any, any>) {
 		return this.transcoders.add(transcoder);
 	}
 
-	public listen<T, H>(action: ActionConstructor<T>, handler: ActionHandler<T, H>): this {
-		return this.connector.listen(action, handler), this;
-	}
-
 	protected pull(uids: string[]): Promise<PackageInterface<IdentifiableInterface>> {
 		return new Promise((resolve) => {
 			let uid = this.request++;
 			this.resolver[uid] = resolve;
-			this.connector.fetch(
+			this.collection.fetch(
 				uids.length ? { uid: { $in: uids} } : {},
 				uid
 			);
@@ -54,7 +53,7 @@ export abstract class ObservableConnectedList<T extends IdentifiableInterface> e
 		return new Promise((resolve) => {
 			let uid = this.request++;
 			this.resolver[uid] = resolve;
-			this.connector.update(pack, uid);
+			this.collection.update(pack, uid);
 		});
 	}
 
