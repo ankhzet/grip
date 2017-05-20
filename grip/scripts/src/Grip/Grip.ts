@@ -67,7 +67,7 @@ export class Grip {
 			throw new Error(`Book with uid "${uid}" not found`);
 		}
 
-		(new Cacher())
+		return (new Cacher())
 			.fetch({
 				tocURI: book.uri,
 				matchers: book.matchers,

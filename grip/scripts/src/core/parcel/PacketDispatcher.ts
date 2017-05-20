@@ -55,10 +55,11 @@ export class PacketDispatcher implements PacketDispatchDelegate<any> {
 		return context;
 	}
 
-	dispatch<S>(sender: S, packet: Packet<any>) {
+	async dispatch<S extends ClientPort>(sender: S, packet: Packet<any>): Promise<boolean> {
 		let handled = false;
 
 		try {
+			let promises = [], promise;
 
 			for (let action of [packet.action, PacketDispatcher.DEFAULT]) {
 				let handlers = this.actionHandlers[action];
@@ -67,16 +68,26 @@ export class PacketDispatcher implements PacketDispatchDelegate<any> {
 					handled = true;
 
 					for (let handler of handlers) {
-						handler(sender, packet);
+						if (promise = handler(sender, packet)) {
+							promises.push(promise);
+						}
 					}
+
 				}
 			}
 
+			await Promise.all(promises);
 		} catch (e) {
 			// let address = e.stack.match(/[^\s]+:\d+(:\d+)/)[0].split(':');
 			let stack = e.stack.split("\n").slice(1).join("\n");
 			packet.error = `${e}\n${stack}`;
-			console.error(`Error while dispatching request:`, e);
+
+			if (!e.logged) {
+				console.error(`Error while dispatching request:`, e);
+				e.logged = true;
+			}
+
+			throw e;
 		}
 
 		return handled;

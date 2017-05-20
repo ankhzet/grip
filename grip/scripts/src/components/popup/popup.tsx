@@ -97,6 +97,18 @@ class App extends React.Component<LocationProps, AppState> {
 	}
 
 	componentWillMount() {
+		this.server.listen(SendAction, ({ what, data: { action, error } }) => {
+			switch (what) {
+				case 'error':
+					console.log('Server:', error);
+					Alertify.alert(`
+<div class="col-xs-12">
+<h4 class="text-danger">Failed "${action}" action:</h4>
+<pre class="text-danger">${error.replace('\n', '<br />')}</pre>
+</div>`);
+					break;
+			}
+		});
 	}
 
 	breadcrumbs(): Menu {
