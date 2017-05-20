@@ -1,13 +1,13 @@
 
 import { BaseActions } from '../parcel/actions/Base/BaseActions';
-import { ClientConnector } from './ClientConnector';
 import { UpdatedAction, UpdatedPacketData } from '../../Grip/Server/actions/Updated';
+import { ServerConnector } from '../client/ServerConnector';
 
 export class CollectionConnector {
 	public collection: string;
-	private connector: ClientConnector;
+	private connector: ServerConnector;
 
-	constructor(connector: ClientConnector, collection: string) {
+	constructor(connector: ServerConnector, collection: string) {
 		this.connector = connector;
 		this.collection = collection;
 	}

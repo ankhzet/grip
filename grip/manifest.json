@@ -15,7 +15,7 @@
 	},
 	"content_scripts": [
 		{
-			"matches": ["*://*/*"],
+			"matches": ["*://*/*?grip"],
 			"js": ["scripts/commons.js", "scripts/content.js"]
 		}
 	],
