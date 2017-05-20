@@ -73,11 +73,10 @@ export class ClientPort extends Port {
 	process(packet: Packet<any>) {
 		this.touched = +new Date;
 
-		if (this.dispatcher.dispatch(this, packet)) {
-			if (packet.error) {
-				BaseActions.send(this, { what: 'error', data: packet });
-			}
-		}
+		this.dispatcher.dispatch(this, packet)
+			.catch((e) => {
+				BaseActions.send(this, { what: 'error', data: packet}, e.toLocaleString());
+			});
 	}
 
 	connectable({ uid }: ConnectPacketData) {
