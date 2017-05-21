@@ -1,9 +1,10 @@
 
-import { ClientPort } from '../parcel/ClientPort';
+import { PortUtils } from '../parcel/PortUtils';
+import { Port } from '../parcel/Port';
 
-export class ServerConnector extends ClientPort {
+export class ServerConnector extends Port {
 
-	uid: string = ClientPort.guid('listener');
+	uid: string = PortUtils.guid('S');
 
 	constructor(namespace: string) {
 		super(namespace);

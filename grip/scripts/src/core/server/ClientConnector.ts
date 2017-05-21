@@ -1,7 +1,7 @@
 
-import { ClientPort } from '../parcel/ClientPort';
+import { Port } from '../parcel/Port';
 
-export class ClientConnector extends ClientPort {
+export class ClientConnector extends Port {
 
 	constructor(namespace: string) {
 		super(namespace);

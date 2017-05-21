@@ -3,15 +3,15 @@ import { Packet } from './Packet';
 import { ActionConstructor } from './actions/Action';
 import { ActionHandler } from './ActionHandler';
 import { RepositoryInterface } from './actions/RepositoryInterface';
-import { ClientPort } from './ClientPort';
+import { Port } from './Port';
 
-export type PacketHandlerDescriptor<T, S extends ClientPort> = {handler: ActionHandler<T, S>, action: ActionConstructor<T>};
+export type PacketHandlerDescriptor<T, S extends Port> = {handler: ActionHandler<T, S>, action: ActionConstructor<T>};
 
 export interface PacketDispatchDelegate<T> {
-	dispatch<S extends ClientPort>(sender: S, packet: Packet<T>): Promise<boolean>;
+	dispatch<S extends Port>(sender: S, packet: Packet<T>): Promise<boolean>;
 }
 
-export interface PacketHandler<S extends ClientPort> {
+export interface PacketHandler<S extends Port> {
 	on<T>(action: ActionConstructor<T>, handler: ActionHandler<T, S>): this;
 }
 
@@ -25,7 +25,7 @@ export class PacketDispatcher implements PacketDispatchDelegate<any> {
 		this.repository = repository;
 	}
 
-	bind<T, C, S extends ClientPort>(context: C, descriptors: PacketHandlerDescriptor<T, S>|(PacketHandlerDescriptor<T, S>[])): C {
+	bind<T, C, S extends Port>(context: C, descriptors: PacketHandlerDescriptor<T, S>|(PacketHandlerDescriptor<T, S>[])): C {
 		if (descriptors instanceof Array) {
 			for (let descriptor of descriptors) {
 				this.bind(context, descriptor);
@@ -55,7 +55,7 @@ export class PacketDispatcher implements PacketDispatchDelegate<any> {
 		return context;
 	}
 
-	async dispatch<S extends ClientPort>(sender: S, packet: Packet<any>): Promise<boolean> {
+	async dispatch<S extends Port>(sender: S, packet: Packet<any>): Promise<boolean> {
 		let handled = false;
 
 		try {

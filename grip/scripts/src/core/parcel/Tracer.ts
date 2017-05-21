@@ -1,12 +1,12 @@
 
-import { ClientPort } from '../parcel/ClientPort';
-import { Packet } from '../parcel/Packet';
+import { Port } from './Port';
+import { Packet } from './Packet';
 
 export class Tracer {
 	private static instance: Tracer;
 	private index: number = 0;
 
-	private trace(message: string, port: ClientPort, packet: Packet<any>) {
+	private trace(message: string, port: Port, packet: Packet<any>) {
 		return this.log({
 			index: this.index++,
 			timestamp: new Date(),
@@ -32,7 +32,10 @@ export class Tracer {
 
 	private log(entry: TraceEntry) {
 		console.log(
-			`[${entry.index} - ${Tracer.dateStr(entry.timestamp)}] [${entry.port.uid}]${entry.message}[${(entry.packet.sender == entry.port.uid) ? '*:????' : entry.packet.sender}] PROTOCOL TRACE:`,
+			`
+[${entry.index} - ${Tracer.dateStr(entry.timestamp)}] PROTOCOL TRACE:
+  [${entry.port.uid}]${entry.message}[${(entry.packet.sender == entry.port.uid) ? '*:????' : entry.packet.sender}]
+			`.trim(),
 			entry.packet, '\n',
 			entry.stack
 		);
@@ -40,7 +43,7 @@ export class Tracer {
 		return entry;
 	}
 
-	static trace(message: string, port: ClientPort, packet: Packet<any>) {
+	static trace(message: string, port: Port, packet: Packet<any>) {
 		if (!this.instance) {
 			this.instance = new Tracer();
 		}
@@ -57,7 +60,7 @@ interface TraceEntry {
 	index: number;
 	timestamp: Date;
 	message: string;
-	port: ClientPort;
+	port: Port;
 	packet: Packet<any>;
 	stack: string
 }

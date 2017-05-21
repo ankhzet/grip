@@ -1,8 +1,8 @@
 
-import { ClientPort } from '../../core/parcel/ClientPort';
+import { Port } from '../../core/parcel/Port';
 import { BaseActions } from '../../core/parcel/actions/Base/BaseActions';
 
-export class GripClient extends ClientPort {
+export class GripClient extends Port {
 
 	constructor(port: chrome.runtime.Port) {
 		super('grip', port);

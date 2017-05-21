@@ -1,6 +1,6 @@
 
-import { ClientPort } from '../parcel/ClientPort';
-import { ServerPort } from '../parcel/ServerPort';
+import { Port } from '../parcel/Port';
+import { Listener } from '../parcel/Listener';
 
 import { ClientsPool } from "../parcel/ClientsPool";
 import { PacketDispatcher } from "../parcel/PacketDispatcher";
@@ -13,7 +13,7 @@ import { Collection } from './data/Collection';
 import { CollectionThunk, Synchronizer } from './Synchronizer';
 import { ObjectUtils } from '../utils/object';
 
-export class Server<C extends ClientPort> extends ServerPort<C> {
+export class Server<C extends Port> extends Listener<C> {
 	public transcoder: TranscoderInterface<any, any>;
 	public synchronised: Synchronizer;
 

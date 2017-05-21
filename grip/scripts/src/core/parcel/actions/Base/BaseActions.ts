@@ -1,5 +1,5 @@
 
-import { ConnectPacketData, ConnectAction } from './Connect';
+import { HandshakePacketData, HandshakeAction } from './Handshake';
 import { FetchPacketData, FetchAction } from '../../../server/actions/Fetch';
 import { SendAction, SendPacketData } from './Send';
 import { UpdatePacketData, UpdateAction } from '../../../server/actions/Update';
@@ -9,11 +9,11 @@ import { ActionPerformer } from '../ActionPerformer';
 
 export class BaseActions extends AbstractActions {
 
-	static get connect(): ActionPerformer<ConnectPacketData, ConnectAction> {
-		let action = ConnectAction.uid;
+	static get handshake(): ActionPerformer<HandshakePacketData, HandshakeAction> {
+		let action = HandshakeAction.uid;
 
 		if (!this.registered(action)) {
-			this.register(ConnectAction);
+			this.register(HandshakeAction);
 		}
 
 		return this.action(action);
