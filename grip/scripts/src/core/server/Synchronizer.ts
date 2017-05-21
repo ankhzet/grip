@@ -1,5 +1,5 @@
 
-import { ClientPort } from '../parcel/ClientPort';
+import { Port } from '../parcel/Port';
 import { BaseActions } from '../parcel/actions/Base/BaseActions';
 import { PacketHandler } from '../parcel/PacketDispatcher';
 import { FetchAction, FetchPacketData } from './actions/Fetch';
@@ -22,7 +22,7 @@ export interface CollectionThunk<M extends IdentifiableInterface, D> {
 export class Synchronizer {
 	private collections: {[name: string]: CollectionThunk<any, any>};
 
-	constructor(handler: PacketHandler<ClientPort>) {
+	constructor(handler: PacketHandler<Port>) {
 		this.collections = {};
 
 		this.thunked(handler, FetchAction , this.fetch);
@@ -36,8 +36,8 @@ export class Synchronizer {
 		};
 	}
 
-	thunked<T extends CollectionPacketData>(handler: PacketHandler<ClientPort>, action: ActionConstructor<T>, listener: (thunk: CollectionThunk<any, any>, data: T, client: ClientPort) => Promise<any>) {
-		handler.on(action, (data: T, client: ClientPort) => {
+	thunked<T extends CollectionPacketData>(handler: PacketHandler<Port>, action: ActionConstructor<T>, listener: (thunk: CollectionThunk<any, any>, data: T, client: Port) => Promise<any>) {
+		handler.on(action, (data: T, client: Port) => {
 			let thunk = this.collections[data.what];
 
 			if (thunk) {
@@ -46,7 +46,7 @@ export class Synchronizer {
 		});
 	}
 
-	fetch(thunk: CollectionThunk<any, any>, { what, data: query, payload }: FetchPacketData, client: ClientPort) {
+	fetch(thunk: CollectionThunk<any, any>, { what, data: query, payload }: FetchPacketData, client: Port) {
 		return thunk.collection
 			.fetch(query)
 			.then((data: Package<IdentifiableInterface>) => {
@@ -59,7 +59,8 @@ export class Synchronizer {
 		;
 	}
 
-	update(thunk: CollectionThunk<any, any>, { what, data, payload }: UpdatePacketData, client: ClientPort) {
+	update(thunk: CollectionThunk<any, any>, { what, data, payload }: UpdatePacketData, client: Port) {
+		console.log('update', what, payload);
 		return thunk.collection
 			.update(this.decode(thunk, data))
 			.then((result: SyncResultInterface) => (
@@ -78,7 +79,7 @@ export class Synchronizer {
 		;
 	}
 
-	send(client: ClientPort, data: SendPacketData) {
+	send(client: Port, data: SendPacketData) {
 		return BaseActions.send(client, data);
 	}
 

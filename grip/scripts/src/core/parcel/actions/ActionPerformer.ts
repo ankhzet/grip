@@ -1,5 +1,5 @@
 
 import { Action } from './Action';
-import { ClientPort } from '../ClientPort';
+import { Port } from '../Port';
 
-export type ActionPerformer<T, A extends Action<T>> = (port: ClientPort, data?: T, error?: string) => any;
+export type ActionPerformer<T, A extends Action<T>> = (port: Port, data?: T, error?: string) => any;

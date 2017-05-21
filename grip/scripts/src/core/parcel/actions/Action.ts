@@ -1,5 +1,5 @@
 
-import { ClientPort } from '../ClientPort';
+import { Port } from '../Port';
 
 export interface ActionConstructor<T> {
 	new (): Action<T>;
@@ -23,7 +23,7 @@ export class Action<T> {
 		// return <T>this.properties.map((prop) => data[prop]);
 	}
 
-	send(port: ClientPort, data?, error?) {
+	send(port: Port, data?, error?) {
 		return port.sendPacket(this.uid, this.pack(data), error);
 	}
 
