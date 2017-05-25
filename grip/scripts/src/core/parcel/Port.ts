@@ -20,13 +20,6 @@ export class Port {
 
 	constructor(name: string, port?: chrome.runtime.Port) {
 		this.name = PortUtils.portName(name);
-
-		console.log('created', this.name, this.uid, this.constructor.name);
-		this.listen(HandshakeAction, this.connectable);
-
-		if (this.rebind(port)) {
-			this.handshake();
-		}
 	}
 
 	disconnect(): boolean {

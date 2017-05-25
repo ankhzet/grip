@@ -3,7 +3,7 @@ import { Port } from '../parcel/Port';
 import { Listener } from '../parcel/Listener';
 
 import { ClientsPool } from "../parcel/ClientsPool";
-import { PacketDispatcher } from "../parcel/PacketDispatcher";
+import { PacketDispatcher, PacketHandler } from "../parcel/PacketDispatcher";
 
 import { SendPacketData, SendAction } from '../parcel/actions/Base/Send';
 
@@ -12,13 +12,20 @@ import { TranscoderInterface } from './TranscoderInterface';
 import { Collection } from './data/Collection';
 import { CollectionThunk, Synchronizer } from './Synchronizer';
 import { ObjectUtils } from '../utils/object';
+import { HandshakeAction, HandshakePacketData } from '../parcel/actions/Base/Handshake';
+import { ActionHandler } from '../parcel/ActionHandler';
+import { ActionConstructor } from '../parcel/actions/Action';
+import { Packet } from '../parcel/Packet';
 
-export class Server<C extends Port> extends Listener<C> {
+export class Server<C extends Port> extends Listener<C> implements PacketHandler<C> {
+	private dispatcher: PacketDispatcher;
+
 	public transcoder: TranscoderInterface<any, any>;
 	public synchronised: Synchronizer;
 
 	constructor(name: string, dispatcher: PacketDispatcher, pool: ClientsPool<C>) {
-		super(name, dispatcher, pool);
+		super(name, pool);
+		this.dispatcher = dispatcher;
 		this.synchronised = new Synchronizer(this);
 
 		// todo: implement default protocol transcoder
@@ -76,13 +83,11 @@ export class Server<C extends Port> extends Listener<C> {
 	}
 
 	connect(port: chrome.runtime.Port): C {
-		let client = super.connect(port);
-
-		return (
-			client
-				? this.prepareAfterConnect(client)
-				: client
-		);
+		let client = super.connect(port)
+			.listen(HandshakeAction, this._handle_handshake.bind(this))
+		;
+		client.handshake();
+		return client;
 	}
 
 	disconnect(client: C): boolean {
@@ -94,13 +99,25 @@ export class Server<C extends Port> extends Listener<C> {
 	}
 
 	prepareAfterConnect(client: C): C {
-
 		return client;
 	}
 
 	clearBeforeDisconnect(client: C): C {
-
 		return client;
+	}
+
+	on<T>(action: ActionConstructor<T>, handler: ActionHandler<T, C>): this {
+		return this.dispatcher.bind(this, { action, handler });
+	}
+
+	_handle_handshake(data: HandshakePacketData, client: C) {
+		client = this.add(client);
+		client = this.prepareAfterConnect(client);
+		console.log('handshaked', data);
+
+		return client.listen(null, (sender: C, data: any, packet: Packet<any>) => {
+			return this.dispatcher.dispatch(client, packet);
+		});
 	}
 
 	_handle_send({ what, data: payload }: SendPacketData, client, packet) {
