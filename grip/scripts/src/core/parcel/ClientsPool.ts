@@ -1,7 +1,6 @@
 
 import { Action } from './actions/Action';
 import { ActionPerformer } from './actions/ActionPerformer';
-import { HandshakeAction, HandshakePacketData } from './actions/Base/Handshake';
 import { ClientFactory, Port } from './Port';
 
 export class ClientsPool<C extends Port> {
