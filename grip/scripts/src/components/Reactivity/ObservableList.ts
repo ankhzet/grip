@@ -15,8 +15,11 @@ export abstract class ObservableList<T extends IdentifiableInterface> extends Ev
 	}
 
 	getOne(uid: string): Promise<T> {
-		return this.get([uid])
-			.then((pack: PackageInterface<T>) => pack[uid]);
+		return (
+			uid
+				? this.get([uid]).then((pack: PackageInterface<T>) => pack[uid])
+				: Promise.resolve(null)
+		);
 	}
 
 	get(uids: string[] = []): Promise<PackageInterface<T>> {
