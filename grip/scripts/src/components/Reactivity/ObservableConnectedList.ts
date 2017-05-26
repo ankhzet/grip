@@ -6,7 +6,7 @@ import { PackageInterface } from '../../core/db/data/PackageInterface';
 import { CollectionConnector } from '../../core/server/CollectionConnector';
 import { TranscoderInterface } from '../../core/server/TranscoderInterface';
 import { TranscoderAggregate } from '../../core/server/TranscoderAggregate';
-import { ServerConnector } from '../../Grip/Client/ServerConnector';
+import { ServerConnector } from '../../core/client/ServerConnector';
 
 export abstract class ObservableConnectedList<T extends IdentifiableInterface> extends ObservableList<T> {
 	protected connector: ServerConnector;
