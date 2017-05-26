@@ -131,8 +131,8 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 									</div>
 
 									<div className="tab-content form-control">
-										{ Object.keys(Book.matchers).map((matcher) => (
-											<div className="tab-pane active" id={ 'matcher-' + matcher }>
+										{ Object.keys(Book.matchers).map((matcher, index) => (
+											<div className={ "tab-pane" + (index ? "" : " active") } id={ 'matcher-' + matcher }>
 												<CodeMirror
 													value={ this.state.form.matchers[matcher] }
 													options={{

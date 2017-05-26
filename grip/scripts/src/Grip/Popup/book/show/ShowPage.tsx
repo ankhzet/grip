@@ -140,8 +140,8 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 								</ul>
 
 								<div className="tab-content">
-									{ Object.keys(Book.matchers).map((matcher) => (
-										<div className="tab-pane active" id={ 'matcher-' + matcher }>
+									{ Object.keys(Book.matchers).map((matcher, index) => (
+										<div className={ "tab-pane" + (index ? "" : " active") } id={ 'matcher-' + matcher }>
 											<CodeMirror
 												className="form-control-static"
 												value={ book.matchers.get(matcher) }
