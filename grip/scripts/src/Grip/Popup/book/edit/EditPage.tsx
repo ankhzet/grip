@@ -117,20 +117,36 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 							</div>
 						</div>
 
-						<div className="form-group">
-							<CodeMirror
-								className="col-xs-12"
-								value={ this.state.form.matchers[Book.MATCHER_TOC] }
-								options={{
-									mode: 'javascript',
-									theme: 'base16-oceanicnext-dark',
-									lineNumbers: true,
-									indentWithTabs: true,
-									tabSize: 2,
-									readOnly: false,
-								}}
-								onChange={ (value) => this.tocMatcherChanged(value) }
-							/>
+						<div className="form-group tabs-left">
+							<div className="col-xs-12">
+								<div className="input-group">
+									<div className="input-group-addon">
+										<ul className="nav nav-tabs">
+											<li className="active">
+												<a href="#a" data-toggle="tab">TOC</a>
+											</li>
+										</ul>
+									</div>
+
+									<div className="tab-content form-control">
+										<div className="tab-pane active" id="a">
+											<CodeMirror
+												value={ this.state.form.matchers[Book.MATCHER_TOC] }
+												options={{
+													mode: 'javascript',
+													theme: 'base16-oceanicnext-dark',
+													lineNumbers: true,
+													indentWithTabs: true,
+													tabSize: 2,
+													readOnly: false,
+												}}
+												onChange={ (value) => this.matcherChanged(Book.MATCHER_TOC, value) }
+											/>
+										</div>
+									</div>
+								</div>
+
+							</div>
 						</div>
 					</div>
 				</PanelBody>
@@ -174,10 +190,10 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 		});
 	}
 
-	private tocMatcherChanged(value) {
+	private matcherChanged(matcher, value) {
 		this.patchState({
 			form: {
-				matchers: ObjectUtils.compose(Book.MATCHER_TOC, value),
+				matchers: ObjectUtils.compose(matcher, value),
 			}
 		});
 	}

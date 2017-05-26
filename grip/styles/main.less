@@ -32,6 +32,60 @@ body {
 	to { -moz-transform: rotate(360deg);}
 }
 
+.input-group-addon {
+	min-width: 80px;
+}
+
+.tabs-left {
+	.input-group-addon {
+		padding: 0;
+		vertical-align: top;
+
+		.nav-tabs {
+
+			a {
+				border-width: 1px 0;
+			}
+
+		}
+	}
+
+	.nav-tabs {
+		float: left;
+		border-bottom: 0;
+
+		li {
+			width: 100%;
+			margin: 0;
+
+			a {
+				margin-right: 0;
+				border: 0;
+			}
+		}
+	}
+
+	.nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus {
+		border:0;
+	}
+
+	.tab-content {
+		margin-left: 45px;
+
+		.tab-pane {
+			padding: 0;
+			overflow-y: auto;
+		}
+
+	}
+
+	.tab-content.form-control {
+		float: none;
+		padding: 0;
+	}
+
+}
+
 .CodeMirror {
 	width: 100%;
 	min-height: 500px !important;
