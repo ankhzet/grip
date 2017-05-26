@@ -7,29 +7,31 @@ import { CollectionConnector } from '../../core/server/CollectionConnector';
 import { TranscoderInterface } from '../../core/server/TranscoderInterface';
 import { TranscoderAggregate } from '../../core/server/TranscoderAggregate';
 import { ServerConnector } from '../../core/client/ServerConnector';
+import { CallbackStore } from "./CallbackStore";
 
 export abstract class ObservableConnectedList<T extends IdentifiableInterface> extends ObservableList<T> {
 	protected connector: ServerConnector;
 	protected collection: CollectionConnector;
-	private resolver: {[request: number]: (any) => any} = [];
-	private request = 0;
 
+	private resolvers: CallbackStore;
 	private transcoders: TranscoderAggregate<T, {}>;
 
 	constructor(connector: ServerConnector, collection: CollectionConnector) {
 		super();
 
+		this.resolvers = new CallbackStore();
 		this.transcoders = new TranscoderAggregate<T, {}>();
 		this.collection = collection;
 		this.collection.updated(this.invalidate.bind(this));
 
 		this.connector = connector;
 		this.connector.listen(SendAction, (data: SendPacketData) => {
-			let resolver = this.resolver[data.payload];
+			let resolver = this.resolvers.pop(data.payload);
 
 			if (resolver) {
-				delete this.resolver[data.payload];
-				resolver(data.data);
+				return resolver(data.data);
+			} else {
+				console.log('unmet resolver', data.payload);
 			}
 		});
 	}
@@ -40,20 +42,19 @@ export abstract class ObservableConnectedList<T extends IdentifiableInterface> e
 
 	protected pull(uids: string[]): Promise<PackageInterface<IdentifiableInterface>> {
 		return new Promise((resolve) => {
-			let uid = this.request++;
-			this.resolver[uid] = resolve;
 			this.collection.fetch(
 				uids.length ? { uid: { $in: uids} } : {},
-				uid
+				this.resolvers.push(resolve)
 			);
 		});
 	}
 
 	protected push(pack: PackageInterface<T>): Promise<string[]> {
 		return new Promise((resolve) => {
-			let uid = this.request++;
-			this.resolver[uid] = resolve;
-			this.collection.update(pack, uid);
+			this.collection.update(
+				pack,
+				this.resolvers.push(resolve)
+			);
 		});
 	}
 
