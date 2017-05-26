@@ -110,7 +110,7 @@ class App extends React.Component<LocationProps, AppState> {
 					Alertify.alert(`
 <div class="col-xs-12">
 <h4 class="text-danger">Failed "${action}" action:</h4>
-<pre class="text-danger">${error.replace('\n', '<br />')}</pre>
+<pre class="text-danger">${error.replace('<', '&lt;')}</pre>
 </div>`);
 					break;
 			}
