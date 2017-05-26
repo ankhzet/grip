@@ -1,8 +1,8 @@
 
 import { PackageInterface } from './PackageInterface';
-import { IdentifiableInterface } from './IdentifiableInterface';
+import { IdentifiableInterface as Identifiable } from './IdentifiableInterface';
 
-export class Package<M extends IdentifiableInterface> implements PackageInterface<M> {
+export class Package<M extends Identifiable> implements PackageInterface<M> {
 	[uid: string]: M;
 
 	constructor(instances?: M[]) {
@@ -13,6 +13,16 @@ export class Package<M extends IdentifiableInterface> implements PackageInterfac
 				this[(instance && instance.uid) ? instance.uid : key] = instance;
 			}
 		}
+	}
+
+	static create<S extends Identifiable, D extends Identifiable>(data: PackageInterface<S>, mapper: (i: S) => D): PackageInterface<D> {
+		let pack = new this<D>();
+
+		for (let uid in data) {
+			pack[uid] = mapper(data[uid]);
+		}
+
+		return pack;
 	}
 
 }
