@@ -130,19 +130,33 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 						</div>
 
 						<div className="form-group">
-							<div className="input-group col-xs-12 reactive-editor">
-								<CodeMirror
-									className="form-control-static col-xs-12"
-									value={ book.matchers.get(Book.MATCHER_TOC) }
-									options={{
-										mode: 'javascript',
-										theme: 'base16-oceanicnext-dark',
-										lineNumbers: true,
-										indentWithTabs: true,
-										tabSize: 2,
-										readOnly: true,
-									}}
-								/>
+							<div className="col-xs-12">
+								<ul className="nav nav-tabs">
+									{ Object.keys(Book.matchers).map((matcher, index) => (
+										<li className={ index ? '' : 'active' }>
+											<a href={ '#matcher-' + matcher } data-toggle="tab">{ matcher }</a>
+										</li>
+									)) }
+								</ul>
+
+								<div className="tab-content">
+									{ Object.keys(Book.matchers).map((matcher) => (
+										<div className="tab-pane active" id={ 'matcher-' + matcher }>
+											<CodeMirror
+												className="form-control-static"
+												value={ book.matchers.get(matcher) }
+												options={{
+													mode: 'javascript',
+													theme: 'base16-oceanicnext-dark',
+													lineNumbers: true,
+													indentWithTabs: true,
+													tabSize: 2,
+													readOnly: true,
+												}}
+											/>
+										</div>
+									)) }
+								</div>
 							</div>
 						</div>
 

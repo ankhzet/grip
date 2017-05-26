@@ -122,31 +122,36 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 								<div className="input-group">
 									<div className="input-group-addon">
 										<ul className="nav nav-tabs">
-											<li className="active">
-												<a href="#a" data-toggle="tab">TOC</a>
-											</li>
+											{ Object.keys(Book.matchers).map((matcher, index) => (
+												<li className={ index ? '' : 'active' }>
+													<a href={ '#matcher-' + matcher } data-toggle="tab">{ matcher }</a>
+												</li>
+											)) }
 										</ul>
 									</div>
 
 									<div className="tab-content form-control">
-										<div className="tab-pane active" id="a">
-											<CodeMirror
-												value={ this.state.form.matchers[Book.MATCHER_TOC] }
-												options={{
-													mode: 'javascript',
-													theme: 'base16-oceanicnext-dark',
-													lineNumbers: true,
-													indentWithTabs: true,
-													tabSize: 2,
-													readOnly: false,
-												}}
-												onChange={ (value) => this.matcherChanged(Book.MATCHER_TOC, value) }
-											/>
-										</div>
+										{ Object.keys(Book.matchers).map((matcher) => (
+											<div className="tab-pane active" id={ 'matcher-' + matcher }>
+												<CodeMirror
+													value={ this.state.form.matchers[matcher] }
+													options={{
+														mode: 'javascript',
+														theme: 'base16-oceanicnext-dark',
+														lineNumbers: true,
+														indentWithTabs: true,
+														tabSize: 2,
+														readOnly: false,
+													}}
+													onChange={ (value) => this.matcherChanged(matcher, value) }
+												/>
+											</div>
+										)) }
 									</div>
 								</div>
 
 							</div>
+
 						</div>
 					</div>
 				</PanelBody>
