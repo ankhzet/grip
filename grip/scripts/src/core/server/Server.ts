@@ -1,5 +1,4 @@
 
-import { Port } from '../parcel/Port';
 import { Listener } from '../parcel/Listener';
 
 import { ClientsPool } from "../parcel/ClientsPool";
@@ -16,8 +15,9 @@ import { HandshakeAction, HandshakePacketData } from '../parcel/actions/Base/Han
 import { ActionHandler } from '../parcel/ActionHandler';
 import { ActionConstructor } from '../parcel/actions/Action';
 import { Packet } from '../parcel/Packet';
+import { ServerConnector } from '../client/ServerConnector';
 
-export class Server<C extends Port> extends Listener<C> implements PacketHandler<C> {
+export class Server<C extends ServerConnector> extends Listener<C> implements PacketHandler<C> {
 	private dispatcher: PacketDispatcher;
 
 	public transcoder: TranscoderInterface<any, any>;
@@ -115,9 +115,11 @@ export class Server<C extends Port> extends Listener<C> implements PacketHandler
 		client = this.prepareAfterConnect(client);
 		console.log('handshaked', data);
 
-		return client.listen(null, (sender: C, data: any, packet: Packet<any>) => {
+		client.listen(null, (sender: C, data: any, packet: Packet<any>) => {
 			return this.dispatcher.dispatch(client, packet);
 		});
+
+		return false;
 	}
 
 	_handle_send({ what, data: payload }: SendPacketData, client, packet) {
