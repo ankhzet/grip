@@ -15,7 +15,7 @@ const EMPTY_MATCHER = `
 		}
 
 		match(content) {
-			throw new Error('Not implemented.').
+			throw new Error('Not implemented.');
 		}
 
 	}
