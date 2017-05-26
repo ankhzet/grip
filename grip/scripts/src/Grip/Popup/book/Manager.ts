@@ -4,10 +4,10 @@ import { ObservableConnectedList } from '../../../components/Reactivity/Observab
 import { PackageInterface } from '../../../core/db/data/PackageInterface';
 import { ReactiveInterface } from '../../../components/Reactivity/ReactiveInterface';
 import { BooksPackage } from '../../Domain/BooksPackage';
-import { BookTranscoder } from '../../Domain/Transcoders/Book';
 import { CollectionConnector } from '../../../core/server/CollectionConnector';
 import { BooksDepot } from '../../Domain/BooksDepot';
 import { GripServerConnector } from '../../Client/GripServerConnector';
+import { BookTranscoder } from '../../Domain/Transcoders/Packet/BookTranscoder';
 
 export class BookManager extends ObservableConnectedList<Book> implements ReactiveInterface<Book> {
 	static ACTION_CACHE = 'cache';
