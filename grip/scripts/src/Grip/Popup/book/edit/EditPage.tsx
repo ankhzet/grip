@@ -74,7 +74,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 	}
 
 	componentWillReceiveProps(next) {
-		this.pullBook(next.uid);
+		this.pullBook(next.params.id);
 	}
 
 	componentWillMount() {
