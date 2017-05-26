@@ -11,7 +11,7 @@ export class ClientsPool<C extends Port> {
 		this.factory = factory;
 	}
 
-	create(port: chrome.runtime.Port) {
+	create(port: chrome.runtime.Port): C {
 		return this.factory(port);
 	}
 

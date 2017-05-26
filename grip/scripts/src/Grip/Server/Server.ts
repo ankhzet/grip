@@ -1,7 +1,7 @@
 
 import { Server } from '../../core/server/Server';
 import { PacketDispatcher } from '../../core/parcel/PacketDispatcher';
-import { GripClient } from './Client';
+import { GripClient } from './GripClient';
 import { GripActions } from './actions/GripActions';
 import { ContentedClientsPool } from './ContentedClientsPool';
 
