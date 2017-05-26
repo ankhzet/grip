@@ -31,10 +31,8 @@ export class Utils {
 
 	static relative(url: string): string {
 		let uri = new URL(url);
-		uri.host = '';
-		uri.port = '';
 
-		return uri.toString();
+		return uri.toString().replace(uri.origin, '');
 	}
 
 	static $ = JQuery;
