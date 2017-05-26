@@ -9,7 +9,7 @@ import { BooksPageRoutes, BooksPage } from './BooksPage';
 import { BookManager } from './book/Manager';
 import { ManagerInterface } from '../../components/Reactivity/ManagerInterface';
 import { Book } from '../Domain/Book';
-import { ServerConnector } from '../Client/ServerConnector';
+import { GripServerConnector } from '../Client/GripServerConnector';
 import { SendAction } from '../../core/parcel/actions/Base/Send';
 import { Alertify } from "../../core/utils/alertify";
 // import { Breadcrumbs } from '../breadcrumbs';
@@ -85,20 +85,12 @@ interface AppState {
 }
 
 class App extends React.Component<LocationProps, AppState> {
-	private server: ServerConnector;
+	private server: GripServerConnector;
 
 	constructor(props) {
 		super(props);
 
-		this.server = new ServerConnector();
-		this.state = {
-			books: new BookManager(this.server),
-		};
-
-		this.server.handshake();
-	}
-
-	componentWillMount() {
+		this.server = new GripServerConnector();
 		this.server.listen(SendAction, ({ what, data: { action, error } }) => {
 			switch (what) {
 				case 'error':
@@ -110,6 +102,13 @@ class App extends React.Component<LocationProps, AppState> {
 </div>`);
 					break;
 			}
+		});
+
+		this.state = {
+			books: new BookManager(this.server),
+		};
+
+		this.server.handshake(() => {
 		});
 	}
 
