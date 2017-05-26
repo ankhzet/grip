@@ -11,7 +11,7 @@ import { Cacher } from './Client/Cacher';
 import { PagesCache } from './Client/Book/PagesCache';
 import { Collection } from '../core/server/data/Collection';
 import { TranscoderInterface } from '../core/server/TranscoderInterface';
-import { BookTranscoder } from './Domain/Transcoders/Book';
+import { BookTranscoder } from "./Domain/Transcoders/Packet/BookTranscoder";
 
 export class Grip {
 	server: GripServer;
