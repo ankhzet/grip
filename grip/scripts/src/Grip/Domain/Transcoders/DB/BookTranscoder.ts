@@ -10,7 +10,6 @@ export class BookTranscoder implements TranscoderInterface<Book, {}> {
 			switch (prop) {
 				case 'toc':
 					value = ObjectUtils.transform(value, (title, uri) => (
-						console.log('encoding', uri || "", btoa(uri || "")),
 						[title, btoa(uri || "")]
 					));
 					break;
@@ -30,7 +29,6 @@ export class BookTranscoder implements TranscoderInterface<Book, {}> {
 				case 'toc':
 					value = ObjectUtils.transform(value, (title, uri) => {
 						try {
-							console.log('decoding', uri || "", atob(uri || ""));
 							return [title, atob(uri || "")];
 						} catch (e) {
 							return [title, uri];
