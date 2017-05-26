@@ -1,23 +1,24 @@
 
-import { Listener } from '../parcel/Listener';
+import { ObjectUtils } from '../utils/ObjectUtils';
 
-import { ClientsPool } from "../parcel/ClientsPool";
+import { ActionHandler } from '../parcel/ActionHandler';
+import { ActionConstructor } from '../parcel/actions/Action';
+import { Packet } from '../parcel/Packet';
 import { PacketDispatcher, PacketHandler } from "../parcel/PacketDispatcher";
 
+import { HandshakePacketData } from '../parcel/actions/Base/Handshake';
 import { SendPacketData, SendAction } from '../parcel/actions/Base/Send';
+
+import { Listener } from '../parcel/Listener';
+import { ClientsPool } from "../parcel/ClientsPool";
+import { ClientConnector } from './ClientConnector';
 
 import { IdentifiableInterface } from '../db/data/IdentifiableInterface';
 import { TranscoderInterface } from './TranscoderInterface';
 import { Collection } from './data/Collection';
 import { CollectionThunk, Synchronizer } from './Synchronizer';
-import { ObjectUtils } from '../utils/ObjectUtils';
-import { HandshakeAction, HandshakePacketData } from '../parcel/actions/Base/Handshake';
-import { ActionHandler } from '../parcel/ActionHandler';
-import { ActionConstructor } from '../parcel/actions/Action';
-import { Packet } from '../parcel/Packet';
-import { ServerConnector } from '../client/ServerConnector';
 
-export class Server<C extends ServerConnector> extends Listener<C> implements PacketHandler<C> {
+export class Server<C extends ClientConnector> extends Listener<C> implements PacketHandler<C> {
 	private dispatcher: PacketDispatcher;
 
 	public transcoder: TranscoderInterface<any, any>;
@@ -83,11 +84,9 @@ export class Server<C extends ServerConnector> extends Listener<C> implements Pa
 	}
 
 	connect(port: chrome.runtime.Port): C {
-		let client = super.connect(port)
-			.listen(HandshakeAction, this._handle_handshake.bind(this))
+		return super.connect(port)
+			.handshake(this._handle_handshake.bind(this))
 		;
-		client.handshake();
-		return client;
 	}
 
 	disconnect(client: C): boolean {

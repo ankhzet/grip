@@ -7,12 +7,12 @@ import { BooksPackage } from '../../Domain/BooksPackage';
 import { BookTranscoder } from '../../Domain/Transcoders/Book';
 import { CollectionConnector } from '../../../core/server/CollectionConnector';
 import { BooksDepot } from '../../Domain/BooksDepot';
-import { ServerConnector } from '../../Client/ServerConnector';
+import { GripServerConnector } from '../../Client/GripServerConnector';
 
 export class BookManager extends ObservableConnectedList<Book> implements ReactiveInterface<Book> {
 	static ACTION_CACHE = 'cache';
 
-	constructor(connector: ServerConnector) {
+	constructor(connector: GripServerConnector) {
 		super(
 			connector,
 			new CollectionConnector(connector, BooksDepot.collection)
@@ -22,12 +22,14 @@ export class BookManager extends ObservableConnectedList<Book> implements Reacti
 	}
 
 	public perform(uids: string[], action: string, payload?: any): Promise<BooksPackage> {
+		let connector: GripServerConnector = <GripServerConnector>this.connector;
+
 		return this.get(uids)
 			.then((pack: PackageInterface<any>) => {
 				let results = Object.keys(pack).map((uid) => {
 					switch (action) {
 						case BookManager.ACTION_CACHE:
-							return this.connector.cache(uid);
+							return connector.cache(uid);
 					}
 				});
 

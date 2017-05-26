@@ -1,8 +1,8 @@
 
 import { BaseActions } from '../../core/parcel/actions/Base/BaseActions';
-import { ServerConnector } from '../../core/client/ServerConnector';
+import { ClientConnector } from '../../core/server/ClientConnector';
 
-export class GripClient extends ServerConnector {
+export class GripClientConnector extends ClientConnector {
 
 	constructor(port: chrome.runtime.Port) {
 		super('grip', port);
