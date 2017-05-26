@@ -82,7 +82,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 	}
 
 	render() {
-		let book = this.state.book;
+		let { book, form: { title, uri } } = this.state;
 
 		return (book || null) && (
 			<Panel>
@@ -103,7 +103,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 							<div className="col-xs-12">
 								<div className="input-group">
 									<span className="input-group-addon">Title</span>
-									<input className="form-control" value={ this.state.form.title } onChange={ (e) => this.titleChanged(e) } />
+									<input className="form-control" value={ title } onChange={ (e) => this.titleChanged(e) } />
 								</div>
 							</div>
 						</div>
@@ -112,7 +112,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 							<div className="col-xs-12">
 								<div className="input-group">
 									<span className="input-group-addon">URI</span>
-									<input className="form-control" value={ this.state.form.uri } onChange={ (e) => this.uriChanged(e) } />
+									<input className="form-control" value={ uri } onChange={ (e) => this.uriChanged(e) } />
 								</div>
 							</div>
 						</div>

@@ -49,7 +49,7 @@ class Navbar extends React.Component<LocationProps, {}> {
 	}
 
 	render() {
-		let menu = this.props.menu;
+		let { menu } = this.props;
 
 		return (
 			<nav className="navbar navbar-default navbar-fixed.top" role="navigation">
