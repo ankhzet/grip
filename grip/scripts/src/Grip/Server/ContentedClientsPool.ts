@@ -1,6 +1,6 @@
 
 import { ClientsPool } from '../../core/parcel/ClientsPool';
-import { GripClient } from './Client';
+import { GripClient } from './GripClient';
 
 export class ContentedClientsPool extends ClientsPool<GripClient> {
 
