@@ -82,21 +82,11 @@ export class Synchronizer {
 	}
 
 	encode<T extends IdentifiableInterface>(thunk: CollectionThunk<T, any>, data?: PackageInterface<T>): PackageInterface<any> {
-		return new Package(
-			Object.keys(data)
-				.map((uid) => (
-					thunk.transcoder.encode(data[uid])
-				))
-		);
+		return Package.create<T, any>(data, (i: T) => thunk.transcoder.encode(i));
 	}
 
 	decode<T extends IdentifiableInterface>(thunk: CollectionThunk<T, any>, data?: PackageInterface<any>): PackageInterface<T> {
-		return new Package(
-			Object.keys(data)
-				.map((uid) => (
-					thunk.transcoder.decode(data[uid])
-				))
-		);
+		return Package.create<any, T>(data, (i: any) => thunk.transcoder.decode(i));
 	}
 
 }
