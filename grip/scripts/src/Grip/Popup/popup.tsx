@@ -12,6 +12,7 @@ import { Book } from '../Domain/Book';
 import { GripServerConnector } from '../Client/GripServerConnector';
 import { SendAction } from '../../core/parcel/actions/Base/Send';
 import { Alertify } from "../../core/utils/alertify";
+import { Glyph } from '../../components/glyph';
 // import { Breadcrumbs } from '../breadcrumbs';
 
 interface PageLink {
@@ -26,6 +27,7 @@ interface Menu extends PageLink {
 interface LocationProps {
 	location: { action: "PUSH" | "POP", pathname: string };
 	menu: Menu;
+	connected: boolean;
 }
 
 class Navbar extends React.Component<LocationProps, {}> {
@@ -49,7 +51,7 @@ class Navbar extends React.Component<LocationProps, {}> {
 	}
 
 	render() {
-		let { menu } = this.props;
+		let { menu, connected } = this.props;
 
 		return (
 			<nav className="navbar navbar-default navbar-fixed.top" role="navigation">
@@ -61,7 +63,16 @@ class Navbar extends React.Component<LocationProps, {}> {
 							<span className="icon-bar" />
 							<span className="icon-bar" />
 						</button>
-						<Link to={ menu.link } className="navbar-brand" target="_blank">{ menu.title }</Link>
+						<Link to={ menu.link } className="navbar-brand" target="_blank">
+							{ menu.title }
+
+							{ connected || (
+								<div style={{ fontSize: '74%', display: 'inline-block', marginLeft: '3px', }}>
+									<Glyph name="repeat glyphicon-animate" />
+								</div>
+							)}
+						</Link>
+
 					</div>
 
 					<div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -81,7 +92,8 @@ class Navbar extends React.Component<LocationProps, {}> {
 }
 
 interface AppState {
-	books: ManagerInterface<Book>,
+	connected?: boolean;
+	books?: ManagerInterface<Book>,
 }
 
 class App extends React.Component<LocationProps, AppState> {
@@ -105,10 +117,14 @@ class App extends React.Component<LocationProps, AppState> {
 		});
 
 		this.state = {
+			connected: false,
 			books: new BookManager(this.server),
 		};
 
 		this.server.handshake(() => {
+			this.setState({
+				connected: true,
+			});
 		});
 	}
 
@@ -141,6 +157,7 @@ class App extends React.Component<LocationProps, AppState> {
 		let navprops: LocationProps = {
 			location: this.props.location,
 			menu: this.breadcrumbs(),
+			connected: this.state.connected,
 		};
 
 		let childrenprops = {
