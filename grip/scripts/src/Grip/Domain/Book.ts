@@ -1,7 +1,7 @@
 
 import { Model } from '../../core/db/data/Model';
 import { TocInterface } from './TocInterface';
-import { ObjectUtils } from '../../core/utils/object';
+import { ObjectUtils } from '../../core/utils/ObjectUtils';
 import { Matchers } from './Matching/Matchers';
 import { Utils } from '../Client/Utils';
 

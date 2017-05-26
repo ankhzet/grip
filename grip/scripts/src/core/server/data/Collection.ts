@@ -5,7 +5,7 @@ import { ModelStore } from '../../db/ModelStore';
 import { SyncResultInterface } from '../../db/SyncResultInterface';
 import { PackageInterface } from '../../db/data/PackageInterface';
 import { Package } from '../../db/data/Package';
-import { ObjectUtils } from '../../utils/object';
+import { ObjectUtils } from '../../utils/ObjectUtils';
 import { TranscoderInterface } from '../TranscoderInterface';
 import { Eventable } from '../../utils/Eventable';
 
