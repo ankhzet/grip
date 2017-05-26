@@ -1,75 +1,82 @@
 
 import { GripDB } from './GripDB';
-import { Packet } from '../core/parcel/Packet';
 import { GripServer } from './Server/Server';
-import { GripClient } from './Server/Client';
 
-import { BooksDepot } from './Domain/BooksDepot';
+import { GripActions } from './Server/actions/GripActions';
 import { CacheAction, CachePacketData } from './Server/actions/Cache';
-import { SendAction, SendPacketData } from '../core/parcel/actions/Base/Send';
+
+import { Book } from './Domain/Book';
+import { BooksDepot } from './Domain/BooksDepot';
 import { Cacher } from './Client/Cacher';
 import { PagesCache } from './Client/Book/PagesCache';
-import { Book } from './Domain/Book';
-import { GripActions } from './Server/actions/GripActions';
-import { ContentedClientsPool } from './Server/ContentedClientsPool';
-import { PacketDispatcher } from '../core/parcel/PacketDispatcher';
+import { Collection } from '../core/server/data/Collection';
+import { TranscoderInterface } from '../core/server/TranscoderInterface';
+import { BookTranscoder } from './Domain/Transcoders/Book';
 
 export class Grip {
-	server: GripServer<GripClient>;
+	server: GripServer;
 	db: GripDB;
-	books: BooksDepot;
+	collections: {[name: string]: Collection<any>} = {
+		books: null,
+	};
+	transcoders: {[name: string]: TranscoderInterface<any, any>} = {
+		books: null,
+	};
 
 	constructor() {
 		this.db = new GripDB();
-		this.books = new BooksDepot(this.db);
+		this.collections = {
+			books: new BooksDepot(this.db),
+		};
+		this.transcoders = {
+			books: new BookTranscoder(),
+		};
 
-		this.server = new GripServer(
-			new PacketDispatcher(GripActions),
-			new ContentedClientsPool((port: chrome.runtime.Port) => {
-				return new GripClient(port);
-			})
-		);
+		this.server = new GripServer();
+		let dtr = this.server.transcoder;
 
-		this.server.collection(this.books);
+		for (let name of Object.keys(this.collections)) {
+			let collection = this.collections[name];
+			let transcoder = this.transcoders[name];
 
-		this.server.on(SendAction, this._handle_send.bind(this));
-		this.server.on(CacheAction, this._handle_cache.bind(this));
-
-		this.books.changed((uids: string[]) => {
-			this.server.broadcast(GripActions.updated, { what: 'books', uids});
-		})
-	}
-
-	_handle_send({ what, data: payload }: SendPacketData, client: GripClient, packet: Packet<SendPacketData>) {
-		switch (what) {
-			case 'error': {
-				console.log(`Client ${client.uid} reported error during ${payload.action}:\n`,
-					JSON.stringify(payload.data), '\n',
-					`\t`, payload.error, '\n',
-					packet
-				);
-
-				break;
+			if (transcoder && dtr) {
+				transcoder = ((transcoder: TranscoderInterface<any, any>) => ({
+					encode(model) {
+						return dtr.encode(transcoder.encode(model))
+					},
+					decode(data) {
+						return dtr.decode(transcoder.decode(data))
+					}
+				}))(transcoder);
 			}
+
+			this.server.collection(collection, this.transcoders[name]);
+
+			collection.changed((uids: string[]) => {
+				this.server.broadcast(GripActions.updated, { what: name, uids});
+			});
 		}
+
+		this.server.on(CacheAction, this._handle_cache.bind(this));
 	}
 
-	async _handle_cache({ book: { uid, title } }: CachePacketData) {
-		let book = await this.books.getOne(uid);
+	async _handle_cache({ uid }: CachePacketData) {
+		let book = await this.collections.books.getOne(uid);
 
 		if (!book) {
-			throw new Error(`Book "${title}" with uid "${uid}" not found`);
+			throw new Error(`Book with uid "${uid}" not found`);
 		}
 
-		(new Cacher())
+		return (new Cacher())
 			.fetch({
 				tocURI: book.uri,
 				matchers: book.matchers,
 			}).then((cache: PagesCache) => {
 				book.toc = cache.toc;
 
-				return this.books.setOne(book);
+				return this.collections.books.setOne(book);
 			}).then((book: Book) => {
+				console.log('Updated cache:', book);
 			})
 		;
 	}

@@ -1,20 +1,51 @@
 
 import * as React from "react";
 
-import { Panel, PanelFooter, PanelHeader, PanelBody } from '../../../panel';
-import { Button } from '../../../button';
-import { Glyph } from '../../../glyph';
+import { Panel, PanelFooter, PanelHeader, PanelBody } from '../../../../components/panel';
+import { Button } from '../../../../components/button';
+import { Glyph } from '../../../../components/glyph';
 
 import * as CodeMirror from 'react-codemirror';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/lib/codemirror.css';
 
-import { Book } from '../../../../Grip/Domain/Book';
+import { Book } from '../../../Domain/Book';
 import { BooksPage } from '../../BooksPage';
-import { ManagerInterface } from '../../../Reactivity/ManagerInterface';
+import { ManagerInterface } from '../../../../components/Reactivity/ManagerInterface';
 import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
 import { Link } from 'react-router';
+import { Utils } from '../../../Client/Utils';
+import { TocInterface } from '../../../Domain/TocInterface';
+
+interface TocListProps {
+	uid: string;
+	toc: TocInterface;
+	columns?: number;
+}
+
+class TocList extends React.Component<TocListProps, {}> {
+	static DEFAULT_COLUMNS = 3;
+
+	render() {
+		let { uid, toc, columns } = this.props;
+		let links = Object.keys(toc);
+		let col = 12 / Math.min(columns || TocList.DEFAULT_COLUMNS, 12);
+
+		return (links.length || null) && (
+			<div id={ 'chapter-list-' + uid } style={{ marginBottom: "10px", }}>
+				{ Utils.chunks(links, 10).map((chunk, offset) => (
+					<ul className={ 'col-xs-' + col }>
+						{ chunk.map((uri) => (
+							<li key={ uri }><Link to={ uri }>{ toc[uri] }</Link></li>
+						)) }
+					</ul>
+				)) }
+			</div>
+		);
+	}
+}
+
 
 export interface ShowPageProps {
 	manager: ManagerInterface<Book>;
@@ -55,7 +86,6 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 
 	render() {
 		let book = this.state.book;
-		let links = (book && book.toc && Object.keys(book.toc)) || [];
 
 		return (book || null) && (
 			<Panel>
@@ -90,6 +120,16 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 						</div>
 
 						<div className="form-group">
+							<div className="input-group col-xs-12" data-toggle="collapse" data-target={ '#chapter-list-' + book.uid }>
+								<label className="col-xs-2 form-control-static">Chapters:</label>
+								<span className="col-xs-10 form-control-static">{ Object.keys(book.toc).length }</span>
+							</div>
+							<div className="collapse collapsed col-xs-12" id={ 'chapter-list-' + book.uid }>
+								<TocList uid={ book.uid } toc={ book.toc } columns={ 4 } />
+							</div>
+						</div>
+
+						<div className="form-group">
 							<div className="input-group col-xs-12 reactive-editor">
 								<CodeMirror
 									className="form-control-static col-xs-12"
@@ -105,20 +145,6 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 								/>
 							</div>
 						</div>
-
-						{ (links.length || null) &&
-						<div className="form-group">
-							<div className="input-group">
-								<label className="col-xs-2 form-control-static">Chapters:</label>
-								<span className="col-xs-10 form-control-static">{ links.length }</span>
-							</div>
-							<ul className="collapse collapsed">
-								{ links.map((uri) => (
-									<li key={ uri }><Link to={ uri }>{ book.toc[uri] }</Link></li>
-								)) }
-							</ul>
-						</div>
-						}
 
 					</form>
 				</PanelBody>

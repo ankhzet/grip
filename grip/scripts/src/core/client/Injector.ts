@@ -29,12 +29,18 @@ export class Injector {
 		if (aged || !last) {
 			this.log(`Last request ${age} msec ago (${watch} delay for reconnect)`);
 
+			if (aged) {
+				this.connector.disconnect();
+			}
+
 			if (!this.connector.rebind()) {
 				if (this.aggressive) {
 					this.log('Failed to connect to extension, reloading');
 
 					window.location.reload();
 				}
+			} else {
+				this.connector.handshake();
 			}
 		}
 

@@ -1,6 +1,6 @@
 
 import * as DataStore from 'nedb';
-import { ObjectUtils } from '../utils/object';
+import { ObjectUtils } from '../utils/ObjectUtils';
 import { Package } from './data/Package';
 import { SyncResultInterface } from './SyncResultInterface';
 import { IdentifiableInterface } from './data/IdentifiableInterface';

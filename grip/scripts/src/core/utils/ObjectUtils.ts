@@ -42,4 +42,18 @@ export class ObjectUtils {
 		return target;
 	}
 
+	public static transform(src: any, c: (value: any, prop: string, has: any) => any, r: any = {}) {
+		let props = Object.keys(src);
+
+		for (let prop of props) {
+			let [n = undefined, p = undefined] = c(src[prop], prop, r[prop]) || [];
+
+			if (n !== undefined) {
+				r[p] = n;
+			}
+		}
+
+		return r;
+	}
+
 }
