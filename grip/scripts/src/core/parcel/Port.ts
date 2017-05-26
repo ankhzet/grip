@@ -78,12 +78,12 @@ export class Port {
 			error: error || null,
 		};
 
-		Tracer.trace(' > ', this, packet);
+		// Tracer.trace(' > ', this, packet);
 		this.port.postMessage(packet);
 	}
 
 	process(packet: Packet<any>) {
-		Tracer.trace(' < ', this, packet);
+		// Tracer.trace(' < ', this, packet);
 		this.touched = +new Date;
 
 		this.dispatcher.dispatch(this, packet)
