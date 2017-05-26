@@ -4,7 +4,7 @@
   "description": "Blog fetcher",
   "scripts": {
     "pack": "webpack --display-modules --progress --colors -p",
-    "watchdog": "webpack --progress --colors --watch --watch-poll --verbose",
+    "watchdog": "webpack --progress --colors --watch --watch-poll",
     "install:webpack": "npm link webpack",
     "install:typings": "npm link typings",
     "install:global": "npm run install:webpack && npm run install:typings"
