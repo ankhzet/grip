@@ -70,6 +70,8 @@ export class PacketDispatcher implements PacketDispatchDelegate<any> {
 					for (let handler of handlers) {
 						if (promise = handler(sender, packet)) {
 							promises.push(promise);
+						} else if (promise === false) {
+							break;
 						}
 					}
 

@@ -3,7 +3,6 @@ import { BaseActions } from './actions/Base/BaseActions';
 import { PacketDispatcher } from './PacketDispatcher';
 import { Packet } from './Packet';
 import { ActionConstructor } from './actions/Action';
-import { HandshakeAction, HandshakePacketData } from './actions/Base/Handshake';
 import { ActionHandler } from './ActionHandler';
 import { Tracer } from './Tracer';
 import { PortUtils } from './PortUtils';
@@ -18,7 +17,7 @@ export class Port {
 	public uid: string = PortUtils.guid('C');
 	public touched: number = 0;
 
-	constructor(name: string, port?: chrome.runtime.Port) {
+	constructor(name: string) {
 		this.name = PortUtils.portName(name);
 	}
 
@@ -27,19 +26,19 @@ export class Port {
 			return false;
 		}
 
-		this.port.disconnect();
-		this.port = null;
+		try {
+			this.port.disconnect();
+		} catch (e) {
+
+		} finally {
+			this.port = null;
+		}
 
 		return true;
 	}
 
 	rebind(port?: chrome.runtime.Port) {
-		return this.bind(port || chrome.runtime.connect({ name: this.name }));
-	}
-
-	handshake() {
-		console.log('connecting');
-		return BaseActions.handshake(this, { uid: this.uid });
+		return this.bind(port || this.port || chrome.runtime.connect({ name: this.name }));
 	}
 
 	fire(sender: string, event: string) {
@@ -86,12 +85,6 @@ export class Port {
 				BaseActions.send(this, { what: 'error', data: packet}, e.toLocaleString());
 			});
 	}
-
-	connectable(data: HandshakePacketData) {
-		this.uid = PortUtils.rename(this.uid, data.uid);
-		this.touched = +new Date;
-	}
-
 }
 
 export type ClientFactory<C extends Port> = (port: chrome.runtime.Port) => C;

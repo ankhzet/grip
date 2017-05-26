@@ -94,6 +94,8 @@ class App extends React.Component<LocationProps, AppState> {
 		this.state = {
 			books: new BookManager(this.server),
 		};
+
+		this.server.handshake();
 	}
 
 	componentWillMount() {
