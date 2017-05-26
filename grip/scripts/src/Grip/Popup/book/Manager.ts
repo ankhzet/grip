@@ -1,13 +1,13 @@
 
-import { Book } from '../../../Grip/Domain/Book';
-import { ObservableConnectedList } from '../../Reactivity/ObservableConnectedList';
+import { Book } from '../../Domain/Book';
+import { ObservableConnectedList } from '../../../components/Reactivity/ObservableConnectedList';
 import { PackageInterface } from '../../../core/db/data/PackageInterface';
-import { ReactiveInterface } from '../../Reactivity/ReactiveInterface';
-import { BooksPackage } from '../../../Grip/Domain/BooksPackage';
-import { BookTranscoder } from '../../../Grip/Domain/Transcoders/Book';
+import { ReactiveInterface } from '../../../components/Reactivity/ReactiveInterface';
+import { BooksPackage } from '../../Domain/BooksPackage';
+import { BookTranscoder } from '../../Domain/Transcoders/Book';
 import { CollectionConnector } from '../../../core/server/CollectionConnector';
-import { BooksDepot } from '../../../Grip/Domain/BooksDepot';
-import { ServerConnector } from '../../../Grip/Client/ServerConnector';
+import { BooksDepot } from '../../Domain/BooksDepot';
+import { ServerConnector } from '../../Client/ServerConnector';
 
 export class BookManager extends ObservableConnectedList<Book> implements ReactiveInterface<Book> {
 	static ACTION_CACHE = 'cache';

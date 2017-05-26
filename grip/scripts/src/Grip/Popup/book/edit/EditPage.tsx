@@ -1,17 +1,17 @@
 
 import * as React from "react";
 
-import { Panel, PanelHeader, PanelBody, PanelFooter } from '../../../panel';
-import { Button } from '../../../button';
-import { Glyph } from '../../../glyph';
+import { Panel, PanelHeader, PanelBody, PanelFooter } from '../../../../components/panel';
+import { Button } from '../../../../components/button';
+import { Glyph } from '../../../../components/glyph';
 
 import * as CodeMirror from 'react-codemirror';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/lib/codemirror.css';
 
-import { Book } from '../../../../Grip/Domain/Book';
-import { ManagerInterface } from '../../../Reactivity/ManagerInterface';
+import { Book } from '../../../Domain/Book';
+import { ManagerInterface } from '../../../../components/Reactivity/ManagerInterface';
 import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
 import { BooksPage } from '../../BooksPage';
 import { ObjectUtils } from "../../../../core/utils/ObjectUtils";

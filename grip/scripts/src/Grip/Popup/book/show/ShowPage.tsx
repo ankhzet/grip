@@ -1,22 +1,22 @@
 
 import * as React from "react";
 
-import { Panel, PanelFooter, PanelHeader, PanelBody } from '../../../panel';
-import { Button } from '../../../button';
-import { Glyph } from '../../../glyph';
+import { Panel, PanelFooter, PanelHeader, PanelBody } from '../../../../components/panel';
+import { Button } from '../../../../components/button';
+import { Glyph } from '../../../../components/glyph';
 
 import * as CodeMirror from 'react-codemirror';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/lib/codemirror.css';
 
-import { Book } from '../../../../Grip/Domain/Book';
+import { Book } from '../../../Domain/Book';
 import { BooksPage } from '../../BooksPage';
-import { ManagerInterface } from '../../../Reactivity/ManagerInterface';
+import { ManagerInterface } from '../../../../components/Reactivity/ManagerInterface';
 import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
 import { Link } from 'react-router';
-import { Utils } from '../../../../Grip/Client/Utils';
-import { TocInterface } from '../../../../Grip/Domain/TocInterface';
+import { Utils } from '../../../Client/Utils';
+import { TocInterface } from '../../../Domain/TocInterface';
 
 interface TocListProps {
 	uid: string;

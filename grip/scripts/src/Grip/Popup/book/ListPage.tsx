@@ -3,13 +3,13 @@ import * as React from 'react';
 
 import { Link, withRouter } from 'react-router'
 
-import { Glyph } from '../../glyph';
-import { Button } from '../../button';
-import { Panel, PanelHeader, PanelList } from '../../panel';
+import { Glyph } from '../../../components/glyph';
+import { Button } from '../../../components/button';
+import { Panel, PanelHeader, PanelList } from '../../../components/panel';
 
-import { Book } from '../../../Grip/Domain/Book';
-import { BooksPackage } from "../../../Grip/Domain/BooksPackage";
-import { ManagerInterface } from '../../Reactivity/ManagerInterface';
+import { Book } from '../../Domain/Book';
+import { BooksPackage } from "../../Domain/BooksPackage";
+import { ManagerInterface } from '../../../components/Reactivity/ManagerInterface';
 import { BookUIDelegateInterface } from "./delegates/BookUIDelegateInterface";
 import { ShowPage } from './show/ShowPage';
 import { EditPage } from './edit/EditPage';

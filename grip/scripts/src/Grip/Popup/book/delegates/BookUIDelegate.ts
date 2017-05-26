@@ -1,6 +1,6 @@
 
 import { BookUIDelegateInterface } from './BookUIDelegateInterface';
-import { Book } from '../../../../Grip/Domain/Book';
+import { Book } from '../../../Domain/Book';
 import { BookManager } from '../Manager';
 import { InjectedRouter } from 'react-router';
 import { ShowPage } from '../show/ShowPage';
