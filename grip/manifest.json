@@ -13,12 +13,6 @@
 			"scripts/background.js"
 		]
 	},
-	"content_scripts": [
-		{
-			"matches": ["*://*/*?grip"],
-			"js": ["scripts/commons.js", "scripts/content.js"]
-		}
-	],
 	"permissions": [
 		"background",
 		"notifications",
