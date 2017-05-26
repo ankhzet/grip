@@ -3,14 +3,15 @@ import { Packet } from './Packet';
 import { ActionConstructor } from './actions/Action';
 import { ActionHandler } from './ActionHandler';
 import { RepositoryInterface } from './actions/RepositoryInterface';
+import { Port } from './Port';
 
-export type PacketHandlerDescriptor<T, S> = {handler: ActionHandler<T, S>, action: ActionConstructor<T>};
+export type PacketHandlerDescriptor<T, S extends Port> = {handler: ActionHandler<T, S>, action: ActionConstructor<T>};
 
 export interface PacketDispatchDelegate<T> {
-	dispatch<S>(sender: S, packet: Packet<T>): boolean;
+	dispatch<S extends Port>(sender: S, packet: Packet<T>): Promise<boolean>;
 }
 
-export interface PacketHandler<S> {
+export interface PacketHandler<S extends Port> {
 	on<T>(action: ActionConstructor<T>, handler: ActionHandler<T, S>): this;
 }
 
@@ -24,7 +25,7 @@ export class PacketDispatcher implements PacketDispatchDelegate<any> {
 		this.repository = repository;
 	}
 
-	bind<T, C, S>(context: C, descriptors: PacketHandlerDescriptor<T, S>|(PacketHandlerDescriptor<T, S>[])): C {
+	bind<T, C, S extends Port>(context: C, descriptors: PacketHandlerDescriptor<T, S>|(PacketHandlerDescriptor<T, S>[])): C {
 		if (descriptors instanceof Array) {
 			for (let descriptor of descriptors) {
 				this.bind(context, descriptor);
@@ -54,10 +55,11 @@ export class PacketDispatcher implements PacketDispatchDelegate<any> {
 		return context;
 	}
 
-	dispatch<S>(sender: S, packet: Packet<any>) {
+	async dispatch<S extends Port>(sender: S, packet: Packet<any>): Promise<boolean> {
 		let handled = false;
 
 		try {
+			let promises = [], promise;
 
 			for (let action of [packet.action, PacketDispatcher.DEFAULT]) {
 				let handlers = this.actionHandlers[action];
@@ -66,16 +68,28 @@ export class PacketDispatcher implements PacketDispatchDelegate<any> {
 					handled = true;
 
 					for (let handler of handlers) {
-						handler(sender, packet);
+						if (promise = handler(sender, packet)) {
+							promises.push(promise);
+						} else if (promise === false) {
+							break;
+						}
 					}
+
 				}
 			}
 
+			await Promise.all(promises);
 		} catch (e) {
 			// let address = e.stack.match(/[^\s]+:\d+(:\d+)/)[0].split(':');
 			let stack = e.stack.split("\n").slice(1).join("\n");
 			packet.error = `${e}\n${stack}`;
-			console.error(`Error while dispatching request:`, e);
+
+			if (!e.logged) {
+				console.error(`Error while dispatching request:`, e);
+				e.logged = true;
+			}
+
+			throw e;
 		}
 
 		return handled;

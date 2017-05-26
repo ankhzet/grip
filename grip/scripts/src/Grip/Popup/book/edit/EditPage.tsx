@@ -1,20 +1,20 @@
 
 import * as React from "react";
 
-import { Panel, PanelHeader, PanelBody, PanelFooter } from '../../../panel';
-import { Button } from '../../../button';
-import { Glyph } from '../../../glyph';
+import { Panel, PanelHeader, PanelBody, PanelFooter } from '../../../../components/panel';
+import { Button } from '../../../../components/button';
+import { Glyph } from '../../../../components/glyph';
 
 import * as CodeMirror from 'react-codemirror';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/lib/codemirror.css';
 
-import { Book } from '../../../../Grip/Domain/Book';
-import { ManagerInterface } from '../../../Reactivity/ManagerInterface';
+import { Book } from '../../../Domain/Book';
+import { ManagerInterface } from '../../../../components/Reactivity/ManagerInterface';
 import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
 import { BooksPage } from '../../BooksPage';
-import { ObjectUtils } from "../../../../core/utils/object";
+import { ObjectUtils } from "../../../../core/utils/ObjectUtils";
 
 export interface EditPageProps {
 	delegate: BookUIDelegateInterface<Book>;
@@ -74,7 +74,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 	}
 
 	componentWillReceiveProps(next) {
-		this.pullBook(next.uid);
+		this.pullBook(next.params.id);
 	}
 
 	componentWillMount() {
@@ -82,7 +82,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 	}
 
 	render() {
-		let book = this.state.book;
+		let { book, form: { title, uri } } = this.state;
 
 		return (book || null) && (
 			<Panel>
@@ -103,7 +103,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 							<div className="col-xs-12">
 								<div className="input-group">
 									<span className="input-group-addon">Title</span>
-									<input className="form-control" value={ this.state.form.title } onChange={ (e) => this.titleChanged(e) } />
+									<input className="form-control" value={ title } onChange={ (e) => this.titleChanged(e) } />
 								</div>
 							</div>
 						</div>
@@ -112,7 +112,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 							<div className="col-xs-12">
 								<div className="input-group">
 									<span className="input-group-addon">URI</span>
-									<input className="form-control" value={ this.state.form.uri } onChange={ (e) => this.uriChanged(e) } />
+									<input className="form-control" value={ uri } onChange={ (e) => this.uriChanged(e) } />
 								</div>
 							</div>
 						</div>

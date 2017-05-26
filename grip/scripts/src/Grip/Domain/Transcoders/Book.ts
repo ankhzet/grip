@@ -1,30 +1,49 @@
 
 import { Book } from '../Book';
 import { TranscoderInterface } from '../../../core/server/TranscoderInterface';
+import { ObjectUtils } from '../../../core/utils/ObjectUtils';
 
 export class BookTranscoder implements TranscoderInterface<Book, {}> {
 
 	public encode(book: Book): any {
-		return {
-			uid: book.uid,
-			uri: book.uri,
-			title: book.title,
-			toc: book.toc,
-			matchers: book.matchers.code(),
-		};
+		return ObjectUtils.transform(book, (value, prop) => {
+			switch (prop) {
+				case 'toc':
+					value = ObjectUtils.transform(value, (title, uri) => (
+						[title, btoa(uri || "")]
+					));
+					break;
+
+				case 'matchers':
+					value = value.code();
+					break;
+			}
+
+			return [value, prop];
+		});
 	}
 
 	public decode(data: any, target?: Book): Book {
-		target = target || new Book(data.uid);
+		return ObjectUtils.transform(data, (value, prop, has) => {
+			switch (prop) {
+				case 'toc':
+					value = ObjectUtils.transform(value, (title, uri) => {
+						try {
+							return [title, atob(uri || "")];
+						} catch (e) {
+							return [title, uri];
+						}
+					});
+					break;
 
-		target.uri = data.uri;
-		target.title = data.title;
-		target.toc = data.toc;
+				case 'matchers':
+					value = ObjectUtils.transform(value, (code, matcher) => (
+						[code, matcher]
+					), has);
+					break;
+			}
 
-		for (let matcher of Object.keys(data.matchers)) {
-			target.matchers.set(matcher, data.matchers[matcher]);
-		}
-
-		return target;
+			return [value, prop];
+		}, target || new Book(data.uid));
 	}
 }

@@ -9,7 +9,7 @@ import "../../styles/main.css";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import { Popup } from "./components/popup/popup";
+import { Popup } from "./Grip/Popup/popup";
 
 ReactDOM.render(
 	<Popup />,

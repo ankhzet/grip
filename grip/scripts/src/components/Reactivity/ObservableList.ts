@@ -15,8 +15,11 @@ export abstract class ObservableList<T extends IdentifiableInterface> extends Ev
 	}
 
 	getOne(uid: string): Promise<T> {
-		return this.get([uid])
-			.then((pack: PackageInterface<T>) => pack[uid]);
+		return (
+			uid
+				? this.get([uid]).then((pack: PackageInterface<T>) => pack[uid])
+				: Promise.resolve(null)
+		);
 	}
 
 	get(uids: string[] = []): Promise<PackageInterface<T>> {
@@ -158,8 +161,8 @@ export abstract class ObservableList<T extends IdentifiableInterface> extends Ev
 
 	protected acquire(uids: string[]): Promise<PackageInterface<T>> {
 		return this.pull(uids)
-			.then((data: IdentifiableInterface[]) => {
-				let present = data.map((i) => i.uid);
+			.then((data: PackageInterface<IdentifiableInterface>) => {
+				let present = Object.keys(data);
 
 				for (let uid of uids) {
 					if (this.pending[uid]) {
@@ -171,7 +174,10 @@ export abstract class ObservableList<T extends IdentifiableInterface> extends Ev
 					}
 				}
 
-				return this.set(this.deserialize(data), true)
+				return this.set(
+						this.deserialize(present.map((uid) => data[uid])),
+						true
+					)
 					.then((uids) => this.get(uids))
 				;
 			});
@@ -180,7 +186,7 @@ export abstract class ObservableList<T extends IdentifiableInterface> extends Ev
 	protected abstract serialize(instances: T[]): any[];
 	protected abstract deserialize(data: any[]): T[];
 
-	protected abstract pull(uids: string[]): Promise<IdentifiableInterface[]>;
+	protected abstract pull(uids: string[]): Promise<PackageInterface<IdentifiableInterface>>;
 	protected abstract push(pack: PackageInterface<IdentifiableInterface>): Promise<string[]>;
 
 }

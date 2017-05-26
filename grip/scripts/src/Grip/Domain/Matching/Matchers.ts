@@ -3,19 +3,23 @@ import { Matcher } from './Matcher';
 import { MatcherInterface } from './MatcherInterface';
 
 export class Matchers {
-	private matchers = {};
+	private _matchers = {};
 
 	constructor(context, ...matchers: string[]) {
-		for (let name of matchers) (() => {
-			let matcher = this.matchers[name] = new Matcher(context);
+		for (let name of matchers) {
+			this._matchers[name] = (() => {
+				let matcher = new Matcher(context);
 
-			Object.defineProperty(this, name, {
-				enumerable: true,
-				configurable: false,
-				get: () => { return matcher; },
-				set: (code) => { matcher.code = code; },
-			})
-		})();
+				Object.defineProperty(this, name, {
+					enumerable: true,
+					configurable: false,
+					get: () => { return matcher.code; },
+					set: (code) => { matcher.code = code; },
+				});
+
+				return matcher;
+			})();
+		}
 	}
 
 	static create(context, prototype: {[key: string]: string}): Matchers {
@@ -30,7 +34,7 @@ export class Matchers {
 	}
 
 	public set(name: string, code: string): MatcherInterface<any, any> {
-		let matcher = this.matchers[name];
+		let matcher = this._matchers[name];
 
 		if (matcher) {
 			matcher.code = code;
@@ -40,17 +44,17 @@ export class Matchers {
 	}
 
 	public get(name: string): string {
-		return this.matchers[name] ? this.matchers[name].code : undefined;
+		return this._matchers[name] ? this._matchers[name].code : undefined;
 	}
 
 	public match<T>(matcher: string, content: string): T|boolean {
-		return this[matcher] ? (this[matcher].match(content) || false) : undefined;
+		return this._matchers[matcher] ? (this._matchers[matcher].match(content) || false) : undefined;
 	}
 
 	public fetch() {
 		let matchers = {};
 
-		for (let name of Object.keys(this.matchers)) {
+		for (let name of Object.keys(this._matchers)) {
 			matchers[name] = (content) => this.match(name, content);
 		}
 
@@ -58,13 +62,13 @@ export class Matchers {
 	}
 
 	public code() {
-		let matchers = {};
+		let code = {};
 
-		for (let name of Object.keys(this.matchers)) {
-			matchers[name] = this.matchers[name].code;
+		for (let name of Object.keys(this._matchers)) {
+			code[name] = this._matchers[name].code;
 		}
 
-		return matchers;
+		return code;
 	}
 
 	toString() {

@@ -2,38 +2,36 @@
 import { IdentifiableInterface } from '../../core/db/data/IdentifiableInterface';
 import { ObservableList } from './ObservableList';
 import { SendAction, SendPacketData } from '../../core/parcel/actions/Base/Send';
-import { UpdatedAction, UpdatedPacketData } from '../../Grip/Server/actions/Updated';
 import { PackageInterface } from '../../core/db/data/PackageInterface';
 import { CollectionConnector } from '../../core/server/CollectionConnector';
 import { TranscoderInterface } from '../../core/server/TranscoderInterface';
 import { TranscoderAggregate } from '../../core/server/TranscoderAggregate';
-import { ActionConstructor } from '../../core/parcel/actions/Action';
-import { ActionHandler } from "../../core/parcel/ActionHandler";
+import { ServerConnector } from '../../core/client/ServerConnector';
+import { CallbackStore } from "./CallbackStore";
 
 export abstract class ObservableConnectedList<T extends IdentifiableInterface> extends ObservableList<T> {
-	protected connector: CollectionConnector;
-	private resolver: {[request: number]: (any) => any} = [];
-	private request = 0;
+	protected connector: ServerConnector;
+	protected collection: CollectionConnector;
 
+	private resolvers: CallbackStore;
 	private transcoders: TranscoderAggregate<T, {}>;
 
-	public collection: string;
-
-	constructor(namespace: string, table: string) {
+	constructor(connector: ServerConnector, collection: CollectionConnector) {
 		super();
 
-		this.collection = table;
+		this.resolvers = new CallbackStore();
 		this.transcoders = new TranscoderAggregate<T, {}>();
-		this.connector = new CollectionConnector(namespace, table);
+		this.collection = collection;
+		this.collection.updated(this.invalidate.bind(this));
 
-		this.listen(SendAction, (data: SendPacketData) => {
-			let resolver = this.resolver[data.payload];
-			delete this.resolver[data.payload];
-			resolver(data.data);
-		});
-		this.listen(UpdatedAction, (data: UpdatedPacketData) => {
-			if (data.what === this.collection) {
-				this.invalidate(data.uids);
+		this.connector = connector;
+		this.connector.listen(SendAction, (data: SendPacketData) => {
+			let resolver = this.resolvers.pop(data.payload);
+
+			if (resolver) {
+				return resolver(data.data);
+			} else {
+				console.log('unmet resolver', data.payload);
 			}
 		});
 	}
@@ -42,26 +40,21 @@ export abstract class ObservableConnectedList<T extends IdentifiableInterface> e
 		return this.transcoders.add(transcoder);
 	}
 
-	public listen<T, H>(action: ActionConstructor<T>, handler: ActionHandler<T, H>): this {
-		return this.connector.listen(action, handler), this;
-	}
-
-	protected pull(uids: string[]): Promise<IdentifiableInterface[]> {
+	protected pull(uids: string[]): Promise<PackageInterface<IdentifiableInterface>> {
 		return new Promise((resolve) => {
-			let uid = this.request++;
-			this.resolver[uid] = resolve;
-			this.connector.fetch(
+			this.collection.fetch(
 				uids.length ? { uid: { $in: uids} } : {},
-				uid
+				this.resolvers.push(resolve)
 			);
 		});
 	}
 
 	protected push(pack: PackageInterface<T>): Promise<string[]> {
 		return new Promise((resolve) => {
-			let uid = this.request++;
-			this.resolver[uid] = resolve;
-			this.connector.update(pack, uid);
+			this.collection.update(
+				pack,
+				this.resolvers.push(resolve)
+			);
 		});
 	}
 

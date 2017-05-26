@@ -5,7 +5,7 @@ import { ModelStore } from '../../db/ModelStore';
 import { SyncResultInterface } from '../../db/SyncResultInterface';
 import { PackageInterface } from '../../db/data/PackageInterface';
 import { Package } from '../../db/data/Package';
-import { ObjectUtils } from '../../utils/object';
+import { ObjectUtils } from '../../utils/ObjectUtils';
 import { TranscoderInterface } from '../TranscoderInterface';
 import { Eventable } from '../../utils/Eventable';
 
@@ -14,15 +14,21 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 
 	private _cache: PackageInterface<M> = {};
 	private db: DB;
+	private factory: (uid: string) => M;
 
 	protected transcoder: TranscoderInterface<M, any>;
 
 	public name: string;
 
-	constructor(db: DB, name: string) {
+	constructor(db: DB, name: string, factory: (uid: string) => M) {
 		super();
 		this.db = db;
 		this.name = name;
+		this.factory = factory;
+	}
+
+	public create(uid: string): M {
+		return this.factory(uid);
 	}
 
 	public changed(listener: (uids: string[], event?: string) => any) {
@@ -112,6 +118,7 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 									return result;
 								});
 						})
+						.then(rs)
 						.catch(rj);
 				})
 			;

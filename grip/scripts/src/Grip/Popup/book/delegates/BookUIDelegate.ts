@@ -1,12 +1,12 @@
 
 import { BookUIDelegateInterface } from './BookUIDelegateInterface';
-import { Book } from '../../../../Grip/Domain/Book';
+import { Book } from '../../../Domain/Book';
 import { BookManager } from '../Manager';
 import { InjectedRouter } from 'react-router';
 import { ShowPage } from '../show/ShowPage';
 import { BooksPage } from '../../BooksPage';
 import { EditPage } from '../edit/EditPage';
-import { ObjectUtils } from '../../../../core/utils/object';
+import { ObjectUtils } from '../../../../core/utils/ObjectUtils';
 import { Alertify } from "../../../../core/utils/alertify";
 
 export class BookUIDelegate implements BookUIDelegateInterface<Book> {
@@ -19,7 +19,7 @@ export class BookUIDelegate implements BookUIDelegateInterface<Book> {
 	}
 
 	async fetchBook(book: Book) {
-		this.manager.perform([book.uid], 'fetch');
+		this.manager.perform([book.uid], BookManager.ACTION_CACHE);
 	}
 
 	async createBook(): Promise<Book> {

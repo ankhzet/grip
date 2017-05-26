@@ -1,12 +1,8 @@
 
-import { Action } from '../../parcel/actions/Action';
+import { CollectionAction, CollectionPacketData } from './Collection';
 
-export interface UpdatePacketData {
-	what: string;
-	data: any;
-	payload?: any;
+export interface UpdatePacketData extends CollectionPacketData {
 }
 
-export class UpdateAction extends Action<UpdatePacketData> {
-	properties = ['what', 'data', 'payload'];
+export class UpdateAction extends CollectionAction<UpdatePacketData> {
 }

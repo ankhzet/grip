@@ -1,12 +1,8 @@
 
-import { Action } from '../../parcel/actions/Action';
+import { CollectionAction, CollectionPacketData } from './Collection';
 
-export interface FetchPacketData {
-	what: string;
-	query?: any;
-	payload?: any;
+export interface FetchPacketData extends CollectionPacketData {
 }
 
-export class FetchAction extends Action<FetchPacketData> {
-	properties = ['what', 'query', 'payload'];
+export class FetchAction extends CollectionAction<FetchPacketData> {
 }

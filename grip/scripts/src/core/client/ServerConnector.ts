@@ -1,15 +1,9 @@
 
-import { ClientPort } from '../parcel/ClientPort';
+import { PortUtils } from '../parcel/PortUtils';
+import { Port } from '../parcel/Port';
 
-export class ServerConnector extends ClientPort {
-
-	constructor(namespace: string) {
-		super(namespace);
-
-		if (!this.rebind()) {
-			throw new Error('Failed to connect to background script');
-		}
-	}
+export class ServerConnector extends Port {
+	public uid: string = PortUtils.guid('S');
 
 	notifyDisconnect() {
 	}

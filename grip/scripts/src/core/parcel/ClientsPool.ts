@@ -1,10 +1,9 @@
 
-import { ClientFactory, ClientPort } from './ClientPort';
 import { Action } from './actions/Action';
 import { ActionPerformer } from './actions/ActionPerformer';
-import { ConnectAction, ConnectPacketData } from './actions/Base/Connect';
+import { ClientFactory, Port } from './Port';
 
-export class ClientsPool<C extends ClientPort> {
+export class ClientsPool<C extends Port> {
 	private factory: ClientFactory<C>;
 	private clients: {[uid: string]: C} = {};
 
@@ -12,9 +11,8 @@ export class ClientsPool<C extends ClientPort> {
 		this.factory = factory;
 	}
 
-	create(port: chrome.runtime.Port) {
-		return this.factory(port)
-			.listen(ConnectAction, this.connected.bind(this));
+	create(port: chrome.runtime.Port): C {
+		return this.factory(port);
 	}
 
 	add(client: C[]|C): C[]|C {
@@ -59,11 +57,6 @@ export class ClientsPool<C extends ClientPort> {
 		return this.each((client) => {
 			return action(client, data);
 		});
-	}
-
-	connected(data: ConnectPacketData, client: C) {
-		console.log(`Connected ${client.uid}:`, data);
-		return this.add(client);
 	}
 
 }
