@@ -1,7 +1,7 @@
 
 import { Book } from '../Book';
 import { TranscoderInterface } from '../../../core/server/TranscoderInterface';
-import { ObjectUtils } from '../../../core/utils/object';
+import { ObjectUtils } from '../../../core/utils/ObjectUtils';
 
 export class BookTranscoder implements TranscoderInterface<Book, {}> {
 

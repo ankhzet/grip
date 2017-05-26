@@ -6,7 +6,7 @@ import { InjectedRouter } from 'react-router';
 import { ShowPage } from '../show/ShowPage';
 import { BooksPage } from '../../BooksPage';
 import { EditPage } from '../edit/EditPage';
-import { ObjectUtils } from '../../../../core/utils/object';
+import { ObjectUtils } from '../../../../core/utils/ObjectUtils';
 import { Alertify } from "../../../../core/utils/alertify";
 
 export class BookUIDelegate implements BookUIDelegateInterface<Book> {

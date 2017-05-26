@@ -14,7 +14,7 @@ import { Book } from '../../../../Grip/Domain/Book';
 import { ManagerInterface } from '../../../Reactivity/ManagerInterface';
 import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
 import { BooksPage } from '../../BooksPage';
-import { ObjectUtils } from "../../../../core/utils/object";
+import { ObjectUtils } from "../../../../core/utils/ObjectUtils";
 
 export interface EditPageProps {
 	delegate: BookUIDelegateInterface<Book>;

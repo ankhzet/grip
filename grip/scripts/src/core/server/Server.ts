@@ -11,7 +11,7 @@ import { IdentifiableInterface } from '../db/data/IdentifiableInterface';
 import { TranscoderInterface } from './TranscoderInterface';
 import { Collection } from './data/Collection';
 import { CollectionThunk, Synchronizer } from './Synchronizer';
-import { ObjectUtils } from '../utils/object';
+import { ObjectUtils } from '../utils/ObjectUtils';
 import { HandshakeAction, HandshakePacketData } from '../parcel/actions/Base/Handshake';
 import { ActionHandler } from '../parcel/ActionHandler';
 import { ActionConstructor } from '../parcel/actions/Action';
