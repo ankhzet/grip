@@ -6,7 +6,6 @@ import { FetchAction, FetchPacketData } from './actions/Fetch';
 import { UpdateAction, UpdatePacketData } from './actions/Update';
 import { SendPacketData } from '../parcel/actions/Base/Send';
 import { Package } from '../db/data/Package';
-import { SyncResultInterface } from '../db/SyncResultInterface';
 import { IdentifiableInterface } from '../db/data/IdentifiableInterface';
 import { Collection } from './data/Collection';
 import { PackageInterface } from '../db/data/PackageInterface';
@@ -60,12 +59,11 @@ export class Synchronizer {
 	}
 
 	update(thunk: CollectionThunk<any, any>, { what, data, payload }: UpdatePacketData, client: Port) {
-		console.log('update', what, payload);
 		return thunk.collection
 			.update(this.decode(thunk, data))
-			.then((result: SyncResultInterface) => (
+			.then((pack: PackageInterface<any>) => (
 				this.send(client, {
-					data: result.request,
+					data: pack,
 					what,
 					payload
 				})
