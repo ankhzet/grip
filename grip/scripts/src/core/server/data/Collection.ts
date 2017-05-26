@@ -118,6 +118,7 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 									return result;
 								});
 						})
+						.then(rs)
 						.catch(rj);
 				})
 			;
