@@ -12,6 +12,7 @@ import { PagesCache } from './Client/Book/PagesCache';
 import { Collection } from '../core/server/data/Collection';
 import { TranscoderInterface } from '../core/server/TranscoderInterface';
 import { BookTranscoder } from "./Domain/Transcoders/Packet/BookTranscoder";
+import { ObjectUtils } from '../core/utils/ObjectUtils';
 
 export class Grip {
 	server: GripServer;
@@ -61,7 +62,8 @@ export class Grip {
 	}
 
 	async _handle_cache({ uid }: CachePacketData) {
-		let book = await this.collections.books.getOne(uid);
+		let books = <BooksDepot>this.collections.books;
+		let book = await books.getOne(uid);
 
 		if (!book) {
 			throw new Error(`Book with uid "${uid}" not found`);
@@ -71,12 +73,9 @@ export class Grip {
 			.fetch({
 				tocURI: book.uri,
 				matchers: book.matchers,
-			}).then((cache: PagesCache) => {
-				book.toc = cache.toc;
-
-				return this.collections.books.setOne(book);
-			}).then((book: Book) => {
-				console.log('Updated cache:', book);
+			}).then((cache: PagesCache) => books.setOne(ObjectUtils.patch(book, {
+				toc: cache.toc,
+			}))).then((book: Book) => {
 			})
 		;
 	}

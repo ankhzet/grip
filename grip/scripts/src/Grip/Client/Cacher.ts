@@ -1,75 +1,74 @@
 
+import { Utils } from './Utils';
+import { ObjectUtils } from '../../core/utils/ObjectUtils';
 import { State } from './Book/Page/State';
 import { CachedPage, CacheParams, PagesCache } from './Book/PagesCache';
-import { Utils } from './Utils';
 import { TocInterface } from '../Domain/TocInterface';
 import { Book } from '../Domain/Book';
+import { Matcher } from '../Domain/Matching/Matcher';
 
 export class Cacher {
 
-	fetch(data: CacheParams) {
-		return this.download(data.tocURI)
-			.then((html: string) => data.matchers.match(Book.MATCHER_TOC, html))
+	match(uri: string, matcher: Matcher<string, any, any>) {
+		return this.download(uri)
+			.then((html: string) => matcher.match(html));
+	}
+
+	fetch(data: CacheParams): Promise<PagesCache> {
+		return this.match(data.tocURI, data.matchers.get(Book.MATCHER_TOC))
 			.then((toc: TocInterface) => {
-				let uris = Object.keys(toc);
+				let { tocURI, matchers } = data;
 
-				return <CacheParams>{
-					tocURI: data.tocURI,
-					toc: toc,
+				return ObjectUtils.patch(new PagesCache(), {
+					tocURI,
+					matchers,
+					toc,
 
-					matchers: data.matchers,
-
-					pages: uris.map((uri, index) => {
-						return <CachedPage>({
-							index   : index,
-							uri     : uri,
-							title   : toc[uri],
-							state   : new State(),
-							contents: undefined,
-						});
-					}),
-				};
+					pages: Object.keys(toc).map((uri, index) =>
+						ObjectUtils.patch(new CachedPage(), {
+							index: index,
+							uri  : uri,
+							title: toc[uri],
+						})
+					),
+				});
 			})
 		;
 	}
 
 	preload(data: PagesCache, page: number, force?: boolean) {
-		if (!force) {
-			let contents = data.cache(page);
-
-			if (contents !== undefined) {
-				return Promise.resolve(contents);
-			}
-		}
-
 		return new Promise((rs, rj) => {
+			if (!force) {
+				let contents = data.cache.get(page);
+
+				if (contents !== undefined) {
+					return rs(contents);
+				}
+			}
+
 			let uri = Object.keys(data.toc)[page];
-			let state = data.pages[page].state;
+			let { state } = data.pages[page];
 
-			state.set(State.STATE_LOADING);
-
-			return Utils.download(uri)
-				.catch((e) => {
-					console.log(e);
-
-					throw new Error('Download failed for uri "' + uri + '"');
+			return Utils.ensure(() => this.match(uri, data.matchers.get(Book.MATCHER_PAGE)), (finished: boolean) => {
+					if (finished) {
+						state.remove(State.STATE_LOADING);
+					} else {
+						state.set(State.STATE_LOADING);
+					}
 				})
-				.then((html: string) => data.matchers.match(Book.MATCHER_PAGE, html))
 				.then((contents: string) => {
-					data.cache(page, contents);
+					data.cache.put(page, contents);
 
 					if (contents !== undefined) {
 						state.set(State.STATE_LOADED);
-						rs(contents);
-					} else {
-						rj(new Error('Failed to extract contents of "' + uri + '"'));
+
+						return contents;
 					}
+
+					throw new Error('Failed to extract contents of "' + uri + '"');
 				})
-				.then(() => {
-					state.remove(State.STATE_LOADING);
-				})
+				.then(rs)
 				.catch((e) => {
-					state.remove(State.STATE_LOADING);
 					state.set(State.STATE_FAILED);
 
 					rj(e);

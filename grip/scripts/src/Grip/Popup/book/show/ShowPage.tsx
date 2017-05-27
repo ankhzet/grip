@@ -17,6 +17,7 @@ import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
 import { Link } from 'react-router';
 import { Utils } from '../../../Client/Utils';
 import { TocInterface } from '../../../Domain/TocInterface';
+import { RadioGroup } from '../../../../components/radiogroup';
 
 interface TocListProps {
 	uid: string;
@@ -53,7 +54,12 @@ export interface ShowPageProps {
 	params: { id: string };
 }
 
-export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
+export interface ShowPageState {
+	book: Book;
+	matcher: string;
+}
+
+export class ShowPage extends React.Component<ShowPageProps, ShowPageState> {
 
 	static path(uid: string): string {
 		return `${BooksPage.PATH}/${uid}`;
@@ -64,15 +70,19 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 
 		this.state = {
 			book: null,
+			matcher: null,
 		};
 	}
 
 	async pullBook(id: string) {
 		this.setState({
 			book: null,
+			matcher: null,
 		});
+
 		this.setState({
 			book: await this.props.manager.getOne(id),
+			matcher: Object.keys(Book.matchers).shift(),
 		});
 	}
 
@@ -85,7 +95,11 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 	}
 
 	render() {
-		let book = this.state.book;
+		let {
+			book,
+			matcher,
+		} = this.state;
+		let matchers = Object.keys(Book.matchers);
 
 		return (book || null) && (
 			<Panel>
@@ -94,7 +108,7 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 
 					<div className="btn-toolbar pull-right">
 						<div className="btn-group">
-							<Button class="btn-xs" onClick={ () => this.removeBook() }>
+							<Button class="btn-xs btn-danger" onClick={ () => this.removeBook() }>
 								<Glyph name="remove" />
 							</Button>
 							<Button class="btn-xs" onClick={ () => this.editBook() }>
@@ -114,15 +128,15 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 
 						<div className="form-group">
 							<div className="input-group col-xs-12">
-								<label className="col-xs-2 form-control-static">URL:</label>
-								<span className="col-xs-10 form-control-static">{ book.uri }</span>
+								<label className="col-xs-2">URL:</label>
+								<span className="form-control-static">{ book.uri }</span>
 							</div>
 						</div>
 
 						<div className="form-group">
 							<div className="input-group col-xs-12" data-toggle="collapse" data-target={ '#chapter-list-' + book.uid }>
-								<label className="col-xs-2 form-control-static">Chapters:</label>
-								<span className="col-xs-10 form-control-static">{ Object.keys(book.toc).length }</span>
+								<label className="col-xs-2">Chapters:</label>
+								<span className="form-control-static">{ Object.keys(book.toc).length }</span>
 							</div>
 							<div className="collapse collapsed col-xs-12" id={ 'chapter-list-' + book.uid }>
 								<TocList uid={ book.uid } toc={ book.toc } columns={ 4 } />
@@ -130,22 +144,37 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 						</div>
 
 						<div className="form-group">
-							<div className="input-group col-xs-12 reactive-editor">
-								<CodeMirror
-									className="form-control-static col-xs-12"
-									value={ book.matchers.get(Book.MATCHER_TOC) }
-									options={{
-										mode: 'javascript',
-										theme: 'base16-oceanicnext-dark',
-										lineNumbers: true,
-										indentWithTabs: true,
-										tabSize: 2,
-										readOnly: true,
-									}}
-								/>
-							</div>
-						</div>
+							<div className="input-group col-xs-12">
+								<label className="col-xs-2">
+									Matchers:
+								</label>
 
+								<RadioGroup
+									name="matchers"
+									value={ matcher }
+									onChange={ (e: any) => this.setState({...this.state, matcher: e.target.value}) }
+								>
+									{ matchers.map((name) => (
+										<label className="form-control-static" style={{ paddingRight: '15px', }}>
+											<input type="radio" value={ name } /> { name }
+										</label>
+									)) }
+								</RadioGroup>
+							</div>
+
+							<CodeMirror
+								className="form-control-static col-xs-12"
+								value={ book.matchers[matcher] }
+								options={{
+									mode: 'javascript',
+									theme: 'base16-oceanicnext-dark',
+									lineNumbers: true,
+									indentWithTabs: true,
+									tabSize: 2,
+									readOnly: true,
+								}}
+							/>
+						</div>
 					</form>
 				</PanelBody>
 

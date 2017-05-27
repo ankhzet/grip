@@ -7,6 +7,7 @@ import { ActionHandler } from './ActionHandler';
 import { Tracer } from './Tracer';
 import { PortUtils } from './PortUtils';
 import { HandshakeAction, HandshakePacketData } from "./actions/Base/Handshake";
+import { config } from '../config';
 
 export class Port {
 	private dispatcher: PacketDispatcher = new PacketDispatcher(BaseActions);
@@ -78,12 +79,18 @@ export class Port {
 			error: error || null,
 		};
 
-		// Tracer.trace(' > ', this, packet);
+		if (config.tracing) {
+			Tracer.trace(' > ', this, packet);
+		}
+
 		this.port.postMessage(packet);
 	}
 
 	process(packet: Packet<any>) {
-		// Tracer.trace(' < ', this, packet);
+		if (config.tracing) {
+			Tracer.trace(' < ', this, packet);
+		}
+
 		this.touched = +new Date;
 
 		this.dispatcher.dispatch(this, packet)
