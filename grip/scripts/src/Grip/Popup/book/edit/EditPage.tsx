@@ -82,7 +82,13 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 	}
 
 	render() {
-		let { book, form: { title, uri } } = this.state;
+		let {
+			book,
+			form: {
+				title,
+				uri,
+			},
+		} = this.state;
 
 		return (book || null) && (
 			<Panel>
