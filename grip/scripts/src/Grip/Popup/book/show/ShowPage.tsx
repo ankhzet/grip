@@ -137,6 +137,9 @@ export class ShowPage extends React.Component<ShowPageProps, ShowPageState> {
 							<div className="input-group col-xs-12" data-toggle="collapse" data-target={ '#chapter-list-' + book.uid }>
 								<label className="col-xs-2">Chapters:</label>
 								<span className="form-control-static">{ Object.keys(book.toc).length }</span>
+								{ book.cached && (
+									<span className="form-control-static pull-right">Last cached: { Utils.formatTimestamp(book.cached) }</span>
+								)}
 							</div>
 							<div className="collapse collapsed col-xs-12" id={ 'chapter-list-' + book.uid }>
 								<TocList uid={ book.uid } toc={ book.toc } columns={ 4 } />
