@@ -29,10 +29,11 @@
   },
   "devDependencies": {
     "component-inspector": "^1.4.0",
-    "webpack": "latest",
     "css-loader": "latest",
     "file-loader": "latest",
+    "lodash": "^4.17.4",
     "style-loader": "latest",
-    "url-loader": "latest"
+    "url-loader": "latest",
+    "webpack": "latest"
   }
 }
