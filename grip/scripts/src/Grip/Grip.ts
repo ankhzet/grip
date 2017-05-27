@@ -62,7 +62,7 @@ export class Grip {
 	}
 
 	async _handle_cache({ uid }: CachePacketData) {
-		let books = this.collections.books;
+		let books = <BooksDepot>this.collections.books;
 		let book = await books.getOne(uid);
 
 		if (!book) {
@@ -75,7 +75,7 @@ export class Grip {
 				matchers: book.matchers,
 			}).then((cache: PagesCache) => books.setOne(ObjectUtils.patch(book, {
 				toc: cache.toc,
-			}))).then((book) => {
+			}))).then((book: Book) => {
 			})
 		;
 	}
