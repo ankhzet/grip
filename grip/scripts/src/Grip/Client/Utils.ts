@@ -18,6 +18,8 @@ export class Utils {
 		return new Promise((rs, rj) => {
 			JQuery.get(uri)
 				.then(rs, (j, t, e) => rj(j.status + ' ' + e));
+		}).catch((e) => {
+			throw new Error('Download failed for uri "' + uri + '" (' + e + ')');
 		});
 	}
 

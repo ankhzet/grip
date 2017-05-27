@@ -10,7 +10,7 @@ import { Matcher } from '../Domain/Matching/Matcher';
 export class Cacher {
 
 	match(uri: string, matcher: Matcher<string, any, any>) {
-		return this.download(uri)
+		return Utils.download(uri)
 			.then((html: string) => matcher.match(html));
 	}
 
@@ -36,7 +36,7 @@ export class Cacher {
 		;
 	}
 
-	preload(data: PagesCache, page: number, force?: boolean) {
+	preload(data: PagesCache, page: number, force?: boolean): Promise<string> {
 		return new Promise((rs, rj) => {
 			if (!force) {
 				let contents = data.cache.get(page);
@@ -76,15 +76,4 @@ export class Cacher {
 		});
 	}
 
-	download(uri: string, ...args): Promise<string> {
-		return new Promise((rs, rj) => {
-			$.get(uri)
-				.then(
-					rs.bind(null, ...args),
-					(j, t, e) => rj(j.status + ' ' + e)
-				);
-		}).catch((e) => {
-			throw new Error('Download failed for uri "' + uri + '" (' + e.getMessage() + ')');
-		});
-	}
 }
