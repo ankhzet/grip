@@ -7,7 +7,7 @@ import { Utils } from '../Client/Utils';
 
 const EMPTY_MATCHER = `
 
-(grip) => {
+({ grip, $ }) => {
 	class Matcher {
 		constructor(context) {
 			this.context = context;
@@ -31,7 +31,7 @@ export class Book extends Model {
 	public uri: string;
 	public toc: TocInterface = {};
 
-	public matchers: Matchers = Matchers.create(Utils, Book.matchers);
+	public matchers: Matchers = Matchers.create({ Utils, $: jQuery }, Book.matchers);
 
 	static MATCHER_TOC = 'toc';
 	static MATCHER_PAGE= 'page';
