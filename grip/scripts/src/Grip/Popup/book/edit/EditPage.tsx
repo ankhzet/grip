@@ -105,6 +105,12 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 								<Glyph name="remove" />
 							</Button>
 						</div>
+
+						<div className="btn-group">
+							<Button class="btn-xs" onClick={ () => this.fetchBook() }>
+								<Glyph name="play-circle" />
+							</Button>
+						</div>
 					</div>
 				</PanelHeader>
 
@@ -242,6 +248,10 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 		return (back && this.props.delegate.showBook(book)) || this.patchState({
 			modified: false,
 		});
+	}
+
+	fetchBook() {
+		return this.props.delegate.fetchBook(this.state.book);
 	}
 
 }
