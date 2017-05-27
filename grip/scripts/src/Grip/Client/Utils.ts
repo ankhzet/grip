@@ -34,4 +34,24 @@ export class Utils {
 
 		return uri.toString().replace(uri.origin, '');
 	}
+
+	static ensure<T>(resolve: () => Promise<T>, state: (finished: boolean) => boolean|void) {
+		return new Promise((rs, rj) => {
+			if (state(false) === false) {
+				return;
+			}
+
+			resolve()
+				.then((value) => {
+					state(true);
+
+					rs(value);
+				})
+				.catch((e) => {
+					state(true);
+
+					rj(e);
+				})
+		});
+	}
 }

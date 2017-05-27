@@ -8,19 +8,32 @@ export class CacheParams {
 	matchers: Matchers;
 }
 
-export interface CachedPage {
+export class CachedPage {
 	index: number;
 	uri  : string;
 	title: string;
 	state: State;
-	cache?: string;
+
+	constructor() {
+		this.state = new State();
+	}
 }
 
 export class PagesCache extends CacheParams {
 	private current?: CachedPage;
 
 	toc: TocInterface = {};
-	pages?: CachedPage[];
+	pages: CachedPage[];
+	cache: Cache;
+	state: State;
+
+	constructor() {
+		super();
+
+		this.cache = new Cache();
+		this.state = new State();
+		this.pages = [];
+	}
 
 	get page() {
 		return this.current ? this.current.index : undefined;
@@ -49,10 +62,6 @@ export class PagesCache extends CacheParams {
 		return Math.min(page + 1, this.pages.length - 1);
 	}
 
-	state(page): State {
-		return this.pages[page] ? this.pages[page].state : undefined;
-	}
-
 	uri(page) {
 		return this.pages[page] ? this.pages[page].uri : undefined;
 	}
@@ -61,15 +70,35 @@ export class PagesCache extends CacheParams {
 		return this.pages[page] ? this.pages[page].title : undefined;
 	}
 
-	cache(page, value?): string {
-		let cache = this.pages[page];
+}
 
-		if (value !== undefined) {
-			if (cache) {
-				cache.cache = value;
+interface Bucket {
+	expires: number;
+	data: any;
+}
+
+class Cache {
+	private store: {[key: string]: Bucket} = {};
+
+	public put(key: string|number, value: any, ttl: number = 0) {
+		let bucket = this.store[key] || (this.store[key] = <Bucket>{});
+
+		bucket.expires = +(ttl && (+new Date) + ttl);
+		bucket.data = value;
+	}
+
+	public get(key: string|number): any {
+		let bucket = this.store[key];
+		let valid = bucket && !(bucket.expires && ((+new Date) > bucket.expires));
+
+		if (!valid) {
+			if (bucket) {
+				delete this.store[key];
 			}
+
+			return;
 		}
 
-		return cache ? cache.cache : undefined;
+		return bucket.data;
 	}
 }

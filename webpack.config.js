@@ -51,9 +51,9 @@ module.exports = {
 			// (Only use these entries)
 		}),
 		...(!DEBUG ? [
-			new webpack.optimize.WatchIgnorePlugin([
-				path.resolve(__dirname, './**/fonts/'),
-			]),
+			// new webpack.optimize.WatchIgnorePlugin([
+			// 	path.resolve(__dirname, './**/fonts/'),
+			// ]),
 
 			// new webpack.optimize.OccurenceOrderPlugin(),
 			// new webpack.optimize.UglifyJsPlugin({

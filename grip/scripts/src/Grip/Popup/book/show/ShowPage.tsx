@@ -164,7 +164,7 @@ export class ShowPage extends React.Component<ShowPageProps, ShowPageState> {
 
 							<CodeMirror
 								className="form-control-static col-xs-12"
-								value={ book.matchers.get(matcher) }
+								value={ book.matchers[matcher] }
 								options={{
 									mode: 'javascript',
 									theme: 'base16-oceanicnext-dark',
