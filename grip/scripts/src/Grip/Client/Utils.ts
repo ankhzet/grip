@@ -3,7 +3,7 @@ import * as JQuery from 'jquery';
 
 export class Utils {
 	static wrap(html: string, parent?: string): JQuery {
-		return $('<' + (parent || 'html') + '>').html(html);
+		return JQuery('<' + (parent || 'html') + '>').html(html);
 	}
 
 	static contents(html: string, context: string, parent?: string): string {
@@ -15,7 +15,7 @@ export class Utils {
 
 	static download(uri: string): Promise<string> {
 		return new Promise((rs, rj) => {
-			$.get(uri)
+			JQuery.get(uri)
 				.then(rs, (j, t, e) => rj(j.status + ' ' + e));
 		});
 	}
@@ -34,6 +34,4 @@ export class Utils {
 
 		return uri.toString().replace(uri.origin, '');
 	}
-
-	static $ = JQuery;
 }
