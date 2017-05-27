@@ -63,7 +63,7 @@ export class Synchronizer {
 			.update(this.decode(thunk, data))
 			.then((pack: PackageInterface<any>) => (
 				this.send(client, {
-					data: pack,
+					data: Object.keys(pack),
 					what,
 					payload
 				})
