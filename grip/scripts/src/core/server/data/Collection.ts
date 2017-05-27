@@ -58,7 +58,7 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 			.then((pack: PackageInterface<M>) => (
 				pack[uid]
 			))
-			;
+		;
 	}
 
 	public setOne(instance: M): Promise<M> {
@@ -66,7 +66,7 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 			.then((pack: PackageInterface<M>) => (
 				pack[instance.uid]
 			))
-			;
+		;
 	}
 
 	public update(data: PackageInterface<M>): Promise<PackageInterface<M>> {
