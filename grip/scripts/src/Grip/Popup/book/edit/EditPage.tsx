@@ -97,6 +97,9 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 
 					<div className="btn-toolbar pull-right">
 						<div className="btn-group">
+							<Button class="btn-xs btn-danger" onClick={ () => this.removeBook() }>
+								<Glyph name="remove" />
+							</Button>
 						</div>
 					</div>
 				</PanelHeader>
@@ -167,12 +170,8 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 						&larr;
 					</Button>
 
-					<div className="pull-right">
-						<Button class="btn-xs btn-danger" onClick={ () => this.removeBook() }>
-							<Glyph name="remove" />
-						</Button>
-
-						<Button class="btn-xs btn-primary" onClick={ () => this.saveBook() }>
+					<div className="pull-right btn-group">
+						<Button class="btn-xs" onClick={ () => this.saveBook() }>
 							Save
 						</Button>
 					</div>

@@ -94,7 +94,7 @@ export class ShowPage extends React.Component<ShowPageProps, { book: Book }> {
 
 					<div className="btn-toolbar pull-right">
 						<div className="btn-group">
-							<Button class="btn-xs" onClick={ () => this.removeBook() }>
+							<Button class="btn-xs btn-danger" onClick={ () => this.removeBook() }>
 								<Glyph name="remove" />
 							</Button>
 							<Button class="btn-xs" onClick={ () => this.editBook() }>
