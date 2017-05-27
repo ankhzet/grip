@@ -17,10 +17,11 @@ export class ObjectUtils {
 				let o = current[prop];
 				let n = next[prop];
 
-				current[prop] = (typeof n === 'object')
-					? this.patch(o, n)
-					: n
-				;
+				if (o && (typeof n === 'object')) {
+					n = this.patch(o, n);
+				}
+
+				current[prop] = n;
 			}
 		}
 
