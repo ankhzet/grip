@@ -26,6 +26,7 @@ export interface EditPageProps {
 
 export interface EditPageState {
 	book: Book;
+	modified: boolean;
 	form: {
 		title: string;
 		uri: string;
@@ -42,6 +43,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 
 		this.state = {
 			book: null,
+			modified: false,
 			form: {
 				title: '',
 				uri: '',
@@ -61,6 +63,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 			.then((book: Book) => {
 				this.setState({
 					book: book,
+					modified: false,
 					form: {
 						title   : book.title,
 						uri     : book.uri,
@@ -84,6 +87,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 	render() {
 		let {
 			book,
+			modified,
 			form: {
 				title,
 				uri,
@@ -171,8 +175,11 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 					</Button>
 
 					<div className="pull-right btn-group">
-						<Button class="btn-xs" onClick={ () => this.saveBook() }>
+						<Button class="btn-xs" disabled={ !modified } onClick={ () => this.saveBook() }>
 							Save
+						</Button>
+						<Button class="btn-xs" disabled={ !modified } onClick={ () => this.saveBook(true) }>
+							Save and go back
 						</Button>
 					</div>
 				</PanelFooter>
@@ -181,7 +188,14 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 	}
 
 	private patchState(next) {
-		this.setState(ObjectUtils.patch(this.state, next));
+		this.setState(
+			ObjectUtils.patch(
+				this.state,
+				ObjectUtils.patch({
+					modified: true,
+				}, next)
+			)
+		);
 	}
 
 	private titleChanged(e) {
@@ -219,13 +233,15 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 		;
 	}
 
-	private async saveBook() {
-		return this.props.delegate.showBook(
-			await this.props.delegate.saveBook(
-				this.state.book,
-				this.state.form
-			)
+	private async saveBook(back?: boolean) {
+		let book = await this.props.delegate.saveBook(
+			this.state.book,
+			this.state.form
 		);
+
+		return (back && this.props.delegate.showBook(book)) || this.patchState({
+			modified: false,
+		});
 	}
 
 }
