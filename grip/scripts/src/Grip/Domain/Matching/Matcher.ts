@@ -34,7 +34,7 @@ export class Matcher<S, R, M extends MatcherInterface<S, R>> implements MatcherI
 		return this._compiled ? this._compiled(context) : false;
 	}
 
-	match(content: any) {
+	match(content: S): R|boolean {
 		let matcher;
 
 		if (matcher = this.instance(this)) {
