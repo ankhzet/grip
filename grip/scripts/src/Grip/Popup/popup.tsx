@@ -115,17 +115,17 @@ class App extends React.Component<LocationProps, AppState> {
 					break;
 			}
 		});
-
-		this.state = {
-			connected: false,
-			books: new BookManager(this.server),
-		};
-
 		this.server.handshake(() => {
 			this.setState({
 				connected: true,
 			});
 		});
+
+		let books = new BookManager(this.server);
+		this.state = {
+			connected: false,
+			books: books,
+		};
 	}
 
 	breadcrumbs(): Menu {
@@ -180,7 +180,7 @@ class App extends React.Component<LocationProps, AppState> {
 					</div>
 				</div>
 			</div>
-		)
+		);
 	}
 }
 
