@@ -75,14 +75,7 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 				.specific(null, (table) => {
 					let store = new ModelStore(table);
 					let encoded = this.transcoder
-						? new Package(
-								Object.keys(data)
-									.map((uid) => (
-										data[uid]
-											? this.transcoder.encode(data[uid])
-											: data[uid]
-									))
-							)
+						? Package.create<M, any>(data, (i) => this.transcoder.encode(i))
 						: data
 					;
 
@@ -134,16 +127,10 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 						() => rs(this.cached())
 					)
 					.fetch((err, data: any[]) => {
+						let pack = new Package(data);
 						let decoded = this.transcoder
-							? new Package(
-								data
-									.map((document) => (
-										document
-											? this.transcoder.decode(document)
-											: document
-									))
-							)
-							: new Package(data)
+							? Package.create<any, M>(pack, (i) => this.transcoder.decode(i))
+							: pack
 						;
 
 						return (

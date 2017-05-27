@@ -6,7 +6,7 @@ import { ObjectUtils } from '../../../../core/utils/ObjectUtils';
 export class BookTranscoder implements TranscoderInterface<Book, {}> {
 
 	public encode(book: Book): any {
-		return ObjectUtils.transform(book, (value, prop) => {
+		return book && ObjectUtils.transform(book, (value, prop) => {
 			switch (prop) {
 				case 'toc':
 					value = ObjectUtils.transform(value, (title, uri) => (
@@ -24,7 +24,7 @@ export class BookTranscoder implements TranscoderInterface<Book, {}> {
 	}
 
 	public decode(data: any, target?: Book): Book {
-		return ObjectUtils.transform(data, (value, prop, has) => {
+		return data && ObjectUtils.transform(data, (value, prop, has) => {
 			switch (prop) {
 				case 'toc':
 					value = ObjectUtils.transform(value, (title, uri) => {

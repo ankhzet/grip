@@ -4,7 +4,7 @@
   "description": "Blog fetcher",
   "scripts": {
     "pack": "webpack --display-modules --progress --colors -p",
-    "watchdog": "webpack --progress --colors --watch --watch-poll --verbose",
+    "watchdog": "webpack --progress --colors --watch --watch-poll",
     "install:webpack": "npm link webpack",
     "install:typings": "npm link typings",
     "install:global": "npm run install:webpack && npm run install:typings"
@@ -13,14 +13,14 @@
   "license": "ISC",
   "dependencies": {
     "@types/chrome": "0.0.46",
-    "bootstrap": "^3.3.7",
-    "jquery": "^3.1.0",
-    "nedb": "^1.8.0",
+    "@types/history": "^2.0.39",
     "@types/react": "^0.14.48",
     "@types/react-codemirror": "^0.2.6",
     "@types/react-dom": "^0.14.18",
-    "@types/history": "^2.0.39",
     "@types/react-router": "^2.0.46",
+    "bootstrap": "^3.3.7",
+    "jquery": "^3.1.0",
+    "nedb": "^1.8.0",
     "react": "^15.3.1",
     "react-codemirror": "^0.2.6",
     "react-dom": "^15.3.1",

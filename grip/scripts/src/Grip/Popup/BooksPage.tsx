@@ -1,7 +1,6 @@
 
 import * as React from "react";
-import { Route, IndexRoute, withRouter } from 'react-router'
-import InjectedRouter = ReactRouter.InjectedRouter;
+import { Route, IndexRoute, withRouter, InjectedRouter } from 'react-router'
 
 import { ListPage } from './book/ListPage';
 import { ShowPage } from './book/show/ShowPage';

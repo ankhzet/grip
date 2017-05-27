@@ -26,6 +26,7 @@ export interface EditPageProps {
 
 export interface EditPageState {
 	book: Book;
+	modified: boolean;
 	form: {
 		title: string;
 		uri: string;
@@ -42,6 +43,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 
 		this.state = {
 			book: null,
+			modified: false,
 			form: {
 				title: '',
 				uri: '',
@@ -61,6 +63,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 			.then((book: Book) => {
 				this.setState({
 					book: book,
+					modified: false,
 					form: {
 						title   : book.title,
 						uri     : book.uri,
@@ -82,7 +85,15 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 	}
 
 	render() {
-		let { book, form: { title, uri } } = this.state;
+		let {
+			book,
+			modified,
+			form: {
+				title,
+				uri,
+				matchers,
+			},
+		} = this.state;
 
 		return (book || null) && (
 			<Panel>
@@ -91,6 +102,15 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 
 					<div className="btn-toolbar pull-right">
 						<div className="btn-group">
+							<Button class="btn-xs btn-danger" onClick={ () => this.removeBook() }>
+								<Glyph name="remove" />
+							</Button>
+						</div>
+
+						<div className="btn-group">
+							<Button class="btn-xs" onClick={ () => this.fetchBook() }>
+								<Glyph name="play-circle" />
+							</Button>
 						</div>
 					</div>
 				</PanelHeader>
@@ -117,20 +137,41 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 							</div>
 						</div>
 
-						<div className="form-group">
-							<CodeMirror
-								className="col-xs-12"
-								value={ this.state.form.matchers[Book.MATCHER_TOC] }
-								options={{
-									mode: 'javascript',
-									theme: 'base16-oceanicnext-dark',
-									lineNumbers: true,
-									indentWithTabs: true,
-									tabSize: 2,
-									readOnly: false,
-								}}
-								onChange={ (value) => this.tocMatcherChanged(value) }
-							/>
+						<div className="form-group tabs-left">
+							<div className="col-xs-12">
+								<div className="input-group">
+									<div className="input-group-addon">
+										<ul className="nav nav-tabs">
+											{ Object.keys(Book.matchers).map((matcher, index) => (
+												<li className={ index ? '' : 'active' }>
+													<a href={ '#matcher-' + matcher } data-toggle="tab">{ matcher }</a>
+												</li>
+											)) }
+										</ul>
+									</div>
+
+									<div className="tab-content form-control">
+										{ Object.keys(Book.matchers).map((matcher, index) => (
+											<div className={ "tab-pane" + (index ? "" : " active") } id={ 'matcher-' + matcher }>
+												<CodeMirror
+													value={ matchers[matcher] }
+													options={{
+														mode: 'javascript',
+														theme: 'base16-oceanicnext-dark',
+														lineNumbers: true,
+														indentWithTabs: true,
+														tabSize: 2,
+														readOnly: false,
+													}}
+													onChange={ (value) => this.matcherChanged(matcher, value) }
+												/>
+											</div>
+										)) }
+									</div>
+								</div>
+
+							</div>
+
 						</div>
 					</div>
 				</PanelBody>
@@ -140,13 +181,12 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 						&larr;
 					</Button>
 
-					<div className="pull-right">
-						<Button class="btn-xs btn-danger" onClick={ () => this.removeBook() }>
-							<Glyph name="remove" />
-						</Button>
-
-						<Button class="btn-xs btn-primary" onClick={ () => this.saveBook() }>
+					<div className="pull-right btn-group">
+						<Button class="btn-xs" disabled={ !modified } onClick={ () => this.saveBook() }>
 							Save
+						</Button>
+						<Button class="btn-xs" disabled={ !modified } onClick={ () => this.saveBook(true) }>
+							Save and go back
 						</Button>
 					</div>
 				</PanelFooter>
@@ -155,7 +195,14 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 	}
 
 	private patchState(next) {
-		this.setState(ObjectUtils.patch(this.state, next));
+		this.setState(
+			ObjectUtils.patch(
+				this.state,
+				ObjectUtils.patch({
+					modified: true,
+				}, next)
+			)
+		);
 	}
 
 	private titleChanged(e) {
@@ -174,10 +221,10 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 		});
 	}
 
-	private tocMatcherChanged(value) {
+	private matcherChanged(matcher, value) {
 		this.patchState({
 			form: {
-				matchers: ObjectUtils.compose(Book.MATCHER_TOC, value),
+				matchers: ObjectUtils.compose(matcher, value),
 			}
 		});
 	}
@@ -193,13 +240,19 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 		;
 	}
 
-	private async saveBook() {
-		return this.props.delegate.showBook(
-			await this.props.delegate.saveBook(
-				this.state.book,
-				this.state.form
-			)
+	private async saveBook(back?: boolean) {
+		let book = await this.props.delegate.saveBook(
+			this.state.book,
+			this.state.form
 		);
+
+		return (back && this.props.delegate.showBook(book)) || this.patchState({
+			modified: false,
+		});
+	}
+
+	fetchBook() {
+		return this.props.delegate.fetchBook(this.state.book);
 	}
 
 }

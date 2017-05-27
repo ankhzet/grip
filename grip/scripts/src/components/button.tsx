@@ -1,8 +1,7 @@
 
 import * as React from "react";
-import DOMAttributes = React.DOMAttributes;
 
-export interface ButtonProps extends DOMAttributes<any> {
+export interface ButtonProps extends React.HTMLAttributes<any> {
 	'class': string;
 }
 
