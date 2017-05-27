@@ -1,11 +1,13 @@
 
 const path = require('path');
+const _ = require('lodash');
 const webpack = require('webpack');
 
-const DEBUG = !process.argv.includes('-p');
+const PRODUCTION = process.argv.includes('-p');
 const VERBOSE = process.argv.includes('--verbose');
 
 const SCRIPTS_ROOT = 'grip/scripts';
+const env = PRODUCTION ? 'production' : 'development';
 
 module.exports = {
 	entry: {
@@ -18,12 +20,12 @@ module.exports = {
 		sourcePrefix: '  ',
 
 		path: path.resolve(__dirname, SCRIPTS_ROOT),
-		filename: DEBUG ? '[name].js?[hash]' : '[name].js',
+		filename: PRODUCTION ? '[name].js' : '[name].js?[hash]',
 	},
 
 	plugins: [
 		new webpack.LoaderOptionsPlugin({
-			debug: DEBUG,
+			debug: !PRODUCTION,
 		}),
 
 		new webpack.ProvidePlugin({
@@ -32,42 +34,22 @@ module.exports = {
 			"window.jQuery": "jquery"
 		}),
 		new webpack.DefinePlugin({
-			'process.env.NODE_ENV': DEBUG ? '"development"' : '"production"',
+			'__APP_CONFIG__': JSON.stringify(_.merge({}, require('./grip/config/base'), require(`./grip/config/${env}`))),
+			'process.env.NODE_ENV': `"${env}"`,
 			'process.env.BROWSER': true,
-			__DEV__: DEBUG,
+			'__DEV__': !PRODUCTION,
 		}),
-		// new HtmlWebpackPlugin({
-		// 	template: path.join(__dirname, "grip", "popup.html"),
-		// 	filename: "popup.html",
-		// 	chunks: ["popup"]
-		// }),
 		new webpack.optimize.CommonsChunkPlugin({
 			name: "commons",
 			filename: "commons.js",
-			// minChunks: 2,
-			// (Modules must be shared between 3 entries)
-
-			// chunks: ["background", "content", "popup"],
-			// (Only use these entries)
 		}),
-		...(!DEBUG ? [
-			// new webpack.optimize.WatchIgnorePlugin([
-			// 	path.resolve(__dirname, './**/fonts/'),
-			// ]),
-
-			// new webpack.optimize.OccurenceOrderPlugin(),
-			// new webpack.optimize.UglifyJsPlugin({
-			// 	compress: {
-			// 		screw_ie8: true,
-			// 		warnings: VERBOSE,
-			// 	},
-			// }),
+		...(PRODUCTION ? [
+			new webpack.optimize.OccurenceOrderPlugin(),
 			new webpack.optimize.AggressiveMergingPlugin(),
 		] : []),
 	],
 
-	cache: DEBUG,
-	// debug: DEBUG,
+	cache: !PRODUCTION,
 
 	watchOptions: {
 		aggregateTimeout: 400,
@@ -76,7 +58,7 @@ module.exports = {
 
 	stats: {
 		colors: true,
-		reasons: DEBUG,
+		reasons: !PRODUCTION,
 		hash: VERBOSE,
 		version: VERBOSE,
 		timings: true,
@@ -95,10 +77,6 @@ module.exports = {
 			'react-dom': 'react-lite',
 		},
 	},
-	// externals: {
-	// 	'react': 'React',
-	// 	'react-dom': 'ReactDOM',
-	// },
 
 	module: {
 		loaders: [
