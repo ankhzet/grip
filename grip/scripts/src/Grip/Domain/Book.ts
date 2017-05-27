@@ -31,6 +31,8 @@ export class Book extends Model {
 	public uri: string;
 	public toc: TocInterface = {};
 
+	public cached: number;
+
 	public matchers: Matchers = Matchers.create({ Utils, $: jQuery }, Book.matchers);
 
 	static MATCHER_TOC = 'toc';

@@ -76,6 +76,7 @@ export class Grip {
 			}).then((cache: PagesCache) => books.setOne(ObjectUtils.patch(book, {
 				toc: cache.toc,
 			}))).then((book: Book) => {
+				this.server.broadcast(GripActions.cached, { uids: [book.uid]});
 			})
 		;
 	}
