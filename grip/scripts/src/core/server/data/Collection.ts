@@ -39,10 +39,6 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 		return this.fetch({ uid: { $in: uids } });
 	}
 
-	public set(instances: PackageInterface<M>): Promise<PackageInterface<M>> {
-		return this.update(instances);
-	}
-
 	public remove(uids: string[]): Promise<PackageInterface<M>> {
 		let pack = new Package<M>();
 
@@ -50,7 +46,7 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 			pack[uid] = null;
 		}
 
-		return this.update(pack);
+		return this.set(pack);
 	}
 
 	public getOne(uid: string): Promise<M> {
@@ -62,14 +58,14 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 	}
 
 	public setOne(instance: M): Promise<M> {
-		return this.update(new Package([instance]))
+		return this.set(new Package([instance]))
 			.then((pack: PackageInterface<M>) => (
 				pack[instance.uid]
 			))
 			;
 	}
 
-	public update(data: PackageInterface<M>): Promise<PackageInterface<M>> {
+	public set(data: PackageInterface<M>): Promise<PackageInterface<M>> {
 		return new Promise((rs, rj) => {
 			this.db.query(this.name)
 				.specific(null, (table) => {

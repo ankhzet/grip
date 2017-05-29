@@ -5,54 +5,38 @@ import { GripServer } from './Server/Server';
 import { GripActions } from './Server/actions/GripActions';
 import { CacheAction, CachePacketData } from './Server/actions/Cache';
 
-import { Book } from './Domain/Book';
 import { BooksDepot } from './Domain/BooksDepot';
 import { Cacher } from './Client/Cacher';
 import { PagesCache } from './Client/Book/PagesCache';
-import { Collection } from '../core/server/data/Collection';
-import { TranscoderInterface } from '../core/server/TranscoderInterface';
 import { BookTranscoder } from "./Domain/Transcoders/Packet/BookTranscoder";
-import { ObjectUtils } from '../core/utils/ObjectUtils';
+import { CollectionThunk } from '../core/server/Synchronizer';
+import { Package } from '../core/db/data/Package';
+import { PackageInterface } from '../core/db/data/PackageInterface';
+import { Book } from './Domain/Book';
 
 export class Grip {
 	server: GripServer;
 	db: GripDB;
-	collections: {[name: string]: Collection<any>} = {
-		books: null,
-	};
-	transcoders: {[name: string]: TranscoderInterface<any, any>} = {
-		books: null,
+	collections: {[name: string]: CollectionThunk<any, any>} = {
+		books: {
+			collection: null,
+			transcoder: null,
+		}
 	};
 
 	constructor() {
 		this.db = new GripDB();
 		this.collections = {
-			books: new BooksDepot(this.db),
+			books: {
+				collection: new BooksDepot(this.db),
+				transcoder: new BookTranscoder(),
+			},
 		};
-		this.transcoders = {
-			books: new BookTranscoder(),
-		};
-
 		this.server = new GripServer();
-		let dtr = this.server.transcoder;
 
 		for (let name of Object.keys(this.collections)) {
-			let collection = this.collections[name];
-			let transcoder = this.transcoders[name];
-
-			if (transcoder && dtr) {
-				transcoder = ((transcoder: TranscoderInterface<any, any>) => ({
-					encode(model) {
-						return dtr.encode(transcoder.encode(model))
-					},
-					decode(data) {
-						return dtr.decode(transcoder.decode(data))
-					}
-				}))(transcoder);
-			}
-
-			this.server.collection(collection, this.transcoders[name]);
-
+			let { collection, transcoder } = this.collections[name];
+			this.server.collection(collection, transcoder);
 			collection.changed((uids: string[]) => {
 				this.server.broadcast(GripActions.updated, { what: name, uids});
 			});
@@ -62,7 +46,7 @@ export class Grip {
 	}
 
 	async _handle_cache({ uid }: CachePacketData) {
-		let books = <BooksDepot>this.collections.books;
+		let books = <BooksDepot>this.collections.books.collection;
 		let book = await books.getOne(uid);
 
 		if (!book) {

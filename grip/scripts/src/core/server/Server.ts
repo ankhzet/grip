@@ -1,6 +1,4 @@
 
-import { ObjectUtils } from '../utils/ObjectUtils';
-
 import { ActionHandler } from '../parcel/ActionHandler';
 import { ActionConstructor } from '../parcel/actions/Action';
 import { Packet } from '../parcel/Packet';
@@ -17,6 +15,7 @@ import { IdentifiableInterface } from '../db/data/IdentifiableInterface';
 import { TranscoderInterface } from './TranscoderInterface';
 import { Collection } from './data/Collection';
 import { CollectionThunk, Synchronizer } from './Synchronizer';
+import { ObjectTranscoder } from './data/ObjectTranscoder';
 
 export class Server<C extends ClientConnector> extends Listener<C> implements PacketHandler<C> {
 	private dispatcher: PacketDispatcher;
@@ -28,27 +27,7 @@ export class Server<C extends ClientConnector> extends Listener<C> implements Pa
 		super(name, pool);
 		this.dispatcher = dispatcher;
 		this.synchronised = new Synchronizer(this);
-
-		// todo: implement default protocol transcoder
-		let converter = (o) => {
-			return ObjectUtils.transform(o, (value, prop) => (
-				(!prop.match(/^_/) && [
-					(typeof value === 'object')
-						? converter(value)
-						: value,
-					prop,
-				])
-			));
-		};
-
-		this.transcoder = {
-			encode(model: any): any {
-				return converter(model);
-			},
-			decode(data: any): any {
-				return converter(data);
-			},
-		};
+		this.transcoder = new ObjectTranscoder();
 
 		// todo: improve default handler
 		this.on(null, (data, client, packet) => {
@@ -61,9 +40,23 @@ export class Server<C extends ClientConnector> extends Listener<C> implements Pa
 	}
 
 	collection<M extends IdentifiableInterface>(collection: Collection<M>, transcoder?: TranscoderInterface<M, any>): CollectionThunk<M, any> {
+		let main = this.transcoder;
+
+		if (transcoder && main) {
+			let wrap = transcoder;
+			transcoder = {
+				encode(model) {
+					return main.encode(wrap.encode(model))
+				},
+				decode(data) {
+					return wrap.decode(main.decode(data))
+				}
+			};
+		}
+
 		return this.synchronised.collection(
 			collection,
-			transcoder || this.transcoder
+			transcoder
 		);
 	}
 
