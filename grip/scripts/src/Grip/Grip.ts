@@ -57,9 +57,14 @@ export class Grip {
 			.fetch({
 				tocURI: book.uri,
 				matchers: book.matchers,
-			}).then((cache: PagesCache) => books.setOne(ObjectUtils.patch(book, {
-				toc: cache.toc,
-			}))).then((book: Book) => {
+			}).then((cache: PagesCache) => {
+				book.toc = cache.toc;
+				book.cached = +new Date();
+
+				return books.setOne(book)
+					.then((book: Book) => {
+						this.server.broadcast(GripActions.cached, { uids: [book.uid], });
+					});
 			})
 		;
 	}

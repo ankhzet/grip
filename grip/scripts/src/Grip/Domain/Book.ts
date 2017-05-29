@@ -30,6 +30,7 @@ export class Book extends Model {
 	public title: string;
 	public uri: string;
 	public toc: TocInterface = {};
+	public cached: number;
 
 	public matchers: Matchers = Matchers.create({ Utils, $: jQuery }, Book.matchers);
 
