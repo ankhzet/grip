@@ -43,4 +43,22 @@ export class Book extends Model {
 		[Book.MATCHER_TOC , EMPTY_MATCHER],
 		[Book.MATCHER_PAGE, EMPTY_MATCHER],
 	]);
+
+	public getPageUri(page: number): string {
+		return Object.keys(this.toc)[page];
+	}
+
+	public getPageTitle(page: number): string {
+		let uri = this.getPageUri(page);
+
+		return (
+			uri
+				? this.toc[uri]
+				: uri
+		);
+	}
+
+	public getPageContents(page: number): string {
+		return this.contents[page];
+	}
 }
