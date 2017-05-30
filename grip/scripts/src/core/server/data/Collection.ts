@@ -127,16 +127,10 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 						() => rs(this.cached())
 					)
 					.fetch((err, data: any[]) => {
-						let pack = new Package(data);
-						let decoded = this.transcoder
-							? Package.create<any, M>(pack, (i) => this.transcoder.decode(i))
-							: pack
-						;
-
 						return (
 							err
 								? rj(err)
-								: rs(this.cache(decoded))
+								: rs(this.load(data))
 						);
 					})
 				;
@@ -149,7 +143,7 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 	private updated(store: ModelStore<M>, uids: string[] = null): Promise<PackageInterface<M>> {
 		return store.findModels(uids)
 			.then((data: M[]) => {
-				return this.cache(new Package(data));
+				return this.load(data)
 			});
 	}
 
@@ -175,6 +169,16 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 		}
 
 		return this.cached(uids);
+	}
+
+	private load(documents: any[]): PackageInterface<M> {
+		let pack = new Package(documents);
+		let decoded = this.transcoder
+			? Package.create<any, M>(pack, (i) => this.transcoder.decode(i))
+			: pack
+		;
+
+		return this.cache(decoded);
 	}
 
 }
