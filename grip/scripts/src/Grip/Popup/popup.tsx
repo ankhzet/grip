@@ -57,7 +57,7 @@ class Navbar extends React.Component<LocationProps, {}> {
 		let { menu, connected } = this.props;
 
 		return (
-			<nav className="navbar navbar-default navbar-fixed.top" role="navigation">
+			<nav className="navbar navbar-dark navbar-fixed.top" role="navigation">
 				<div className="container-fluid">
 					<div className="navbar-header">
 						<button type="button" className="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">

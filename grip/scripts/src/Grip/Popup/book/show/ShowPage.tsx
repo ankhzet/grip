@@ -14,7 +14,7 @@ import { Book } from '../../../Domain/Book';
 import { BooksPage } from '../../BooksPage';
 import { ManagerInterface } from '../../../../components/Reactivity/ManagerInterface';
 import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
-import { InjectedRouter, Link, withRouter } from 'react-router';
+import { Link } from 'react-router';
 import { Utils } from '../../../Client/Utils';
 import { TocInterface } from '../../../Domain/TocInterface';
 import { RadioGroup } from '../../../../components/radiogroup';
@@ -24,10 +24,8 @@ interface TocListProps {
 	uid: string;
 	toc: TocInterface;
 	columns?: number;
-	router?: InjectedRouter;
 }
 
-@withRouter
 class TocList extends React.Component<TocListProps, {}> {
 	static DEFAULT_COLUMNS = 3;
 
