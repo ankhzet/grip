@@ -60,18 +60,21 @@ export class Grip {
 									book.contents[page] = contents;
 									book.cached = +new Date();
 
-									return books.setOne(book)
-										.then(() => {
-											done.push(page);
+									return books.setOne(book);
+								})
+								.catch((error) => {
+									console.error(error);
+								})
+								.then(() => {
+									done.push(page);
 
-											let next = cache.next(page);
+									let next = cache.next(page);
 
-											if (next !== page) {
-												return loader(next, done);
-											} else {
-												return done;
-											}
-										});
+									if (next !== page) {
+										return loader(next, done);
+									} else {
+										return done;
+									}
 								});
 						};
 
