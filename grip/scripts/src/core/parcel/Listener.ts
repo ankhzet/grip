@@ -16,7 +16,9 @@ export abstract class Listener<C extends Port> {
 	constructor(name: string, pool: ClientsPool<C>) {
 		this.name = PortUtils.portName(name);
 		this.pool = pool;
+	}
 
+	public listen() {
 		chrome.runtime.onConnect.addListener((port) => {
 			if (port.name !== this.name) {
 				return;
