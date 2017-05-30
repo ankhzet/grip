@@ -1,4 +1,4 @@
 
 module.exports = {
-	tracing: true,
+	tracing: false,
 };
