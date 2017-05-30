@@ -77,8 +77,19 @@ export class Server<C extends ClientConnector> extends Listener<C> implements Pa
 	}
 
 	connect(port: chrome.runtime.Port): C {
+		let handshaked = false;
 		return super.connect(port)
-			.handshake(this._handle_handshake.bind(this))
+			.handshake((data: HandshakePacketData, client: C) => {
+				if (handshaked) {
+					return false;
+				}
+
+				try {
+					return this._handle_handshake(data, client);
+				} finally {
+					handshaked = true;
+				}
+			})
 		;
 	}
 
@@ -105,7 +116,6 @@ export class Server<C extends ClientConnector> extends Listener<C> implements Pa
 	_handle_handshake(data: HandshakePacketData, client: C) {
 		client = this.add(client);
 		client = this.prepareAfterConnect(client);
-		console.log('handshaked', data);
 
 		client.listen(null, (sender: C, data: any, packet: Packet<any>) => {
 			return this.dispatcher.dispatch(client, packet);
