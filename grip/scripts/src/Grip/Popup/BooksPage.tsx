@@ -57,7 +57,7 @@ export class BooksPage extends React.Component<BooksPageProps, BooksPageState> {
 }
 
 export const BooksPageRoutes = (
-	<Route path={ BooksPage.PATH } component={ BooksPage }>
+	<Route path={ BooksPage.path() } component={ BooksPage }>
 		<Route path={ EditPage.path(':id') } component={ EditPage } />
 		<Route path={ ShowPage.path(':id') } component={ ShowPage } />
 		<IndexRoute component={ ListPage } />
