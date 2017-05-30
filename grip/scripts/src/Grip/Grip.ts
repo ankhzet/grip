@@ -26,6 +26,7 @@ export class Grip {
 		};
 
 		this.server.on(CacheAction, this._handle_cache.bind(this));
+		this.server.listen();
 	}
 
 	async _handle_cache({ uid }: CachePacketData) {
