@@ -53,7 +53,7 @@ module.exports = {
 
 	watchOptions: {
 		aggregateTimeout: 400,
-		poll: true,
+		ignored: /node_modules/,
 	},
 
 	stats: {

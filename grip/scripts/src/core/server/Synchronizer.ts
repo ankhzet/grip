@@ -60,7 +60,7 @@ export class Synchronizer {
 
 	update(thunk: CollectionThunk<any, any>, { what, data, payload }: UpdatePacketData, client: Port) {
 		return thunk.collection
-			.update(this.decode(thunk, data))
+			.set(this.decode(thunk, data))
 			.then((pack: PackageInterface<any>) => (
 				this.send(client, {
 					data: Object.keys(pack),
