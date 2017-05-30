@@ -15,6 +15,7 @@ import { ManagerInterface } from '../../../../components/Reactivity/ManagerInter
 import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
 import { BooksPage } from '../../BooksPage';
 import { ObjectUtils } from "../../../../core/utils/ObjectUtils";
+import { KeyboardEvent } from 'react';
 
 export interface EditPageProps {
 	delegate: BookUIDelegateInterface<Book>;
@@ -117,7 +118,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 
 				<PanelBody>
 
-					<div className="form-horizontal">
+					<div className="form-horizontal" onKeyDown={ (e) => this.handleKey(e) }>
 
 						<div className="form-group">
 							<div className="col-xs-12">
@@ -255,4 +256,13 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 		return this.props.delegate.fetchBook(this.state.book);
 	}
 
+	private handleKey(e: KeyboardEvent<HTMLElement>) {
+		if((e.ctrlKey || e.metaKey) && e.key == 's') {
+			event.preventDefault();
+
+			this.saveBook();
+		}
+
+		return false;
+	}
 }

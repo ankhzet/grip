@@ -13,6 +13,9 @@ import { GripServerConnector } from '../Client/GripServerConnector';
 import { SendAction } from '../../core/parcel/actions/Base/Send';
 import { Alertify } from "../../core/utils/alertify";
 import { Glyph } from '../../components/glyph';
+import { CachedAction } from '../Server/actions/Cached';
+import { PackageInterface } from '../../core/db/data/PackageInterface';
+import { ObjectUtils } from '../../core/utils/ObjectUtils';
 // import { Breadcrumbs } from '../breadcrumbs';
 
 interface PageLink {
@@ -115,17 +118,42 @@ class App extends React.Component<LocationProps, AppState> {
 					break;
 			}
 		});
-
-		this.state = {
-			connected: false,
-			books: new BookManager(this.server),
-		};
-
 		this.server.handshake(() => {
 			this.setState({
 				connected: true,
 			});
 		});
+
+		let books = new BookManager(this.server);
+
+		books.changed((uids) => {
+			books.get(uids)
+				.then(() => {
+					this.forceUpdate();
+				})
+		});
+
+		this.server.listen(CachedAction, ({ uids }) => {
+			let timestamp = +new Date;
+
+			books.get(uids)
+				.then((pack: PackageInterface<Book>) => {
+					books.set(
+						Object.keys(pack).map(
+							(uid) => {
+								return ObjectUtils.patch(pack[uid], {
+									cached: timestamp,
+								})
+							}
+						)
+					)
+				});
+		});
+
+		this.state = {
+			connected: false,
+			books: books,
+		};
 	}
 
 	breadcrumbs(): Menu {
@@ -180,7 +208,7 @@ class App extends React.Component<LocationProps, AppState> {
 					</div>
 				</div>
 			</div>
-		)
+		);
 	}
 }
 

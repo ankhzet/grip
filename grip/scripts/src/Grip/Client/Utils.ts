@@ -1,5 +1,6 @@
 
 import * as JQuery from 'jquery';
+import * as moment from 'moment';
 
 export class Utils {
 	static wrap(html: string, parent?: string): JQuery {
@@ -10,13 +11,15 @@ export class Utils {
 		return this.wrap(html, parent)
 			.find(context)
 			.html()
-		;
+			;
 	}
 
 	static download(uri: string): Promise<string> {
 		return new Promise((rs, rj) => {
 			JQuery.get(uri)
 				.then(rs, (j, t, e) => rj(j.status + ' ' + e));
+		}).catch((e) => {
+			throw new Error('Download failed for uri "' + uri + '" (' + e + ')');
 		});
 	}
 
@@ -26,7 +29,7 @@ export class Utils {
 			.map((v, index) => {
 				return array.slice(index * block, (index + 1) * block);
 			})
-		;
+			;
 	}
 
 	static relative(url: string): string {
@@ -54,4 +57,9 @@ export class Utils {
 				})
 		});
 	}
+
+	static formatTimestamp(timestamp: number, format: string = 'DD-MM-YYYY HH:mm') {
+		return moment(timestamp).format(format);
+	}
+
 }

@@ -39,10 +39,6 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 		return this.fetch({ uid: { $in: uids } });
 	}
 
-	public set(instances: PackageInterface<M>): Promise<PackageInterface<M>> {
-		return this.update(instances);
-	}
-
 	public remove(uids: string[]): Promise<PackageInterface<M>> {
 		let pack = new Package<M>();
 
@@ -50,7 +46,7 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 			pack[uid] = null;
 		}
 
-		return this.update(pack);
+		return this.set(pack);
 	}
 
 	public getOne(uid: string): Promise<M> {
@@ -58,18 +54,18 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 			.then((pack: PackageInterface<M>) => (
 				pack[uid]
 			))
-			;
+		;
 	}
 
 	public setOne(instance: M): Promise<M> {
-		return this.update(new Package([instance]))
+		return this.set(new Package([instance]))
 			.then((pack: PackageInterface<M>) => (
 				pack[instance.uid]
 			))
-			;
+		;
 	}
 
-	public update(data: PackageInterface<M>): Promise<PackageInterface<M>> {
+	public set(data: PackageInterface<M>): Promise<PackageInterface<M>> {
 		return new Promise((rs, rj) => {
 			this.db.query(this.name)
 				.specific(null, (table) => {
@@ -127,16 +123,10 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 						() => rs(this.cached())
 					)
 					.fetch((err, data: any[]) => {
-						let pack = new Package(data);
-						let decoded = this.transcoder
-							? Package.create<any, M>(pack, (i) => this.transcoder.decode(i))
-							: pack
-						;
-
 						return (
 							err
 								? rj(err)
-								: rs(this.cache(decoded))
+								: rs(this.load(data))
 						);
 					})
 				;
@@ -146,10 +136,10 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 		});
 	}
 
-	private updated(store: ModelStore<M>, uids: string[] = null): Promise<PackageInterface<M>> {
+	private updated(store: ModelStore<any>, uids: string[] = null): Promise<PackageInterface<M>> {
 		return store.findModels(uids)
-			.then((data: M[]) => {
-				return this.cache(new Package(data));
+			.then((data: any[]) => {
+				return this.load(data)
 			});
 	}
 
@@ -175,6 +165,16 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 		}
 
 		return this.cached(uids);
+	}
+
+	private load(documents: any[]): PackageInterface<M> {
+		let pack = new Package(documents);
+		let decoded = this.transcoder
+			? Package.create<any, M>(pack, (i) => this.transcoder.decode(i))
+			: pack
+		;
+
+		return this.cache(decoded);
 	}
 
 }
