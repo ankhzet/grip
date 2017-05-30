@@ -140,9 +140,9 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 		});
 	}
 
-	private updated(store: ModelStore<M>, uids: string[] = null): Promise<PackageInterface<M>> {
+	private updated(store: ModelStore<any>, uids: string[] = null): Promise<PackageInterface<M>> {
 		return store.findModels(uids)
-			.then((data: M[]) => {
+			.then((data: any[]) => {
 				return this.load(data)
 			});
 	}
