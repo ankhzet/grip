@@ -30,6 +30,7 @@ export class Book extends Model {
 	public title: string;
 	public uri: string;
 	public toc: TocInterface = {};
+	public contents: {[page: number]: string} = {};
 
 	public cached: number;
 
