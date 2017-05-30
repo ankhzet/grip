@@ -12,7 +12,6 @@ import { PagesCache } from './Client/Book/PagesCache';
 import { Collection } from '../core/server/data/Collection';
 import { TranscoderInterface } from '../core/server/TranscoderInterface';
 import { BookTranscoder } from "./Domain/Transcoders/Packet/BookTranscoder";
-import { ObjectUtils } from '../core/utils/ObjectUtils';
 
 export class Grip {
 	server: GripServer;
@@ -69,14 +68,47 @@ export class Grip {
 			throw new Error(`Book with uid "${uid}" not found`);
 		}
 
-		return (new Cacher())
+		let cacher = new Cacher();
+
+		return cacher
 			.fetch({
 				tocURI: book.uri,
 				matchers: book.matchers,
-			}).then((cache: PagesCache) => books.setOne(ObjectUtils.patch(book, {
-				toc: cache.toc,
-			}))).then((book: Book) => {
-				this.server.broadcast(GripActions.cached, { uids: [book.uid]});
+			}).then((cache: PagesCache) => {
+				book.toc = cache.toc;
+
+				return books.setOne(book)
+					.then((book: Book) => {
+						this.server.broadcast(GripActions.cached, {uids: [book.uid]});
+
+						return book;
+					}).then((book: Book) => {
+
+						let loader = (page: number, done: number[] = []) => {
+							return cacher.preload(cache, page)
+								.then((contents: string) => {
+									book.contents[page] = contents;
+									book.cached = +new Date();
+
+									return books.setOne(book)
+										.then(() => {
+											done.push(page);
+
+											let next = cache.next(page);
+
+											if (next !== page) {
+												return loader(next, done);
+											} else {
+												return done;
+											}
+										});
+								});
+						};
+
+						return loader(0).then((done: number[]) => {
+							console.log('Preloaded:', cache, done, book);
+						});
+					});
 			})
 		;
 	}
