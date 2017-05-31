@@ -8,7 +8,6 @@ import { Book } from '../../../Domain/Book';
 import { BooksPage } from '../../BooksPage';
 import { ManagerInterface } from '../../../../components/Reactivity/ManagerInterface';
 import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
-import { Utils } from '../../../Client/Utils';
 
 export interface ReadPageProps {
 	manager: ManagerInterface<Book>;
@@ -80,9 +79,7 @@ export class ReadPage extends React.Component<ReadPageProps, ReadPageState> {
 				</PanelHeader>
 
 				<PanelBody>
-					<div className="col-xs-12" dangerouslySetInnerHTML={{ __html: book.getPageContents(page) }}>
-
-					</div>
+					<div className="col-xs-12" dangerouslySetInnerHTML={{ __html: book.getPageContents(page) }} />
 				</PanelBody>
 
 				<PanelFooter>
