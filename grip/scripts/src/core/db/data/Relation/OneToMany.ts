@@ -1,22 +1,25 @@
 
+import { Base } from './Base';
 import { Model } from '../Model';
+import { ManyToOne } from './ManyToOne';
 
-export class OneToMany<S extends Model, T extends Model> {
+export class OneToMany<S extends Model, T extends Model> extends Base<S, T> {
 	private models: T[] = [];
-	private owner: S;
-	private back: string;
-
-	constructor(owner: S, back: string) {
-		this.owner = owner;
-		this.back = back;
-	}
 
 	public get uids() {
 		return this.models.length ? this.models.map((model) => model.uid) : [];
 	}
 
-	public clear() {
-		this.set([]);
+	public detach(one?: T) {
+		if (one === undefined) {
+			return this.models.length && this.set([]);
+		}
+
+		if (this.models.indexOf(one) < 0) {
+			return;
+		}
+
+		this.set(this.models.filter((model) => model !== one));
 	}
 
 	public get(): T[] {
@@ -47,14 +50,14 @@ export class OneToMany<S extends Model, T extends Model> {
 		let from = this.models;
 		let detach = from.filter((model) => to.indexOf(model) < 0);
 		let attach = to.filter((model) => from.indexOf(model) < 0);
-		this.models = to;
+		this.models = to || [];
 
 		for (let model of detach) {
-			model[this.back].set(undefined);
+			(<ManyToOne<T, S>>model[this.back]).detach();
 		}
 
 		for (let model of attach) {
-			model[this.back].set(this.owner);
+			(<ManyToOne<T, S>>model[this.back]).set(this.owner);
 		}
 	}
 
@@ -66,15 +69,4 @@ export class OneToMany<S extends Model, T extends Model> {
 		this.set(this.models.concat([one]));
 	}
 
-	public remove(one: T) {
-		if (this.models.indexOf(one) < 0) {
-			return;
-		}
-
-		this.set(this.models.filter((model) => model !== one));
-	}
-
-	public static attach<S extends Model, T extends Model>(owner: S, reverse?: string): OneToMany<S, T> {
-		return new OneToMany<S, T>(owner, reverse || owner.constructor.name.toLowerCase());
-	}
 }
