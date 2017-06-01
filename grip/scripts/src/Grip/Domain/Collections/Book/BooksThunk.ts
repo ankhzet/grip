@@ -6,13 +6,14 @@ import { TranscoderInterface } from '../../../../core/server/TranscoderInterface
 import { DB } from '../../../../core/db/DB';
 import { BooksDepot } from './BooksDepot';
 import { BookTranscoder } from '../../Transcoders/Packet/BookTranscoder';
+import { Models } from '../../../../core/db/data/Models';
 
 export class BooksThunk implements CollectionThunk<Book, any> {
 	collection: Collection<Book>;
 	transcoder: TranscoderInterface<Book, any>;
 
-	public constructor(db: DB) {
-		this.collection = new BooksDepot(db);
+	public constructor(db: DB, models: Models<Book>) {
+		this.collection = new BooksDepot(db, models);
 		this.transcoder = new BookTranscoder();
 	}
 }
