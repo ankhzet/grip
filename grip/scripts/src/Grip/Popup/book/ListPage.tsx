@@ -7,8 +7,8 @@ import { Glyph } from '../../../components/glyph';
 import { Button } from '../../../components/button';
 import { Panel, PanelHeader, PanelList } from '../../../components/panel';
 
-import { Book } from '../../Domain/Book';
-import { BooksPackage } from "../../Domain/BooksPackage";
+import { Book } from '../../Domain/Collections/Book/Book';
+import { BooksPackage } from "../../Domain/Collections/Book/BooksPackage";
 import { ManagerInterface } from '../../../components/Reactivity/ManagerInterface';
 import { BookUIDelegateInterface } from "./delegates/BookUIDelegateInterface";
 import { ShowPage } from './show/ShowPage';

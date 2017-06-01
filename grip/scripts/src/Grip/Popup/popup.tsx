@@ -8,7 +8,7 @@ import { AboutPageRoutes, AboutPage } from './AboutPage';
 import { BooksPageRoutes, BooksPage } from './BooksPage';
 import { BookManager } from './book/Manager';
 import { ManagerInterface } from '../../components/Reactivity/ManagerInterface';
-import { Book } from '../Domain/Book';
+import { Book } from '../Domain/Collections/Book/Book';
 import { GripServerConnector } from '../Client/GripServerConnector';
 import { SendAction } from '../../core/parcel/actions/Base/Send';
 import { Alertify } from "../../core/utils/alertify";

@@ -4,7 +4,7 @@ import * as React from "react";
 import { Panel, PanelFooter, PanelHeader, PanelBody } from '../../../../components/panel';
 import { Button } from '../../../../components/button';
 
-import { Book } from '../../../Domain/Book';
+import { Book } from '../../../Domain/Collections/Book/Book';
 import { BooksPage } from '../../BooksPage';
 import { ManagerInterface } from '../../../../components/Reactivity/ManagerInterface';
 import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
