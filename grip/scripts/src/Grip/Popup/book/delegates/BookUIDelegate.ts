@@ -57,7 +57,7 @@ export class BookUIDelegate implements BookUIDelegateInterface<Book> {
 	}
 
 	async removeBook(book: Book): Promise<string|null> {
-		let response = await (new Promise((rs, rj) => {
+		let response = await (new Promise((rs) => {
 			Alertify.confirm(`You sure want to delete "${book.title}"?`, rs);
 		}));
 
