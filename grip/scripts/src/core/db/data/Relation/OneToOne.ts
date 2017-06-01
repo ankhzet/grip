@@ -1,6 +1,7 @@
 
 import { Base } from './Base';
 import { Model } from '../Model';
+import { Models } from '../Models';
 
 export class OneToOne<S extends Model, T extends Model> extends Base<S, T> {
 	private model: T;
@@ -17,7 +18,7 @@ export class OneToOne<S extends Model, T extends Model> extends Base<S, T> {
 		return this.model;
 	}
 
-	public set(to: T) {
+	public set(to: T): this {
 		let from = this.model;
 
 		if (to === from) {
@@ -33,6 +34,16 @@ export class OneToOne<S extends Model, T extends Model> extends Base<S, T> {
 		if (to) {
 			(<OneToOne<T, S>>to[this.back]).set(this.owner);
 		}
+
+		return this;
+	}
+
+	encode(store: Models<T>) {
+		return this.uid;
+	}
+
+	decode(store: Models<T>, value: any): Base<S, T> {
+		return this.set(store.get(value));
 	}
 
 }

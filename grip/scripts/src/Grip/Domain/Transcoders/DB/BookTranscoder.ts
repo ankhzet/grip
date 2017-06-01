@@ -1,49 +1,46 @@
 
 import { Book } from '../../Collections/Book/Book';
-import { TranscoderInterface } from '../../../../core/server/TranscoderInterface';
 import { ObjectUtils } from '../../../../core/utils/ObjectUtils';
+import { BaseTranscoder } from './BaseTranscoder';
 
-export class BookTranscoder implements TranscoderInterface<Book, {}> {
+export class BookTranscoder extends BaseTranscoder<Book> {
 
-	public encode(book: Book): any {
-		return book && ObjectUtils.transform(book, (value, prop) => {
-			switch (prop) {
-				case 'toc':
-					value = ObjectUtils.transform(value, (title, uri) => (
-						[title, btoa(uri || "")]
-					));
-					break;
+	protected encodeProperty(model: Book, value, prop): [any, string] {
+		switch (prop) {
+			case 'toc':
+				value = ObjectUtils.transform(value, (title, uri) => (
+					[title, btoa(uri || "")]
+				));
+				break;
 
-				case 'matchers':
-					value = value.code();
-					break;
-			}
+			case 'matchers':
+				value = value.code();
+				break;
+		}
 
-			return [value, prop];
-		});
+		return super.encodeProperty(model, value, prop);
 	}
 
-	public decode(data: any, target?: Book): Book {
-		return data && ObjectUtils.transform(data, (value, prop, has) => {
-			switch (prop) {
-				case 'toc':
-					value = ObjectUtils.transform(value, (title, uri) => {
-						try {
-							return [title, atob(uri || "")];
-						} catch (e) {
-							return [title, uri];
-						}
-					});
-					break;
+	protected decodeProperty(model: Book, value, prop, has): [any, string] {
+		switch (prop) {
+			case 'toc':
+				value = ObjectUtils.transform(value, (title, uri) => {
+					try {
+						return [title, atob(uri || "")];
+					} catch (e) {
+						return [title, uri];
+					}
+				});
+				break;
 
-				case 'matchers':
-					value = ObjectUtils.transform(value, (code, matcher) => (
-						[code, matcher]
-					), has);
-					break;
-			}
+			case 'matchers':
+				value = ObjectUtils.transform(value, (code, matcher) => (
+					[code, matcher]
+				), has);
+				break;
+		}
 
-			return [value, prop];
-		}, target || new Book(data.uid));
+		return super.decodeProperty(model, value, prop, has);
 	}
+
 }

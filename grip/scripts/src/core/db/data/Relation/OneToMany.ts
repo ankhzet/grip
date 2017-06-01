@@ -2,6 +2,7 @@
 import { Base } from './Base';
 import { Model } from '../Model';
 import { ManyToOne } from './ManyToOne';
+import { Models } from '../Models';
 
 export class OneToMany<S extends Model, T extends Model> extends Base<S, T> {
 	private models: T[] = [];
@@ -46,7 +47,7 @@ export class OneToMany<S extends Model, T extends Model> extends Base<S, T> {
 		return null;
 	}
 
-	public set(to: T[]) {
+	public set(to: T[]): this {
 		let from = this.models;
 		let detach = from.filter((model) => to.indexOf(model) < 0);
 		let attach = to.filter((model) => from.indexOf(model) < 0);
@@ -59,6 +60,8 @@ export class OneToMany<S extends Model, T extends Model> extends Base<S, T> {
 		for (let model of attach) {
 			(<ManyToOne<T, S>>model[this.back]).set(this.owner);
 		}
+
+		return this;
 	}
 
 	public add(one: T) {
@@ -67,6 +70,14 @@ export class OneToMany<S extends Model, T extends Model> extends Base<S, T> {
 		}
 
 		this.set(this.models.concat([one]));
+	}
+
+	encode(store: Models<T>) {
+		return this.uids;
+	}
+
+	decode(store: Models<T>, value: string[]): Base<S, T> {
+		return this.set(value ? value.map((uid) => store.get(uid)) : []);
 	}
 
 }
