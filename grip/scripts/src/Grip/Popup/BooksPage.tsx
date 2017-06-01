@@ -7,6 +7,7 @@ import { ShowPage } from './book/show/ShowPage';
 import { EditPage } from './book/edit/EditPage';
 import { BookManager } from './book/Manager';
 import { BookUIDelegate } from './book/delegates/BookUIDelegate';
+import { ReadPage } from './book/read/ReadPage';
 
 interface BooksPageProps {
 	router: InjectedRouter;
@@ -57,8 +58,9 @@ export class BooksPage extends React.Component<BooksPageProps, BooksPageState> {
 }
 
 export const BooksPageRoutes = (
-	<Route path={ BooksPage.PATH } component={ BooksPage }>
+	<Route path={ BooksPage.path() } component={ BooksPage }>
 		<Route path={ EditPage.path(':id') } component={ EditPage } />
+		<Route path={ ReadPage.path(':id', ':page') } component={ ReadPage } />
 		<Route path={ ShowPage.path(':id') } component={ ShowPage } />
 		<IndexRoute component={ ListPage } />
 	</Route>

@@ -10,7 +10,7 @@ import 'codemirror/addon/selection/active-line';
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/lib/codemirror.css';
 
-import { Book } from '../../../Domain/Book';
+import { Book } from '../../../Domain/Collections/Book/Book';
 import { ManagerInterface } from '../../../../components/Reactivity/ManagerInterface';
 import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
 import { BooksPage } from '../../BooksPage';
