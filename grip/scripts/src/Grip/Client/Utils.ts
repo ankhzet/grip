@@ -62,4 +62,20 @@ export class Utils {
 		return moment(timestamp).format(format);
 	}
 
+	static partition(array: any[], predicate: (element: any, index: number, context: any) => any) {
+		let pass = new Array(array.length);
+		let fail = new Array(array.length);
+
+		for (let index in array) {
+			let element = array[index];
+
+			if (predicate(element, <any>index, array)) {
+				pass.push(element);
+			} else {
+				fail.push(element);
+			}
+		}
+
+		return [pass, fail];
+	}
 }
