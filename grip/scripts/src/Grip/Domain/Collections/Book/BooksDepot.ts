@@ -1,9 +1,9 @@
 
 
-import { DB } from '../../core/db/DB';
-import { Collection } from '../../core/server/data/Collection';
+import { DB } from '../../../../core/db/DB';
+import { Collection } from '../../../../core/server/data/Collection';
 import { Book } from './Book';
-import { BookTranscoder } from './Transcoders/DB/BookTranscoder';
+import { BookTranscoder } from '../../Transcoders/DB/BookTranscoder';
 
 export class BooksDepot extends Collection<Book> {
 	static collection = 'books';

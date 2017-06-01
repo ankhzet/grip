@@ -5,11 +5,11 @@ import { GripServer } from './Server/Server';
 import { GripActions } from './Server/actions/GripActions';
 import { CacheAction, CachePacketData } from './Server/actions/Cache';
 
-import { BooksDepot } from './Domain/BooksDepot';
+import { BooksDepot } from './Domain/Collections/Book/BooksDepot';
 import { Cacher } from './Client/Cacher';
 import { PagesCache } from './Client/Book/PagesCache';
-import { Book } from './Domain/Book';
-import { BooksThunk } from './Domain/BooksThunk';
+import { Book } from './Domain/Collections/Book/Book';
+import { BooksThunk } from './Domain/Collections/Book/BooksThunk';
 
 export class Grip {
 	server: GripServer;
