@@ -44,7 +44,7 @@ export class ManyToOne<S extends Model, T extends Model> {
 		}
 	}
 
-	public static attach<S extends Model, T extends Model>(owner: S, reverse?: string): OneToMany<S, T> {
-		return new OneToMany<S, T>(owner, reverse || owner.constructor.name.toLowerCase() + 's');
+	public static attach<S extends Model, T extends Model>(owner: S, reverse?: string): ManyToOne<S, T> {
+		return new ManyToOne<S, T>(owner, reverse || owner.constructor.name.toLowerCase() + 's');
 	}
 }

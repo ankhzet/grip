@@ -83,9 +83,10 @@ export class ShowPage extends React.Component<ShowPageProps, ShowPageState> {
 			matcher: null,
 		});
 
+		let book = await this.props.manager.getOne(id);
 		this.setState({
-			book: await this.props.manager.getOne(id),
-			matcher: Object.keys(Book.matchers).shift(),
+			book,
+			matcher: Object.keys(book.matchers).shift(),
 		});
 	}
 
@@ -102,7 +103,7 @@ export class ShowPage extends React.Component<ShowPageProps, ShowPageState> {
 			book,
 			matcher,
 		} = this.state;
-		let matchers = Object.keys(Book.matchers);
+		let matchers = Object.keys(book.matchers);
 
 		return (book || null) && (
 			<Panel>

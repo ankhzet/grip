@@ -5,17 +5,18 @@ import { GripServer } from './Server/Server';
 import { GripActions } from './Server/actions/GripActions';
 import { CacheAction, CachePacketData } from './Server/actions/Cache';
 
-import { BooksDepot } from './Domain/Collections/Book/BooksDepot';
 import { Cacher } from './Client/Cacher';
 import { PagesCache } from './Client/Book/PagesCache';
 import { Book } from './Domain/Collections/Book/Book';
 import { BooksThunk } from './Domain/Collections/Book/BooksThunk';
+import { PagesThunk } from './Domain/Collections/Page/PagesThunk';
 
 export class Grip {
 	server: GripServer;
 	db: GripDB;
 	collections: {
 		books: BooksThunk,
+		pages: PagesThunk,
 	};
 
 	constructor() {
@@ -23,6 +24,7 @@ export class Grip {
 		this.server = new GripServer();
 		this.collections = {
 			books: this.server.thunk(new BooksThunk(this.db)),
+			pages: this.server.thunk(new PagesThunk(this.db)),
 		};
 
 		this.server.on(CacheAction, this._handle_cache.bind(this));
@@ -30,7 +32,7 @@ export class Grip {
 	}
 
 	async _handle_cache({ uid }: CachePacketData) {
-		let books = <BooksDepot>this.collections.books.collection;
+		let { books: {collection: books}, pages: {collection: pages} } = this.collections;
 		let book = await books.getOne(uid);
 
 		if (!book) {
@@ -54,23 +56,40 @@ export class Grip {
 						return book;
 					}).then((book: Book) => {
 
-						let loader = (page: number, done: number[] = []) => {
-							return cacher.preload(cache, page)
+						let loader = (index: number, done: number[] = []) => {
+							return cacher.preload(cache, index)
 								.then((contents: string) => {
-									book.contents[page] = contents;
-									book.cached = +new Date();
+									let uri = book.getPageUri(index);
+									let page = book.pages.by({ uri });
+									let promise;
 
-									return books.setOne(book);
+									if (!page) {
+										page = pages.create(uri);
+										page.uri = uri;
+										page.title = book.getPageTitle(index);
+										page.book.set(book);
+
+										promise = pages.setOne(page);
+									} else {
+										promise = Promise.resolve(page);
+									}
+
+									return promise.then((page) => {
+										page.contents = contents;
+										book.cached = +new Date();
+
+										return books.setOne(book);
+									});
 								})
 								.catch((error) => {
 									console.error(error);
 								})
 								.then(() => {
-									done.push(page);
+									done.push(index);
 
-									let next = cache.next(page);
+									let next = cache.next(index);
 
-									if (next !== page) {
+									if (next !== index) {
 										return loader(next, done);
 									} else {
 										return done;

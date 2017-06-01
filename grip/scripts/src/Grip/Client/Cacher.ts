@@ -4,7 +4,7 @@ import { ObjectUtils } from '../../core/utils/ObjectUtils';
 import { State } from './Book/Page/State';
 import { CachedPage, CacheParams, PagesCache } from './Book/PagesCache';
 import { TocInterface } from '../Domain/TocInterface';
-import { Book } from '../Domain/Collections/Book/Book';
+import { BookMatchers } from '../Domain/Collections/Book/Book';
 import { Matcher } from '../Domain/Matching/Matcher';
 
 export class Cacher {
@@ -15,7 +15,7 @@ export class Cacher {
 	}
 
 	fetch(data: CacheParams): Promise<PagesCache> {
-		return this.match(data.tocURI, data.matchers.get(Book.MATCHER_TOC))
+		return this.match(data.tocURI, data.matchers.get(BookMatchers.TOC))
 			.then((toc: TocInterface) => {
 				let { tocURI, matchers } = data;
 
@@ -49,7 +49,7 @@ export class Cacher {
 			let uri = Object.keys(data.toc)[page];
 			let { state } = data.pages[page];
 
-			return Utils.ensure(() => this.match(uri, data.matchers.get(Book.MATCHER_PAGE)), (finished: boolean) => {
+			return Utils.ensure(() => this.match(uri, data.matchers.get(BookMatchers.PAGE)), (finished: boolean) => {
 					if (finished) {
 						state.remove(State.STATE_LOADING);
 					} else {

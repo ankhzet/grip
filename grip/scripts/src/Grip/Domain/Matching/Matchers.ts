@@ -8,6 +8,8 @@ export class Matchers {
 	constructor(context, ...matchers: string[]) {
 		this._matchers = matchers.reduce((m, name) => {
 			let matcher = new Matcher(context);
+			matcher.code = EMPTY_MATCHER;
+			m[name] = matcher;
 
 			Object.defineProperty(this, name, {
 				enumerable: true,
@@ -16,7 +18,7 @@ export class Matchers {
 				set: (code) => { matcher.code = code; },
 			});
 
-			return (m[name] = matcher, m);
+			return m;
 		}, {});
 	}
 
@@ -25,7 +27,9 @@ export class Matchers {
 		let instance = new this(context, ...names);
 
 		for (let name of names) {
-			instance.set(name, prototype[name]);
+			if (typeof prototype[name] === 'string') {
+				instance.set(name, prototype[name]);
+			}
 		}
 
 		return instance;
@@ -63,3 +67,22 @@ export class Matchers {
 	}
 
 }
+
+export const EMPTY_MATCHER = `
+
+({ grip, $ }) => {
+	class Matcher {
+		constructor(context) {
+			this.context = context;
+			this.pattern = /^.+$/;
+		}
+
+		match(content) {
+			throw new Error('Not implemented.');
+		}
+
+	}
+
+	return (context) => new Matcher(context);
+};
+`;
