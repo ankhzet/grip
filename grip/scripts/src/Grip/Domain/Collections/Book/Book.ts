@@ -4,6 +4,7 @@ import { TocInterface } from '../../TocInterface';
 import { ObjectUtils } from '../../../../core/utils/ObjectUtils';
 import { Matchers } from '../../Matching/Matchers';
 import { Utils } from '../../../Client/Utils';
+import { Page } from '../Page/Page';
 
 const EMPTY_MATCHER = `
 
@@ -31,6 +32,7 @@ export class Book extends Model {
 	public uri: string;
 	public toc: TocInterface = {};
 	public contents: {[page: number]: string} = {};
+	public pages: {[uid: string]: Page} = {};
 
 	public cached: number;
 
