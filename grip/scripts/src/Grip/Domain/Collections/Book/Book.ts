@@ -2,28 +2,10 @@
 import { Model } from '../../../../core/db/data/Model';
 import { TocInterface } from '../../TocInterface';
 import { ObjectUtils } from '../../../../core/utils/ObjectUtils';
-import { Matchers } from '../../Matching/Matchers';
+import { EMPTY_MATCHER, Matchers } from '../../Matching/Matchers';
 import { Utils } from '../../../Client/Utils';
 import { Page } from '../Page/Page';
-
-const EMPTY_MATCHER = `
-
-({ grip, $ }) => {
-	class Matcher {
-		constructor(context) {
-			this.context = context;
-			this.pattern = /^.+$/;
-		}
-
-		match(content) {
-			throw new Error('Not implemented.');
-		}
-
-	}
-
-	return (context) => new Matcher(context);
-};
-`;
+import { OneToMany } from '../../../../core/db/data/Relation/OneToMany';
 
 export class Book extends Model {
 	public uid: string;
@@ -31,20 +13,11 @@ export class Book extends Model {
 	public title: string;
 	public uri: string;
 	public toc: TocInterface = {};
-	public contents: {[page: number]: string} = {};
-	public pages: {[uid: string]: Page} = {};
 
+	public pages = OneToMany.attach<Book, Page>(this);
 	public cached: number;
 
-	public matchers: Matchers = Matchers.create({ Utils, $: jQuery }, Book.matchers);
-
-	static MATCHER_TOC = 'toc';
-	static MATCHER_PAGE= 'page';
-
-	static matchers = ObjectUtils.compose([
-		[Book.MATCHER_TOC , EMPTY_MATCHER],
-		[Book.MATCHER_PAGE, EMPTY_MATCHER],
-	]);
+	public matchers = new BookMatchers();
 
 	public getPageUri(page: number): string {
 		return Object.keys(this.toc)[page];
@@ -60,7 +33,27 @@ export class Book extends Model {
 		);
 	}
 
-	public getPageContents(page: number): string {
-		return this.contents[page];
+	public getPageContents(uid: string): string {
+		let page = this.pages.by({ uid });
+
+		return (
+			page
+				? page.contents
+				: null
+		);
 	}
+}
+
+export class BookMatchers extends Matchers {
+	static TOC = 'toc';
+	static PAGE= 'page';
+
+	constructor() {
+		super({ Utils, $: jQuery }, ...Object.keys(BookMatchers.matchers));
+	}
+
+	static matchers = ObjectUtils.compose([
+		[BookMatchers.TOC , EMPTY_MATCHER],
+		[BookMatchers.PAGE, EMPTY_MATCHER],
+	]);
 }

@@ -143,7 +143,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 								<div className="input-group">
 									<div className="input-group-addon">
 										<ul className="nav nav-tabs">
-											{ Object.keys(Book.matchers).map((matcher, index) => (
+											{ Object.keys(book.matchers).map((matcher, index) => (
 												<li className={ index ? '' : 'active' }>
 													<a href={ '#matcher-' + matcher } data-toggle="tab">{ matcher }</a>
 												</li>
@@ -152,7 +152,7 @@ export class EditPage extends React.Component<EditPageProps, EditPageState> {
 									</div>
 
 									<div className="tab-content form-control">
-										{ Object.keys(Book.matchers).map((matcher, index) => (
+										{ Object.keys(book.matchers).map((matcher, index) => (
 											<div className={ "tab-pane" + (index ? "" : " active") } id={ 'matcher-' + matcher }>
 												<CodeMirror
 													value={ matchers[matcher] }
