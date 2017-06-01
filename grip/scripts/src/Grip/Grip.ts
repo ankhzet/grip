@@ -5,11 +5,11 @@ import { GripServer } from './Server/Server';
 import { GripActions } from './Server/actions/GripActions';
 import { CacheAction, CachePacketData } from './Server/actions/Cache';
 
-import { BooksDepot } from './Domain/BooksDepot';
+import { BooksDepot } from './Domain/Collections/Book/BooksDepot';
 import { Cacher } from './Client/Cacher';
 import { PagesCache } from './Client/Book/PagesCache';
-import { Book } from './Domain/Book';
-import { BooksThunk } from './Domain/BooksThunk';
+import { Book } from './Domain/Collections/Book/Book';
+import { BooksThunk } from './Domain/Collections/Book/BooksThunk';
 
 export class Grip {
 	server: GripServer;
@@ -60,18 +60,21 @@ export class Grip {
 									book.contents[page] = contents;
 									book.cached = +new Date();
 
-									return books.setOne(book)
-										.then(() => {
-											done.push(page);
+									return books.setOne(book);
+								})
+								.catch((error) => {
+									console.error(error);
+								})
+								.then(() => {
+									done.push(page);
 
-											let next = cache.next(page);
+									let next = cache.next(page);
 
-											if (next !== page) {
-												return loader(next, done);
-											} else {
-												return done;
-											}
-										});
+									if (next !== page) {
+										return loader(next, done);
+									} else {
+										return done;
+									}
 								});
 						};
 

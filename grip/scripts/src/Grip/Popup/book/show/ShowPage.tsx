@@ -10,7 +10,7 @@ import 'codemirror/addon/selection/active-line';
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/lib/codemirror.css';
 
-import { Book } from '../../../Domain/Book';
+import { Book } from '../../../Domain/Collections/Book/Book';
 import { BooksPage } from '../../BooksPage';
 import { ManagerInterface } from '../../../../components/Reactivity/ManagerInterface';
 import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
@@ -18,6 +18,7 @@ import { Link } from 'react-router';
 import { Utils } from '../../../Client/Utils';
 import { TocInterface } from '../../../Domain/TocInterface';
 import { RadioGroup } from '../../../../components/radiogroup';
+import { ReadPage } from '../read/ReadPage';
 
 interface TocListProps {
 	uid: string;
@@ -38,7 +39,9 @@ class TocList extends React.Component<TocListProps, {}> {
 				{ Utils.chunks(links, 10).map((chunk, offset) => (
 					<ul className={ 'col-xs-' + col }>
 						{ chunk.map((uri) => (
-							<li key={ uri }><Link to={ uri }>{ toc[uri] }</Link></li>
+							<li key={ uri }>
+								<Link to={ ReadPage.path(uid, links.indexOf(uri)) }>{ toc[uri] }</Link>
+							</li>
 						)) }
 					</ul>
 				)) }

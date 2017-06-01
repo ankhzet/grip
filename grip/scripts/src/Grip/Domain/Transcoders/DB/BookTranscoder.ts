@@ -1,5 +1,5 @@
 
-import { Book } from '../../Book';
+import { Book } from '../../Collections/Book/Book';
 import { TranscoderInterface } from '../../../../core/server/TranscoderInterface';
 import { ObjectUtils } from '../../../../core/utils/ObjectUtils';
 

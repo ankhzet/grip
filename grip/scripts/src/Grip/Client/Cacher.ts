@@ -4,7 +4,7 @@ import { ObjectUtils } from '../../core/utils/ObjectUtils';
 import { State } from './Book/Page/State';
 import { CachedPage, CacheParams, PagesCache } from './Book/PagesCache';
 import { TocInterface } from '../Domain/TocInterface';
-import { Book } from '../Domain/Book';
+import { Book } from '../Domain/Collections/Book/Book';
 import { Matcher } from '../Domain/Matching/Matcher';
 
 export class Cacher {
