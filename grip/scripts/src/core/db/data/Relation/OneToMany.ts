@@ -23,6 +23,26 @@ export class OneToMany<S extends Model, T extends Model> {
 		return this.models;
 	}
 
+	public by(keys: any): T {
+		let names = Object.keys(keys);
+
+		for (let model of this.models) {
+			let wrong = false;
+
+			for (let key of names) {
+				if (wrong = (model[key] !== keys[key])) {
+					break;
+				}
+			}
+
+			if (!wrong) {
+				return model;
+			}
+		}
+
+		return null;
+	}
+
 	public set(to: T[]) {
 		let from = this.models;
 		let detach = from.filter((model) => to.indexOf(model) < 0);
