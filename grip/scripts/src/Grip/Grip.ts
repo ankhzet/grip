@@ -32,8 +32,8 @@ export class Grip {
 	}
 
 	async _handle_cache({ uid }: CachePacketData) {
-		let { books, pages } = this.collections;
-		let book = await books.collection.getOne(uid);
+		let { books: {collection: books}, pages: {collection: pages} } = this.collections;
+		let book = await books.getOne(uid);
 
 		if (!book) {
 			throw new Error(`Book with uid "${uid}" not found`);
@@ -49,7 +49,7 @@ export class Grip {
 				book.toc = cache.toc;
 				book.cached = +new Date();
 
-				return books.collection.setOne(book)
+				return books.setOne(book)
 					.then((book: Book) => {
 						this.server.broadcast(GripActions.cached, {uids: [book.uid]});
 
@@ -64,12 +64,12 @@ export class Grip {
 									let promise;
 
 									if (!page) {
-										page = pages.collection.create(uri);
+										page = pages.create(uri);
 										page.uri = uri;
 										page.title = book.getPageTitle(index);
 										page.book.set(book);
 
-										promise = pages.collection.setOne(page);
+										promise = pages.setOne(page);
 									} else {
 										promise = Promise.resolve(page);
 									}
@@ -78,7 +78,7 @@ export class Grip {
 										page.contents = contents;
 										book.cached = +new Date();
 
-										return books.collection.setOne(book);
+										return books.setOne(book);
 									});
 								})
 								.catch((error) => {
