@@ -9,6 +9,7 @@ import { OneToMany } from '../../../../core/db/data/Relation/OneToMany';
 
 export class Book extends Model {
 	public uid: string;
+	public matchers = new BookMatchers();
 
 	public title: string;
 	public uri: string;
@@ -16,8 +17,6 @@ export class Book extends Model {
 
 	public pages = new OneToMany<Book, Page>(this);
 	public cached: number;
-
-	public matchers = new BookMatchers();
 }
 
 export class BookMatchers extends Matchers {

@@ -5,30 +5,24 @@ import { ModelStore } from '../../db/ModelStore';
 import { SyncResultInterface } from '../../db/SyncResultInterface';
 import { PackageInterface } from '../../db/data/PackageInterface';
 import { Package } from '../../db/data/Package';
-import { ObjectUtils } from '../../utils/ObjectUtils';
 import { TranscoderInterface } from '../TranscoderInterface';
 import { Eventable } from '../../utils/Eventable';
+import { Models } from '../../db/data/Models';
 
 export class Collection<M extends IdentifiableInterface> extends Eventable {
 	static CHANGED = 'changed';
 
-	private _cache: PackageInterface<M> = {};
 	private db: DB;
-	private factory: (uid: string) => M;
-
 	protected transcoder: TranscoderInterface<M, any>;
 
 	public name: string;
+	public store: Models<M>;
 
-	constructor(db: DB, name: string, factory: (uid: string) => M) {
+	constructor(db: DB, name: string, store: Models<M>) {
 		super();
 		this.db = db;
 		this.name = name;
-		this.factory = factory;
-	}
-
-	public create(uid: string): M {
-		return this.factory(uid);
+		this.store = store;
 	}
 
 	public changed(listener: (uids: string[], event?: string) => any) {
@@ -152,8 +146,8 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 	private cached(uids?: string[]): PackageInterface<M> {
 		return (
 			uids
-				? ObjectUtils.extract(this._cache, uids)
-				: this._cache
+				? new Package(this.store.only(uids))
+				: this.store.all()
 		);
 	}
 
@@ -161,7 +155,7 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 		let uids = Object.keys(pack);
 
 		for (let uid of uids) {
-			this._cache[uid] = pack[uid];
+			this.store.set(pack[uid]);
 		}
 
 		return this.cached(uids);

@@ -6,13 +6,14 @@ import { DB } from '../../../../core/db/DB';
 import { Page } from './Page';
 import { PagesDepot } from './PagesDepot';
 import { PageTranscoder } from '../../Transcoders/Packet/PageTranscoder';
+import { Models } from '../../../../core/db/data/Models';
 
 export class PagesThunk implements CollectionThunk<Page, any> {
 	collection: Collection<Page>;
 	transcoder: TranscoderInterface<Page, any>;
 
-	public constructor(db: DB) {
-		this.collection = new PagesDepot(db);
+	public constructor(db: DB, models: Models<Page>) {
+		this.collection = new PagesDepot(db, models);
 		this.transcoder = new PageTranscoder();
 	}
 }
