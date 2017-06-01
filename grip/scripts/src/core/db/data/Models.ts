@@ -1,6 +1,7 @@
 
 import { Eventable } from '../../utils/Eventable';
 import { IdentifiableInterface } from './IdentifiableInterface';
+import { PackageInterface } from './PackageInterface';
 
 export class Models<M extends IdentifiableInterface> extends Eventable {
 	private instances: {[uid: string]: M} = {};

@@ -112,10 +112,7 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 		return new Promise((rs, rj) => {
 			try {
 				this.db.query(this.name, query)
-					.specific(
-						Object.keys(this._cache),
-						() => rs(this.cached())
-					)
+					.specific(null, () => rs(this.cached()))
 					.fetch((err, data: any[]) => {
 						return (
 							err

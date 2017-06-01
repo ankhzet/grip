@@ -134,11 +134,12 @@ export abstract class ObservableList<T extends IdentifiableInterface> extends Ev
 					}
 				}
 
-				return this.set(
-						this.deserialize(present.map((uid) => data[uid])),
-						true
-					)
-					.then((uids) => this.get(uids))
+				return uids.length
+					? this.set(
+							this.deserialize(present.map((uid) => data[uid])),
+							true
+						).then((uids) => this.get(uids))
+					: Promise.resolve(new Package())
 				;
 			});
 
