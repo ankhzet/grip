@@ -8,11 +8,11 @@ import { Button } from '../../../components/button';
 import { Panel, PanelHeader, PanelList } from '../../../components/panel';
 
 import { Book } from '../../Domain/Collections/Book/Book';
-import { BooksPackage } from "../../Domain/Collections/Book/BooksPackage";
 import { ManagerInterface } from '../../../components/Reactivity/ManagerInterface';
 import { BookUIDelegateInterface } from "./delegates/BookUIDelegateInterface";
 import { ShowPage } from './show/ShowPage';
 import { EditPage } from './edit/EditPage';
+import { PackageInterface } from "../../../core/db/data/PackageInterface";
 
 interface BookItemRowProps {
 	manager: ManagerInterface<Book>;
@@ -103,7 +103,7 @@ export interface ListPageProps {
 	manager: ManagerInterface<Book>;
 }
 
-export class ListPage extends React.Component<ListPageProps, { books: BooksPackage }> {
+export class ListPage extends React.Component<ListPageProps, { books: PackageInterface<Book> }> {
 
 	componentWillMount() {
 		this.pullBooks();
@@ -116,7 +116,7 @@ export class ListPage extends React.Component<ListPageProps, { books: BooksPacka
 	pullBooks(uids: string[] = []) {
 		return this.props.manager
 			.get(uids)
-			.then((books: BooksPackage) => {
+			.then((books: PackageInterface<Book>) => {
 				this.setState({
 					books,
 				});
