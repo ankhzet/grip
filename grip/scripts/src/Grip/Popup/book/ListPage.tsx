@@ -147,9 +147,9 @@ export class ListPage extends React.Component<ListPageProps, { books: PackageInt
 									book={ books[uid] } />
 							</li>
 						))
-						: (
-							<span className="col-md-12 text-center text-info">No books yet</span>
-						)
+						: <li className="list-group-item">
+								No books yet
+							</li>
 					}
 				</PanelList>
 			</Panel>
