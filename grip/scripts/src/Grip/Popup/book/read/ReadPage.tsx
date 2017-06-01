@@ -8,21 +8,23 @@ import { Book } from '../../../Domain/Collections/Book/Book';
 import { BooksPage } from '../../BooksPage';
 import { ManagerInterface } from '../../../../components/Reactivity/ManagerInterface';
 import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
+import { Page } from '../../../Domain/Collections/Page/Page';
 
 export interface ReadPageProps {
 	manager: ManagerInterface<Book>;
 	delegate: BookUIDelegateInterface<Book>;
-	params: { id: string, page: number };
+	params: { book_uid: string, page_uid: string };
 }
 
 export interface ReadPageState {
 	book: Book;
+	page: Page;
 }
 
 export class ReadPage extends React.Component<ReadPageProps, ReadPageState> {
 
-	static path(uid: string, page: string|number = 0): string {
-		return `${BooksPage.PATH}/${uid}/read/${page}`;
+	static path(book_uid: string, page_uid: string): string {
+		return `${BooksPage.PATH}/${book_uid}/read/${page_uid}`;
 	}
 
 	constructor(props) {
@@ -30,36 +32,37 @@ export class ReadPage extends React.Component<ReadPageProps, ReadPageState> {
 
 		this.state = {
 			book: null,
+			page: null,
 		};
 	}
 
-	async pullBook(id: string) {
+	async pullBook(uid: string) {
 		this.setState({
 			book: null,
+			page: null,
 		});
 
+		let book = await this.props.manager.getOne(uid);
+		let page = book.pages.by({ uid: this.props.params.page_uid });
+
 		this.setState({
-			book: await this.props.manager.getOne(id),
+			book,
+			page,
 		});
 	}
 
 	componentWillReceiveProps(next) {
-		this.pullBook(next.params.id);
+		this.pullBook(next.params.book_uid);
 	}
 
 	componentWillMount() {
-		this.pullBook(this.props.params.id);
+		this.pullBook(this.props.params.book_uid);
 	}
 
 	render() {
 		let {
-			params: {
-				page,
-			},
-		} = this.props;
-
-		let {
 			book,
+			page,
 		} = this.state;
 
 		return (book || null) && (
@@ -69,7 +72,10 @@ export class ReadPage extends React.Component<ReadPageProps, ReadPageState> {
 						{ book.title }
 					</h4>
 					<h5>
-						{ book.getPageTitle(page) }
+						{ page
+							? page.title
+							: <span>Page with UID { this.props.params.page_uid } not found</span>
+						}
 					</h5>
 
 					<div className="btn-toolbar pull-right">
@@ -78,9 +84,11 @@ export class ReadPage extends React.Component<ReadPageProps, ReadPageState> {
 					</div>
 				</PanelHeader>
 
-				<PanelBody>
-					<div className="col-xs-12" dangerouslySetInnerHTML={{ __html: book.getPageContents(page) }} />
-				</PanelBody>
+				{ (page || null) && (
+					<PanelBody>
+						<div className="col-xs-12" dangerouslySetInnerHTML={{ __html: page.contents }} />
+					</PanelBody>
+				) }
 
 				<PanelFooter>
 					<Button class="btn-xs" onClick={ () => this.showBook() }>
