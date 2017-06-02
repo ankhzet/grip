@@ -11,7 +11,8 @@ import { Book } from './Domain/Collections/Book/Book';
 import { BooksThunk } from './Domain/Collections/Book/BooksThunk';
 import { PagesThunk } from './Domain/Collections/Page/PagesThunk';
 import { Page } from "./Domain/Collections/Page/Page";
-import { Models } from '../core/db/data/Models';
+import { BookTable } from './Domain/Collections/Book/BookTable';
+import { PageTable } from './Domain/Collections/Page/PageTable';
 
 export class Grip {
 	server: GripServer;
@@ -25,8 +26,17 @@ export class Grip {
 		this.db = new GripDB();
 		this.server = new GripServer();
 		this.collections = {
-			books: this.server.thunk(new BooksThunk(this.db, new Models((uid) => new Book(uid)))),
-			pages: this.server.thunk(new PagesThunk(this.db, new Models((uid) => new Page(uid)))),
+			books: this.server.thunk(
+				new BooksThunk(
+					new BookTable(this.db, (uid) => new Book(uid))
+				)
+			),
+
+			pages: this.server.thunk(
+				new PagesThunk(
+					new PageTable(this.db, (uid) => new Page(uid))
+				)
+			),
 		};
 
 		this.server.on(CacheAction, this._handle_cache.bind(this));
@@ -79,7 +89,7 @@ export class Grip {
 							return rs(page);
 						}
 
-						page = pages.store.create();
+						page = pages.create();
 						page.uri = uri;
 						page.title = book.toc[uri];
 						page.book.set(book);
