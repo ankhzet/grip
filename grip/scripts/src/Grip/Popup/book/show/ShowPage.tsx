@@ -16,31 +16,30 @@ import { ManagerInterface } from '../../../../components/Reactivity/ManagerInter
 import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
 import { Link } from 'react-router';
 import { Utils } from '../../../Client/Utils';
-import { TocInterface } from '../../../Domain/TocInterface';
 import { RadioGroup } from '../../../../components/radiogroup';
 import { ReadPage } from '../read/ReadPage';
+import { Page } from '../../../Domain/Collections/Page/Page';
 
-interface TocListProps {
+interface PagesListProps {
 	uid: string;
-	toc: TocInterface;
+	pages: Page[];
 	columns?: number;
 }
 
-class TocList extends React.Component<TocListProps, {}> {
+class PagesList extends React.Component<PagesListProps, {}> {
 	static DEFAULT_COLUMNS = 3;
 
 	render() {
-		let { uid, toc, columns } = this.props;
-		let links = Object.keys(toc);
-		let col = 12 / Math.min(columns || TocList.DEFAULT_COLUMNS, 12);
+		let { uid, pages, columns } = this.props;
+		let col = 12 / Math.min(columns || PagesList.DEFAULT_COLUMNS, 12);
 
-		return (links.length || null) && (
+		return (pages.length || null) && (
 			<div id={ 'chapter-list-' + uid } style={{ marginBottom: "10px", }}>
-				{ Utils.chunks(links, 10).map((chunk, offset) => (
+				{ Utils.chunks(pages, 10).map((chunk) => (
 					<ul className={ 'col-xs-' + col }>
-						{ chunk.map((uri) => (
-							<li key={ uri }>
-								<Link to={ ReadPage.path(uid, links.indexOf(uri)) }>{ toc[uri] }</Link>
+						{ chunk.map((page: Page) => (
+							<li key={ page.uri }>
+								<Link to={ ReadPage.path(uid, page.uid) }>{ page.title }</Link>
 							</li>
 						)) }
 					</ul>
@@ -146,7 +145,7 @@ export class ShowPage extends React.Component<ShowPageProps, ShowPageState> {
 								)}
 							</div>
 							<div className="collapse collapsed col-xs-12" id={ 'chapter-list-' + book.uid }>
-								<TocList uid={ book.uid } toc={ book.toc } columns={ 4 } />
+								<PagesList uid={ book.uid } pages={ book.pages.get() } columns={ 4 } />
 							</div>
 						</div>
 
