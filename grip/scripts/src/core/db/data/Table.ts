@@ -7,6 +7,7 @@ import { Query } from '../Query';
 import { PackageInterface } from './PackageInterface';
 import { Package } from "./Package";
 import { TranscoderInterface } from '../../server/TranscoderInterface';
+import { StringUtils } from '../../utils/StringUtils';
 
 export class Table<M extends Model> extends Models<M> {
 	private db: DB;
@@ -15,12 +16,11 @@ export class Table<M extends Model> extends Models<M> {
 	public name: string;
 	protected transcoder: TranscoderInterface<M, any>;
 
-	constructor(db: DB, name: string, transcoder: TranscoderInterface<M, any>, factory: (uid: string) => M) {
+	constructor(db: DB, factory: (uid: string) => M, name?: string) {
 		super(factory);
 
 		this.db = db;
-		this.name = name;
-		this.transcoder = transcoder;
+		this.name = name || this.inferName();
 	}
 
 	public get store(): ModelStore<M> {
@@ -95,4 +95,7 @@ export class Table<M extends Model> extends Models<M> {
 		);
 	}
 
+	protected inferName(): string {
+		return StringUtils.camelCaseToHyphenCase(this.constructor.name.replace(/Table$/, '')) + 's';
+	}
 }
