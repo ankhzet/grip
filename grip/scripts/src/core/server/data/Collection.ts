@@ -1,6 +1,5 @@
 
 import { IdentifiableInterface } from '../../db/data/IdentifiableInterface';
-import { ModelStore } from '../../db/ModelStore';
 import { SyncResultInterface } from '../../db/SyncResultInterface';
 import { PackageInterface } from '../../db/data/PackageInterface';
 import { Package } from '../../db/data/Package';
@@ -11,11 +10,19 @@ import { Query } from '../../db/Query';
 export class Collection<M extends IdentifiableInterface> extends Eventable {
 	static CHANGED = 'changed';
 
-	public table: Table<M>;
+	private table: Table<M>;
 
 	constructor(table: Table<M>) {
 		super();
 		this.table = table;
+	}
+
+	public get name(): string {
+		return this.table.name;
+	}
+
+	public create(): M {
+		return this.table.create();
 	}
 
 	public changed(listener: (uids: string[], event?: string) => any) {
@@ -105,19 +112,6 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 				});
 			})
 		;
-	}
-
-	private updated(store: ModelStore<any>, uids: string[] = null): Promise<PackageInterface<M>> {
-		return store.findModels(uids)
-			.then((data: any[]) => {
-				return this.table.load(data)
-			});
-	}
-
-	private removed(store: ModelStore<M>, uids: string[]): Promise<PackageInterface<M>> {
-		return Promise.resolve(
-			this.table.cache(uids.reduce((acc, uid) => (acc[uid] = null, acc), {}))
-		);
 	}
 
 }
