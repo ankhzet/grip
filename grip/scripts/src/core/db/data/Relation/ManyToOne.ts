@@ -1,23 +1,17 @@
 
+import { Base } from './Base';
 import { Model } from '../Model';
 import { OneToMany } from './OneToMany';
+import { Models } from '../Models';
 
-export class ManyToOne<S extends Model, T extends Model> {
+export class ManyToOne<S extends Model, T extends Model> extends Base<S, T> {
 	private model: T;
-	private owner: S;
-	private back: string;
-	private reverse: OneToMany<T, S>;
-
-	constructor(owner: S, back: string) {
-		this.owner = owner;
-		this.back = back;
-	}
 
 	public get uid() {
 		return this.model ? this.model.uid : undefined;
 	}
 
-	public clear() {
+	public detach() {
 		this.set(null);
 	}
 
@@ -25,26 +19,34 @@ export class ManyToOne<S extends Model, T extends Model> {
 		return this.model;
 	}
 
-	public set(to: T) {
-		if (to === this.model) {
+	public set(to: T): this {
+		let from = this.model;
+
+		if (to === from) {
 			return;
 		}
 
 		this.model = to;
 
-		if (this.reverse) {
-			this.reverse.remove(this.owner);
+		if (from) {
+			(<OneToMany<T, S>>from[this.back]).detach(this.owner);
 		}
 
 		if (to) {
-			this.reverse = to[this.back];
-			this.reverse.add(this.owner);
-		} else {
-			this.reverse = null;
+			(<OneToMany<T, S>>to[this.back]).add(this.owner);
 		}
 	}
 
-	public static attach<S extends Model, T extends Model>(to: S, reverse?: string): ManyToOne<S, T> {
-		return new ManyToOne<S, T>(to, reverse || to.constructor.name.toLowerCase());
+	protected inferReverse(owner: S): string {
+		return super.inferReverse(owner) + 's';
 	}
+
+	encode(store: Models<T>) {
+		return this.uid;
+	}
+
+	decode(store: Models<T>, value: any): Base<S, T> {
+		return this.set(store.get(value));
+	}
+
 }
