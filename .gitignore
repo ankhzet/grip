@@ -4,8 +4,8 @@
 node_modules
 ncp-debug.log
 npm-debug.log
-grip/scripts/src/**/*.js
-grip/scripts/src/**/*.js.map
+grip/scripts/src/**/*.js*
+grip/scripts/tests/**/*.js*
 grip/styles/**/*.css
 !webpack.config.js
 /grip/scripts/popup.js

@@ -29,9 +29,11 @@
     "react-router": "^2.8.1"
   },
   "devDependencies": {
+    "@types/jasmine": "^2.5.49",
     "component-inspector": "^1.4.0",
     "css-loader": "latest",
     "file-loader": "latest",
+    "jasmine": "^2.6.0",
     "lodash": "^4.17.4",
     "style-loader": "latest",
     "url-loader": "latest",
