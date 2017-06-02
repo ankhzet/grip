@@ -3,7 +3,6 @@ import { Book } from '../../Domain/Collections/Book/Book';
 import { ObservableConnectedList } from '../../../components/Reactivity/ObservableConnectedList';
 import { PackageInterface } from '../../../core/db/data/PackageInterface';
 import { ReactiveInterface } from '../../../components/Reactivity/ReactiveInterface';
-import { BooksPackage } from '../../Domain/Collections/Book/BooksPackage';
 import { CollectionConnector } from '../../../core/server/CollectionConnector';
 import { BooksDepot } from '../../Domain/Collections/Book/BooksDepot';
 import { GripServerConnector } from '../../Client/GripServerConnector';
@@ -21,7 +20,7 @@ export class BookManager extends ObservableConnectedList<Book> implements Reacti
 		this.addTranscoder(new BookTranscoder());
 	}
 
-	public perform(uids: string[], action: string, payload?: any): Promise<BooksPackage> {
+	public perform(uids: string[], action: string, payload?: any): Promise<PackageInterface<Book>> {
 		let connector: GripServerConnector = <GripServerConnector>this.connector;
 
 		return this.get(uids)
