@@ -16,7 +16,9 @@ export class ObjectUtils {
 				let n = next[prop];
 
 				if (o && (typeof n === 'object')) {
-					n = this.patch(o, n);
+					if (typeof o === 'object') {
+						n = this.patch(o, n);
+					}
 				}
 
 				current[prop] = n;
