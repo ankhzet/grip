@@ -5,6 +5,8 @@ import { PackageInterface } from '../../core/db/data/PackageInterface';
 import { ManagerInterface } from './ManagerInterface';
 import { Eventable } from '../../core/utils/Eventable';
 import { Models } from '../../core/db/data/Models';
+import { Utils } from '../../Grip/Client/Utils';
+import { ObjectUtils } from '../../core/utils/ObjectUtils';
 
 export abstract class ObservableList<T extends IdentifiableInterface> extends Eventable implements ManagerInterface<T> {
 	private pending: {[uid: string]: Promise<PackageInterface<T>>} = {};
@@ -23,84 +25,42 @@ export abstract class ObservableList<T extends IdentifiableInterface> extends Ev
 	}
 
 	get(uids: string[] = []): Promise<PackageInterface<T>> {
-		// todo: too complex, requires refactoring
-
-		// console.log('fetching', uids);
 		if (!uids.length) {
 			return this.acquire(uids);
 		}
 
 		// split requested invalid uids to 'already loaded' and 'invalidated' groups
-		let ready = [];
-		let load  = [];
-		let final;
-		let result = new Package();
-
-		for (let uid of uids) {
-			if (this.data[uid]) {
-				ready.push(uid);
-			} else {
-				load.push(uid);
-			}
-		}
-
-		// console.log(`ready ${ready}, load ${load}`);
+		let [ready, load] = Utils.partition(uids, (uid) => this.data[uid]);
 
 		// fill result with already valid entries
-		for (let uid of ready) {
-			result[uid] = this.data[uid];
+		let result = ObjectUtils.extract(this.data, ready, new Package());
+
+		if (!load.length) {
+			return Promise.resolve(result);
 		}
 
-		// console.log(`result`, result);
+		// split requested invalid uids to 'already pending' and 'just invalidated' groups
+		let fetching = this.fetching();
 
-		if (load.length) {
-			// split requested invalid uids to 'already pending' and 'just invalidated' groups
-			let fetching = this.fetching();
+		// filter 'already pending' uids for distinct promises
+		let [pending, hanging] = Utils.partition(load, (uid) => fetching.indexOf(uid) >= 0);
+		let distinct = Utils.unique(pending.map((uid) => this.pending[uid]));
 
-			let hanging = [];
-			let pending = [];
+		// promise to load 'just invalidated' uids
+		let rest = this.acquire(hanging);
 
-			for (let uid of load) {
-				if (fetching.indexOf(uid) >= 0) {
-					pending.push(uid);
-				} else {
-					hanging.push(uid);
-				}
-			}
-
-			// console.log(`pending ${pending}, hanging ${hanging}`);
-
-			// filter 'already pending' uids for distinct promises
-			let promises = pending.map((uid) => this.pending[uid]);
-			let distinct = promises.filter((promise, idx) => promises.indexOf(promise) === idx);
-
-			// promise to load 'just invalidated' uids
-			let rest = this.acquire(hanging);
-
-			// mark them as 'pending'
-			for (let uid in hanging) {
-				this.pending[uid] = rest;
-			}
-
-			final = Promise.all([rest, ...distinct])
-				.then((data) => {
-					// console.log(`fill`, data);
-					// append only distinct data to response
-					// (previously appended 'already valid' entries can be overwritten)
-					for (let promised of data) {
-						for (let uid in promised) {
-							result[uid] = promised[uid];
-						}
+		return Promise.all([rest, ...distinct])
+			.then((packages: PackageInterface<T>[]) => {
+				// append only distinct data to response
+				// (previously appended 'already valid' entries can be overwritten)
+				for (let promised of packages) {
+					for (let uid in promised) {
+						result[uid] = promised[uid];
 					}
+				}
 
-					return result;
-				});
-		} else {
-			final = Promise.resolve(result);
-		}
-
-		// promise to wait for all requested uids to be loaded
-		return final;
+				return result;
+			});
 	}
 
 	set(values: T[], silent?: boolean): Promise<string[]> {
@@ -160,7 +120,7 @@ export abstract class ObservableList<T extends IdentifiableInterface> extends Ev
 	}
 
 	protected acquire(uids: string[]): Promise<PackageInterface<T>> {
-		return this.pull(uids)
+		let promise = this.pull(uids)
 			.then((data: PackageInterface<IdentifiableInterface>) => {
 				let present = Object.keys(data);
 
@@ -174,13 +134,21 @@ export abstract class ObservableList<T extends IdentifiableInterface> extends Ev
 					}
 				}
 
-				return this.set(
-						this.deserialize(present.map((uid) => data[uid])),
-						true
-					)
-					.then((uids) => this.get(uids))
+				return uids.length
+					? this.set(
+							this.deserialize(present.map((uid) => data[uid])),
+							true
+						).then((uids) => this.get(uids))
+					: Promise.resolve(new Package())
 				;
 			});
+
+		// mark them as 'pending'
+		for (let uid in uids) {
+			this.pending[uid] = promise;
+		}
+
+		return promise;
 	}
 
 	protected abstract serialize(instances: T[]): any[];

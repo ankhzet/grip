@@ -5,24 +5,38 @@ import { GripServer } from './Server/Server';
 import { GripActions } from './Server/actions/GripActions';
 import { CacheAction, CachePacketData } from './Server/actions/Cache';
 
-import { BooksDepot } from './Domain/Collections/Book/BooksDepot';
 import { Cacher } from './Client/Cacher';
 import { PagesCache } from './Client/Book/PagesCache';
 import { Book } from './Domain/Collections/Book/Book';
 import { BooksThunk } from './Domain/Collections/Book/BooksThunk';
+import { PagesThunk } from './Domain/Collections/Page/PagesThunk';
+import { Page } from "./Domain/Collections/Page/Page";
+import { BookTable } from './Domain/Collections/Book/BookTable';
+import { PageTable } from './Domain/Collections/Page/PageTable';
 
 export class Grip {
 	server: GripServer;
 	db: GripDB;
 	collections: {
 		books: BooksThunk,
+		pages: PagesThunk,
 	};
 
 	constructor() {
 		this.db = new GripDB();
 		this.server = new GripServer();
 		this.collections = {
-			books: this.server.thunk(new BooksThunk(this.db)),
+			books: this.server.thunk(
+				new BooksThunk(
+					new BookTable(this.db, (uid) => new Book(uid))
+				)
+			),
+
+			pages: this.server.thunk(
+				new PagesThunk(
+					new PageTable(this.db, (uid) => new Page(uid))
+				)
+			),
 		};
 
 		this.server.on(CacheAction, this._handle_cache.bind(this));
@@ -30,7 +44,7 @@ export class Grip {
 	}
 
 	async _handle_cache({ uid }: CachePacketData) {
-		let books = <BooksDepot>this.collections.books.collection;
+		let { books: {collection: books} } = this.collections;
 		let book = await books.getOne(uid);
 
 		if (!book) {
@@ -52,38 +66,69 @@ export class Grip {
 						this.server.broadcast(GripActions.cached, {uids: [book.uid]});
 
 						return book;
-					}).then((book: Book) => {
-
-						let loader = (page: number, done: number[] = []) => {
-							return cacher.preload(cache, page)
-								.then((contents: string) => {
-									book.contents[page] = contents;
-									book.cached = +new Date();
-
-									return books.setOne(book);
-								})
-								.catch((error) => {
-									console.error(error);
-								})
-								.then(() => {
-									done.push(page);
-
-									let next = cache.next(page);
-
-									if (next !== page) {
-										return loader(next, done);
-									} else {
-										return done;
-									}
-								});
-						};
-
-						return loader(0).then((done: number[]) => {
-							console.log('Preloaded:', cache, done, book);
-						});
-					});
+					}).then((book: Book) => (
+						this.preload(book, cacher, cache)
+					))
+				;
 			})
 		;
+	}
+
+	private preload(book: Book, cacher: Cacher, cache: PagesCache) {
+		let { books: {collection: books}, pages: {collection: pages} } = this.collections;
+		let uids = Object.keys(book.toc);
+
+		let load = (index: number = 0, done: string[] = []) => {
+			return cacher.preload(cache, index)
+				.then((contents: string) => {
+					let uri = uids[index];
+					let page = book.pages.by({ uid: uri });
+
+					return new Promise((rs, rj) => {
+						if (page) {
+							return rs(page);
+						}
+
+						page = pages.create();
+						page.uri = uri;
+						page.title = book.toc[uri];
+						page.book.set(book);
+
+						pages
+							.setOne(page)
+							.then(rs, rj);
+					}).then((page: Page) => {
+						page.contents = contents;
+						book.cached = +new Date();
+
+						return books.setOne(book)
+							.then(() => page)
+						;
+					});
+				})
+				.catch((error) => {
+					console.error(error);
+				})
+				.then((page: Page) => {
+					done.push(page.uid);
+
+					let next = cache.next(index);
+
+					if (next !== index) {
+						return load(next, done);
+					} else {
+						return done;
+					}
+				})
+			;
+		};
+
+		return (
+			load()
+			.then((done: string[]) => {
+				console.log('Preloaded:', cache, done, book);
+			})
+		);
 	}
 
 }
