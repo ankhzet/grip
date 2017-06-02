@@ -1,6 +1,7 @@
 
 import { Eventable } from '../../utils/Eventable';
 import { IdentifiableInterface } from './IdentifiableInterface';
+import { PackageInterface } from './PackageInterface';
 
 export class Models<M extends IdentifiableInterface> extends Eventable {
 	private instances: {[uid: string]: M} = {};
@@ -44,7 +45,7 @@ export class Models<M extends IdentifiableInterface> extends Eventable {
 	}
 
 	public each(consumer: (instance: M) => boolean): boolean {
-		for (let instance in this.map()) {
+		for (let instance of Object.keys(this.instances)) {
 			if (false === consumer(this.instances[instance])) {
 				return false;
 			}
@@ -54,19 +55,23 @@ export class Models<M extends IdentifiableInterface> extends Eventable {
 	}
 
 	public map<T>(consumer?: (instance: M) => T): T[] {
-		let collection : T[] = [];
+		let uids = Object.keys(this.instances);
 
-		for (let instance in this.instances) {
-			if (this.instances.hasOwnProperty(instance)) {
-				collection.push(
-					consumer
-						? consumer(this.instances[instance])
-						: <any>this.instances[instance]
-				);
-			}
-		}
+		return (
+			consumer
+				? uids.map((uid) => consumer(this.instances[uid]))
+				: uids.map((uid) => <any>this.instances[uid])
+		);
+	}
 
-		return collection;
+	public only(uids: string[]): M[] {
+		return uids.map((uid) => this.instances[uid])
+			.filter((m) => m)
+		;
+	}
+
+	public all(): PackageInterface<M> {
+		return this.instances;
 	}
 
 	private genUID(): string {
