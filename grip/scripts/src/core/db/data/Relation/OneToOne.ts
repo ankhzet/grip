@@ -1,22 +1,16 @@
 
+import { Base } from './Base';
 import { Model } from '../Model';
+import { Models } from '../Models';
 
-export class OneToOne<S extends Model, T extends Model> {
+export class OneToOne<S extends Model, T extends Model> extends Base<S, T> {
 	private model: T;
-	private owner: S;
-	private back: string;
-	private reverse: OneToOne<T, S>;
-
-	constructor(owner: S, back: string) {
-		this.owner = owner;
-		this.back = back;
-	}
 
 	public get uid() {
 		return this.model ? this.model.uid : undefined;
 	}
 
-	public clear() {
+	public detach() {
 		this.set(null);
 	}
 
@@ -24,26 +18,32 @@ export class OneToOne<S extends Model, T extends Model> {
 		return this.model;
 	}
 
-	public set(to: T) {
-		if (to === this.model) {
+	public set(to: T): this {
+		let from = this.model;
+
+		if (to === from) {
 			return;
 		}
 
 		this.model = to;
 
-		if (this.reverse) {
-			this.reverse.clear();
+		if (from) {
+			(<OneToOne<T, S>>from[this.back]).detach();
 		}
 
 		if (to) {
-			this.reverse = to[this.back];
-			this.reverse.set(this.owner);
-		} else {
-			this.reverse = null;
+			(<OneToOne<T, S>>to[this.back]).set(this.owner);
 		}
+
+		return this;
 	}
 
-	public static attach<S extends Model, T extends Model>(to: S, reverse?: string): OneToOne<S, T> {
-		return new OneToOne<S, T>(to, reverse || to.constructor.name.toLowerCase());
+	encode(store: Models<T>) {
+		return this.uid;
 	}
+
+	decode(store: Models<T>, value: any): Base<S, T> {
+		return this.set(store.get(value));
+	}
+
 }

@@ -1,34 +1,28 @@
 
 import { IdentifiableInterface } from '../../db/data/IdentifiableInterface';
-import { DB } from "../../db/DB";
-import { ModelStore } from '../../db/ModelStore';
 import { SyncResultInterface } from '../../db/SyncResultInterface';
 import { PackageInterface } from '../../db/data/PackageInterface';
 import { Package } from '../../db/data/Package';
-import { ObjectUtils } from '../../utils/ObjectUtils';
-import { TranscoderInterface } from '../TranscoderInterface';
 import { Eventable } from '../../utils/Eventable';
+import { Table } from '../../db/data/Table';
+import { Query } from '../../db/Query';
 
 export class Collection<M extends IdentifiableInterface> extends Eventable {
 	static CHANGED = 'changed';
 
-	private _cache: PackageInterface<M> = {};
-	private db: DB;
-	private factory: (uid: string) => M;
+	private table: Table<M>;
 
-	protected transcoder: TranscoderInterface<M, any>;
-
-	public name: string;
-
-	constructor(db: DB, name: string, factory: (uid: string) => M) {
+	constructor(table: Table<M>) {
 		super();
-		this.db = db;
-		this.name = name;
-		this.factory = factory;
+		this.table = table;
 	}
 
-	public create(uid: string): M {
-		return this.factory(uid);
+	public get name(): string {
+		return this.table.name;
+	}
+
+	public create(): M {
+		return this.table.create();
 	}
 
 	public changed(listener: (uids: string[], event?: string) => any) {
@@ -66,115 +60,58 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 	}
 
 	public set(data: PackageInterface<M>): Promise<PackageInterface<M>> {
-		return new Promise((rs, rj) => {
-			this.db.query(this.name)
-				.specific(null, (table) => {
-					let store = new ModelStore(table);
-					let encoded = this.transcoder
-						? Package.create<M, any>(data, (i) => this.transcoder.encode(i))
-						: data
-					;
+		return this.table.store
+			.syncModels(this.table.encode(data))
+			.then(({ removed, updated, request }: SyncResultInterface) => {
+				let all = [];
 
-					store.syncModels(encoded)
-						.then(({ removed, updated, request }: SyncResultInterface) => {
-							let all = [];
+				if (removed.length) {
+					all.push(this.table.removed(removed));
+				}
 
-							if (removed.length) {
-								all.push(this.removed(store, removed));
+				if (updated.length) {
+					all.push(this.table.updated(updated));
+				}
+
+				return Promise.all(all)
+					.then((pair) => {
+						if (request.length) {
+							this.fire(Collection.CHANGED, request, pair);
+						}
+
+						return pair;
+					})
+					.then((pair: PackageInterface<M>[]) => {
+						let result = new Package<M>();
+
+						for (let pack of pair) {
+							for (let uid of Object.keys(pack)) {
+								result[uid] = pack[uid];
 							}
+						}
 
-							if (updated.length) {
-								all.push(this.updated(store, updated));
-							}
-
-							return Promise.all(all)
-								.then((pair) => {
-									if (request.length) {
-										this.fire(Collection.CHANGED, request, pair);
-									}
-
-									return pair;
-								})
-								.then((pair: PackageInterface<M>[]) => {
-									let result = new Package<M>();
-
-									for (let pack of pair) {
-										for (let uid of Object.keys(pack)) {
-											result[uid] = pack[uid];
-										}
-									}
-
-									return result;
-								});
-						})
-						.then(rs)
-						.catch(rj);
-				})
-			;
-		});
+						return result;
+					});
+			})
+		;
 	}
 
 	public fetch(query): Promise<PackageInterface<M>> {
-		return new Promise((rs, rj) => {
-			try {
-				this.db.query(this.name, query)
-					.specific(
-						Object.keys(this._cache),
-						() => rs(this.cached())
-					)
-					.fetch((err, data: any[]) => {
-						return (
-							err
-								? rj(err)
-								: rs(this.load(data))
-						);
-					})
-				;
-			} catch (e) {
-				rj(e);
-			}
-		});
-	}
-
-	private updated(store: ModelStore<any>, uids: string[] = null): Promise<PackageInterface<M>> {
-		return store.findModels(uids)
-			.then((data: any[]) => {
-				return this.load(data)
-			});
-	}
-
-	private removed(store: ModelStore<M>, uids: string[]): Promise<PackageInterface<M>> {
-		return Promise.resolve(
-			this.cache(uids.reduce((acc, uid) => (acc[uid] = null, acc), {}))
-		);
-	}
-
-	private cached(uids?: string[]): PackageInterface<M> {
-		return (
-			uids
-				? ObjectUtils.extract(this._cache, uids)
-				: this._cache
-		);
-	}
-
-	private cache(pack: PackageInterface<M>): PackageInterface<M> {
-		let uids = Object.keys(pack);
-
-		for (let uid of uids) {
-			this._cache[uid] = pack[uid];
-		}
-
-		return this.cached(uids);
-	}
-
-	private load(documents: any[]): PackageInterface<M> {
-		let pack = new Package(documents);
-		let decoded = this.transcoder
-			? Package.create<any, M>(pack, (i) => this.transcoder.decode(i))
-			: pack
+		return this.table.query(query)
+			.then((query: Query) => {
+				return new Promise((rs, rj) => {
+					query
+						.specific(null, () => rs(this.table.cached()))
+						.fetch((err, data: any[]) => {
+							return (
+								err
+									? rj(err)
+									: rs(this.table.load(data))
+							);
+						})
+				});
+			})
 		;
-
-		return this.cache(decoded);
 	}
 
 }
