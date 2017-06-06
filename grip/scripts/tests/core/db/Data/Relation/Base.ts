@@ -9,7 +9,7 @@ describe('DB/Relation/Base', () => {
 
 		}
 
-		class Mock extends Base<any, any> {
+		class MockRelation extends Base<any, any> {
 			encode(store: any) {
 				throw new Error("Method not implemented.");
 			}
@@ -22,7 +22,7 @@ describe('DB/Relation/Base', () => {
 
 		it('should infer reverse relation name from owner class name', () => {
 			let owner = new Sample();
-			let relation = new Mock(owner);
+			let relation = new MockRelation(owner);
 
 			expect(relation.back).toBe('sample');
 		});
