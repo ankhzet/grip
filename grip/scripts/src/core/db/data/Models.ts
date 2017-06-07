@@ -74,7 +74,7 @@ export class Models<M extends IdentifiableInterface> extends Eventable {
 		return this.instances;
 	}
 
-	private genUID(): string {
+	protected genUID(): string {
 		return `${Object
 			.keys(this.instances)
 			.map(Number)
