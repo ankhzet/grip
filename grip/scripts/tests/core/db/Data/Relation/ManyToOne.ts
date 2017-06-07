@@ -67,12 +67,8 @@ describe('DB/Relation/ManyToOne', () => {
 				add: () => {},
 				detach: () => {},
 			};
-			let reverseRelation2 = {
-				add: () => {},
-			};
 
 			reverse1[relation.back] = reverseRelation1;
-			reverse2[relation.back] = reverseRelation2;
 
 			spyOn(reverseRelation1, 'detach');
 
