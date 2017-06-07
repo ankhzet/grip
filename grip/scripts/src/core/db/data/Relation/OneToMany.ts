@@ -1,8 +1,8 @@
 
 import { Base } from './Base';
 import { Model } from '../Model';
-import { ManyToOne } from './ManyToOne';
 import { Models } from '../Models';
+import { ManyToOne } from "./ManyToOne";
 
 export class OneToMany<S extends Model, T extends Model> extends Base<S, T> {
 	private models: T[] = [];
@@ -16,7 +16,9 @@ export class OneToMany<S extends Model, T extends Model> extends Base<S, T> {
 			return this.models.length && this.set([]);
 		}
 
-		if (this.models.indexOf(one) < 0) {
+		let index = this.models.indexOf(one);
+
+		if (index < 0) {
 			return;
 		}
 
@@ -49,16 +51,25 @@ export class OneToMany<S extends Model, T extends Model> extends Base<S, T> {
 
 	public set(to: T[]): this {
 		let from = this.models;
+		this.models = to = Array.from(new Set(to));
+
 		let detach = from.filter((model) => to.indexOf(model) < 0);
 		let attach = to.filter((model) => from.indexOf(model) < 0);
-		this.models = to || [];
 
 		for (let model of detach) {
-			(<ManyToOne<T, S>>model[this.back]).detach();
+			let reverse: ManyToOne<T, S> = model[this.back];
+
+			if (reverse) {
+				reverse.detach();
+			}
 		}
 
 		for (let model of attach) {
-			(<ManyToOne<T, S>>model[this.back]).set(this.owner);
+			let reverse: ManyToOne<T, S> = model[this.back];
+
+			if (reverse) {
+				reverse.set(this.owner);
+			}
 		}
 
 		return this;
