@@ -29,11 +29,19 @@ export class ManyToOne<S extends Model, T extends Model> extends Base<S, T> {
 		this.model = to;
 
 		if (from) {
-			(<OneToMany<T, S>>from[this.back]).detach(this.owner);
+			let reverse: OneToMany<T, S> = from[this.back];
+
+			if (reverse) {
+				reverse.detach(this.owner);
+			}
 		}
 
 		if (to) {
-			(<OneToMany<T, S>>to[this.back]).add(this.owner);
+			let reverse: OneToMany<T, S> = to[this.back];
+
+			if (reverse) {
+				reverse.add(this.owner);
+			}
 		}
 	}
 
