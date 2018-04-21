@@ -4,7 +4,7 @@
   "description": "Blog fetcher",
   "scripts": {
     "pack": "webpack --display-modules --progress --colors -p",
-    "watchdog": "webpack --progress --colors --watch --watch-poll",
+    "watchdog": "webpack --mode=development --progress --colors --watch --watch-poll",
     "install:webpack": "npm link webpack",
     "install:typings": "npm link typings",
     "install:global": "npm run install:webpack && npm run install:typings"
@@ -32,11 +32,12 @@
     "@types/jasmine": "^2.5.49",
     "component-inspector": "^1.4.0",
     "css-loader": "latest",
-    "file-loader": "latest",
+    "file-loader": "^1.1.10",
     "jasmine": "^2.6.0",
     "lodash": "^4.17.4",
     "style-loader": "latest",
     "url-loader": "latest",
-    "webpack": "latest"
+    "webpack": "^4.0.1",
+    "webpack-cli": "^2.0.9"
   }
 }
