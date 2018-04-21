@@ -3,6 +3,7 @@ import * as React from "react";
 
 export interface ButtonProps extends React.HTMLAttributes<any> {
 	'class': string;
+	'disabled'?: boolean;
 }
 
 export class Button extends React.Component<ButtonProps, {}> {
@@ -16,7 +17,7 @@ export class Button extends React.Component<ButtonProps, {}> {
 				props[key] = this.props[key];
 
 		return (
-			<button {...props} type="button" className={ `btn btn-default ${this.props.class}` }>
+			<button {...props} type="button" disabled={ this.props.disabled } className={ `btn btn-default ${this.props.class}` }>
 				{ this.props.children }
 			</button>
 		);
