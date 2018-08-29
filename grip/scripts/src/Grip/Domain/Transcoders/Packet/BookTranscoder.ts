@@ -2,6 +2,7 @@
 import { Book } from '../../Collections/Book/Book';
 import { TranscoderInterface } from '../../../../core/server/TranscoderInterface';
 import { ObjectUtils } from '../../../../core/utils/ObjectUtils';
+import { Base } from '../../../../core/db/data/Relation/Base';
 
 export class BookTranscoder implements TranscoderInterface<Book, {}> {
 
@@ -11,6 +12,9 @@ export class BookTranscoder implements TranscoderInterface<Book, {}> {
 				case 'matchers':
 					value = value.code();
 					break;
+
+				case 'pages':
+					value = (value as Base<any, any>).encode(null);
 			}
 
 			return [value, prop];
