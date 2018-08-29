@@ -7,11 +7,12 @@
 		"noImplicitAny": false,
 		"experimentalDecorators": true,
 		"module": "es6",
-		"target": "es6",
+		"target": "es2015",
+		"lib": ["dom", "es2015"],
 		"moduleResolution": "node",
 		"jsx": "react",
-    "typeRoots": [
-      "node_modules/@types"
-    ]
+		"typeRoots": [
+			"node_modules/@types"
+		]
 	}
 }

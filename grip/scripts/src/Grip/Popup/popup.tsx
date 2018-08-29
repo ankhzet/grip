@@ -66,7 +66,7 @@ class Navbar extends React.Component<LocationProps, {}> {
 							<span className="icon-bar" />
 							<span className="icon-bar" />
 						</button>
-						<Link to={ menu.link } className="navbar-brand" target="_blank">
+						<Link to={ menu.link } className="navbar-brand">
 							{ menu.title }
 
 							{ connected || (

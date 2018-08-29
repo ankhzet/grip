@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Blog fetcher",
   "scripts": {
-    "pack": "webpack --display-modules --progress --colors -p",
+    "pack": "webpack --display-modules --progress --colors",
     "watchdog": "webpack --progress --colors --watch --watch-poll",
     "install:webpack": "npm link webpack",
     "install:typings": "npm link typings",
