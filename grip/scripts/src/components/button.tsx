@@ -1,7 +1,7 @@
 
 import * as React from "react";
 
-export interface ButtonProps extends React.HTMLAttributes<any> {
+export interface ButtonProps extends React.AllHTMLAttributes<any> {
 	'class': string;
 }
 

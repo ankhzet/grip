@@ -1,8 +1,8 @@
 
 import * as React from "react";
-import { Children, Component, HTMLAttributes, ReactChild, ReactElement } from "react";
+import { Children, Component, AllHTMLAttributes, ReactChild, ReactElement } from "react";
 
-export interface RadioGroupProps extends HTMLAttributes<any> {
+export interface RadioGroupProps extends AllHTMLAttributes<any> {
 	value: string;
 }
 

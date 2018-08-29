@@ -9,6 +9,9 @@
 		"module": "es6",
 		"target": "es6",
 		"moduleResolution": "node",
-		"jsx": "react"
+		"jsx": "react",
+    "typeRoots": [
+      "node_modules/@types"
+    ]
 	}
 }
