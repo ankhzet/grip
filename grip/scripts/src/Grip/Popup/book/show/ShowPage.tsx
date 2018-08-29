@@ -102,7 +102,7 @@ export class ShowPage extends React.Component<ShowPageProps, ShowPageState> {
 			book,
 			matcher,
 		} = this.state;
-		let matchers = Object.keys(book.matchers);
+		let matchers = book && Object.keys(book.matchers);
 
 		return (book || null) && (
 			<Panel>
