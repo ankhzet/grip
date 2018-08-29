@@ -3,6 +3,8 @@ import { Book } from '../../Collections/Book/Book';
 import { TranscoderInterface } from '../../../../core/server/TranscoderInterface';
 import { ObjectUtils } from '../../../../core/utils/ObjectUtils';
 import { Base } from '../../../../core/db/data/Relation/Base';
+import { OneToMany } from '../../../../core/db/data/Relation/OneToMany';
+import { Page } from '../../Collections/Page/Page';
 
 export class BookTranscoder implements TranscoderInterface<Book, {}> {
 
@@ -26,6 +28,8 @@ export class BookTranscoder implements TranscoderInterface<Book, {}> {
 			return null;
 		}
 
+		const book = target || new Book(data.uid);
+
 		return ObjectUtils.transform(data, (value, prop, has) => {
 			switch (prop) {
 				case 'matchers':
@@ -33,9 +37,12 @@ export class BookTranscoder implements TranscoderInterface<Book, {}> {
 						[code, matcher]
 					), has);
 					break;
+
+				case 'pages':
+					value = (new OneToMany<Book, Page>(book)).decode(null, []);
 			}
 
 			return [value, prop];
-		}, target || new Book(data.uid));
+		}, book);
 	}
 }
