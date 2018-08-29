@@ -2,6 +2,7 @@
 	"compilerOptions": {
 		"noEmitOnError": true,
 		"rootDir": "./grip/scripts",
+		"outDir": "./grip/build",
 		"sourceMap": true,
 		"removeComments": true,
 		"noImplicitAny": false,
