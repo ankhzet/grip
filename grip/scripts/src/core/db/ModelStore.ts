@@ -56,7 +56,7 @@ export class ModelStore<M extends IdentifiableInterface> {
 	updateModels(data: Package<M>, upsert: boolean = true): Promise<string[]> {
 		return Promise.all(
 			Object.keys(data)
-				.map((uid) => new Promise((resolve, reject) => {
+				.map((uid) => new Promise<string>((resolve, reject) => {
 					this.table.update(
 						{ uid },
 						{ $set: data[uid] },
