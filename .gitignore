@@ -13,3 +13,4 @@ grip/styles/**/*.css
 /grip/scripts/content.js*
 /grip/scripts/background.js*
 /grip/scripts/popup.js*
+/grip/build
