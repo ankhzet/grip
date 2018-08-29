@@ -22,7 +22,7 @@ export class GripServer extends Server<GripClientConnector> {
 
 	public collection<M extends IdentifiableInterface, D>(collection: Collection<M>, transcoder?: TranscoderInterface<M, D>): CollectionThunk<M, D> {
 		collection.changed((uids: string[]) => {
-			this.broadcast(GripActions.updated, { what: name, uids});
+			this.broadcast(GripActions.updated, { what: collection.name, uids});
 		});
 
 		return super.collection(collection, transcoder);
