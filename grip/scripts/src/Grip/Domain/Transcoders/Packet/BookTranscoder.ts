@@ -22,7 +22,11 @@ export class BookTranscoder implements TranscoderInterface<Book, {}> {
 	}
 
 	public decode(data: any, target?: Book): Book {
-		return data && ObjectUtils.transform(data, (value, prop, has) => {
+		if (!data) {
+			return null;
+		}
+
+		return ObjectUtils.transform(data, (value, prop, has) => {
 			switch (prop) {
 				case 'matchers':
 					value = ObjectUtils.transform(value, (code, matcher) => (

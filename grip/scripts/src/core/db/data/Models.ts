@@ -66,7 +66,7 @@ export class Models<M extends IdentifiableInterface> extends Eventable {
 
 	public only(uids: string[]): M[] {
 		return uids.map((uid) => this.instances[uid])
-			.filter((m) => m)
+			.filter(Boolean)
 		;
 	}
 
