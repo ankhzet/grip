@@ -8,7 +8,8 @@ grip/scripts/src/**/*.js*
 grip/scripts/tests/**/*.js*
 grip/styles/**/*.css
 !webpack.config.js
-/grip/scripts/popup.js*
-/grip/scripts/commons.js*
-/grip/scripts/background.js*
+/grip/scripts/manifest.js*
+/grip/scripts/vendor.js*
 /grip/scripts/content.js*
+/grip/scripts/background.js*
+/grip/scripts/popup.js*

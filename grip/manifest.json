@@ -9,7 +9,8 @@
 	},
 	"background": {
 		"scripts": [
-			"scripts/commons.js",
+			"scripts/manifest.js",
+			"scripts/vendor.js",
 			"scripts/background.js"
 		]
 	},

@@ -11,9 +11,9 @@ const env = PRODUCTION ? 'production' : 'development';
 
 module.exports = {
 	entry: {
-		popup: 'src/popup.js',
-		content: 'src/content.js',
-		background: 'src/background.js',
+		popup: 'src/popup.tsx',
+		content: 'src/content.tsx',
+		background: 'src/background.ts',
 	},
 	output: {
 		publicPath: '/',
@@ -40,9 +40,10 @@ module.exports = {
 			'__DEV__': !PRODUCTION,
 		}),
 		new webpack.optimize.CommonsChunkPlugin({
-			name: "commons",
-			filename: "commons.js",
+			name: 'vendor',
+			minChunks: ({ resource }) => /node_modules|\/lib\//.test(resource),
 		}),
+		new webpack.optimize.CommonsChunkPlugin('manifest'),
 		...(PRODUCTION ? [
 			new webpack.optimize.OccurrenceOrderPlugin(),
 			new webpack.optimize.AggressiveMergingPlugin(),
@@ -71,7 +72,7 @@ module.exports = {
 
 	resolve: {
 		modules   : [path.resolve(__dirname, 'grip/scripts'), 'node_modules'],
-		extensions: ['.js', '.jsx', '.json'],
+		extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
 		alias: {
 			'react': 'react-lite',
 			'react-dom': 'react-lite',
@@ -98,6 +99,10 @@ module.exports = {
 			}, {
 				test: /\.(eot|ttf|svg|woff|woff2)$/,
 				loader: 'file-loader?name=../styles/fonts/[name].[ext]',
+			},
+			{
+				test: /\.tsx?$/,
+				loader: 'awesome-typescript-loader'
 			},
 		],
 	},
