@@ -44,7 +44,7 @@ module.exports = {
 			filename: "commons.js",
 		}),
 		...(PRODUCTION ? [
-			new webpack.optimize.OccurenceOrderPlugin(),
+			new webpack.optimize.OccurrenceOrderPlugin(),
 			new webpack.optimize.AggressiveMergingPlugin(),
 		] : []),
 	],
