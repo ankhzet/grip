@@ -57,7 +57,11 @@ export class Table<M extends Model> extends Models<M> {
 		let uids = Object.keys(pack);
 
 		for (let uid of uids) {
-			this.set(pack[uid]);
+			if (pack[uid]) {
+				this.set(pack[uid]);
+			} else {
+				this.remove(uid);
+			}
 		}
 
 		return this.cached(uids);
