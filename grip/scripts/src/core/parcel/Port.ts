@@ -80,7 +80,7 @@ export class Port {
 		};
 
 		if (config.tracing) {
-			Tracer.trace(' > ', this, packet);
+			Tracer.trace(` ${packet.action} > `, this, packet);
 		}
 
 		this.port.postMessage(packet);
@@ -88,7 +88,7 @@ export class Port {
 
 	process(packet: Packet<any>) {
 		if (config.tracing) {
-			Tracer.trace(' < ', this, packet);
+			Tracer.trace(` < ${packet.action} `, this, packet);
 		}
 
 		this.touched = +new Date;
