@@ -63,8 +63,8 @@ export class Utils {
   }
 
   static partition(array: any[], predicate: (element: any, index: number, context: any) => any) {
-    let pass = new Array(array.length);
-    let fail = new Array(array.length);
+    let pass = [];
+    let fail = [];
 
     for (let index in array) {
       let element = array[index];
