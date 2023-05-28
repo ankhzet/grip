@@ -11,7 +11,7 @@ const env = PRODUCTION ? 'production' : 'development';
 
 module.exports = {
 	entry: {
-		popup: 'src/popup.js',
+		popup: path.resolve(__dirname, SCRIPTS_ROOT, 'src/popup.js'),
 		content: 'src/content.js',
 		background: 'src/background.js',
 	},
@@ -39,15 +39,23 @@ module.exports = {
 			'process.env.BROWSER': true,
 			'__DEV__': !PRODUCTION,
 		}),
-		new webpack.optimize.CommonsChunkPlugin({
-			name: "commons",
-			filename: "commons.js",
-		}),
 		...(PRODUCTION ? [
 			new webpack.optimize.OccurenceOrderPlugin(),
 			new webpack.optimize.AggressiveMergingPlugin(),
 		] : []),
 	],
+
+	optimization: {
+		splitChunks: {
+			cacheGroups: {
+				commons: {
+					name: "commons",
+					chunks: "initial",
+					minChunks: 2,
+				},
+			},
+		},
+	},
 
 	cache: !PRODUCTION,
 
@@ -79,7 +87,7 @@ module.exports = {
 	},
 
 	module: {
-		loaders: [
+		rules: [
 			{
 				test: /\.css$/,
 				loader: 'style-loader!css-loader',

@@ -3,8 +3,8 @@ import { Model } from '../Model';
 import { Models } from '../Models';
 
 export abstract class Base<S extends Model, T extends Model> {
-	protected owner: S;
-	protected back: string;
+	public owner: S;
+	public back: string;
 
 	constructor(owner: S, back?: string) {
 		this.owner = owner;

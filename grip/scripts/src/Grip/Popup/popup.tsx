@@ -1,7 +1,8 @@
 
 import * as React from 'react';
 
-import { Router, Route, Link, hashHistory } from 'react-router'
+import { Router, Route } from 'react-router'
+import { Link } from 'react-router-dom';
 
 import { DashboardPageRoutes, DashboardPage } from './DashboardPage';
 import { AboutPageRoutes, AboutPage } from './AboutPage';
