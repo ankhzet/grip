@@ -11,7 +11,7 @@ const env = PRODUCTION ? 'production' : 'development';
 
 module.exports = {
 	entry: {
-		popup: path.resolve(__dirname, SCRIPTS_ROOT, 'src/popup.js'),
+		popup: 'src/popup.js',
 		content: 'src/content.js',
 		background: 'src/background.js',
 	},
