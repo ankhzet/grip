@@ -15,7 +15,7 @@ export class Utils {
 	}
 
 	static download(uri: string): Promise<string> {
-		return new Promise((rs, rj) => {
+		return <Promise<string>>new Promise((rs, rj) => {
 			JQuery.get(uri)
 				.then(rs, (j, t, e) => rj(j.status + ' ' + e));
 		}).catch((e) => {

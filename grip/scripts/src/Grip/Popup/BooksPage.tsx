@@ -1,6 +1,6 @@
 
 import * as React from "react";
-import { Route, IndexRoute, withRouter, InjectedRouter } from 'react-router'
+import {Route, RouteComponentProps, withRouter} from 'react-router'
 
 import { ListPage } from './book/ListPage';
 import { ShowPage } from './book/show/ShowPage';
@@ -9,7 +9,7 @@ import { BookManager } from './book/Manager';
 import { BookUIDelegate } from './book/delegates/BookUIDelegate';
 import { ReadPage } from './book/read/ReadPage';
 
-interface BooksPageProps {
+interface BooksPageProps extends RouteComponentProps<any> {
 	router: InjectedRouter;
 	manager: BookManager;
 }

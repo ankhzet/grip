@@ -14,7 +14,7 @@ import { Book } from '../../../Domain/Collections/Book/Book';
 import { BooksPage } from '../../BooksPage';
 import { ManagerInterface } from '../../../../components/Reactivity/ManagerInterface';
 import { BookUIDelegateInterface } from '../delegates/BookUIDelegateInterface';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { Utils } from '../../../Client/Utils';
 import { RadioGroup } from '../../../../components/radiogroup';
 import { ReadPage } from '../read/ReadPage';

@@ -1,7 +1,8 @@
 
 import * as React from 'react';
 
-import { Link, withRouter } from 'react-router'
+import { RouteComponentProps, withRouter } from 'react-router'
+import { Link } from 'react-router-dom';
 
 import { Glyph } from '../../../components/glyph';
 import { Button } from '../../../components/button';
@@ -14,7 +15,7 @@ import { ShowPage } from './show/ShowPage';
 import { EditPage } from './edit/EditPage';
 import { PackageInterface } from "../../../core/db/data/PackageInterface";
 
-interface BookItemRowProps {
+interface BookItemRowProps extends RouteComponentProps<any> {
 	manager: ManagerInterface<Book>;
 	delegate: BookUIDelegateInterface<Book>;
 	book: Book;
