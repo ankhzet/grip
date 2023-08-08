@@ -12,34 +12,38 @@
   "author": "ankhzet@gmail.com",
   "license": "ISC",
   "dependencies": {
+    "bootstrap": "^3.4.1",
+    "jquery": "^3.5.0",
+    "moment": "^2.29.4",
+    "nedb": "~1.7.4",
+    "react": "^17.0.2",
+    "react-codemirror-ts": "^0.0.3",
+    "react-dom": "^17.0.2",
+    "react-lite": "^0.15.40",
+    "react-router": "^4.3.1",
+    "react-router-dom": "^4.3.1",
+    "codemirror": "^6.0.0"
+  },
+  "devDependencies": {
     "@types/chrome": "0.0.59",
     "@types/history": "^4.6.2",
     "@types/react": "^16.0.38",
     "@types/react-codemirror": "^0.2.6",
-    "@types/react-dom": "^16.0.4",
+    "@types/react-dom": "^17.0.20",
     "@types/react-router": "^4.0.22",
-    "bootstrap": "^3.3.7",
-    "jquery": "^3.1.0",
-    "moment": "^2.18.1",
-    "nedb": "^1.8.0",
-    "react": "^16.2.0",
-    "react-codemirror": "^1.0.0",
-    "react-dom": "^16.2.0",
-    "react-lite": "^0.15.35",
-    "react-router": "^4.2.0",
-    "react-router-dom": "^4.2.2"
-  },
-  "devDependencies": {
     "@types/jasmine": "^2.5.49",
-    "@types/react-router-dom": "^4.2.4",
+    "@types/react-router-dom": "^4.3.5",
     "component-inspector": "^1.4.0",
-    "css-loader": "latest",
-    "file-loader": "^1.1.10",
+    "css-loader": "^6.8.1",
+    "file-loader": "^6.2.0",
     "jasmine": "^2.6.0",
-    "lodash": "^4.17.4",
-    "style-loader": "latest",
-    "url-loader": "latest",
-    "webpack": "^4.0.1",
-    "webpack-cli": "^2.0.9"
+    "lodash": "^4.17.21",
+    "style-loader": "^3.3.3",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.84.1",
+    "webpack-cli": "^5.1.1"
+  },
+  "resolutions": {
+    "underscore": "^1.12.1"
   }
 }
