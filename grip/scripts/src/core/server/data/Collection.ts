@@ -99,7 +99,7 @@ export class Collection<M extends IdentifiableInterface> extends Eventable {
 	public fetch(query): Promise<PackageInterface<M>> {
 		return this.table.query(query)
 			.then((query: Query) => {
-				return <Promise<PackageInterface<M>>>new Promise((rs, rj) => {
+				return new Promise<PackageInterface<M>>((rs, rj) => {
 					query
 						.specific(null, () => rs(this.table.cached()))
 						.fetch((err, data: any[]) => {
